@@ -63,6 +63,8 @@ def main_screen(screen):
     screen1 = pygame.image.load(r'C:\Users\marc\OneDrive\Desktop\Projects Remote\Raspberry Pi projects\PipBoy\VaultBoy2fill.png') #Image location to show on the screen
     screen1_rect = screen1.get_rect() #Gets image width/height information
     screen1_resi = pygame.transform.scale(screen1, (500, 500)) #Resizes image
+    screen.fill((0, 0, 0)) #Fill screen with blanking
+    screen.blit(screen1_resi, (150, 75))
 
     #delete once find answer
     ############
@@ -112,8 +114,6 @@ def main_screen(screen):
     textTime = font.render(f'Time: {hour}:{minute}:{sec}', True, (0, 142, 0))
     textTime_rect = textTime.get_rect()
     textTime_rect.center = (150, 550)
-    screen.fill((0, 0, 0)) #Fill screen with blanking
-    screen.blit(screen1_resi, (150, 75))
     screen.blit(textTime, textTime_rect)
 
 def air_screen(screen):
