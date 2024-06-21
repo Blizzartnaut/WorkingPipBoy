@@ -2,14 +2,12 @@ import pygame
 import sys
 from datetime import datetime
 
-#Variable
+#Initial Variables
 resol = (800, 600) #sets resolution
 current = datetime.now()
-#currentT = current.strftime("%H:%M:%S")
-#currentD = 0
 clock = pygame.time.Clock() #Clock manages how fast the screen updates
 
-#This program as 06/18/2024 was built verbatim by ChatGPT 4, will be worked on and improved over time by the stated author.
+#This program as 06/18/2024 was initially built verbatim by ChatGPT 4, has been worked on and improved over time by the stated author.
 #Initialize Pygame
 pygame.init()
 lastUpdate = pygame.time.get_ticks() #To check how much time has passed
@@ -63,8 +61,8 @@ def main_screen(screen):
     screen1 = pygame.image.load(r'C:\Users\marc\OneDrive\Desktop\Projects Remote\Raspberry Pi projects\PipBoy\VaultBoy2fill.png') #Image location to show on the screen
     screen1_rect = screen1.get_rect() #Gets image width/height information
     screen1_resi = pygame.transform.scale(screen1, (500, 500)) #Resizes image
-    screen.fill((0, 0, 0)) #Fill screen with blanking
-    screen.blit(screen1_resi, (150, 75))
+    screen.fill((0, 0, 0)) #Fill screen with blanking color to essentially refresh the screen
+    screen.blit(screen1_resi, (150, 75))    #This function takes a pygame surface (some "image" data) and displays it on top of everything before it, requires arguments, (the image data, the coordinates
 
     #delete once find answer
     ############
@@ -103,10 +101,10 @@ def main_screen(screen):
     #delete once find answer
 
     #Update Sensor Values Here
-    current = datetime.now()
-    sec = current.second
-    minute = current.minute
-    hour = current.hour
+    current = datetime.now()    #Runs the datetime function, getting the exact time and date from the system clock, as its in the looping structure it updates every tick
+    sec = current.second        #Grabs the second data from the datetime function
+    minute = current.minute     #Grabs the minute data from the datetime function
+    hour = current.hour         #Grabs the hour data from the datetime function
 
     #bootstraps() #Why wont this work
 
@@ -115,6 +113,15 @@ def main_screen(screen):
     textTime_rect = textTime.get_rect()
     textTime_rect.center = (150, 550)
     screen.blit(textTime, textTime_rect)
+
+    #Date
+    month = current.month       #Grabs the month data from the datetime function
+    day = current.day           #Grabs the day data from the date time function
+    year = current.year         #Grabs the year data from the date time function
+    datetext = font.render(f'{month}/{day}/{year}', True, (0, 142, 0))
+    datetext_rect = datetext.get_rect()
+    datetext_rect.center = (650, 550)
+    screen.blit(datetext, datetext_rect)
 
 def air_screen(screen):
     #air quality sensor screen content
@@ -168,32 +175,33 @@ def air_screen(screen):
     #Temp
     temp = fontS.render(f'Temp: {tempsens}', True, (0, 142, 0))
     temp_rect = temp.get_rect()
-    temp_rect.center = (150, 150)
+    temp_rect.topleft = (50, 150) #Places the topleft portion of the box at these x,y coordinates
 
     #Humidity
     humid = fontS.render(f'Humidity: {humidsens}', True, (0, 142, 0))
     humid_rect = humid.get_rect()
-    humid_rect.center = (150, 250)
+    humid_rect.topleft =(50, 250)
 
     #CO%
     COper = fontS.render(f'CO: {COsens}', True, (0, 142, 0))
     CO_rect = COper.get_rect()
-    CO_rect.center = (150, 350)
+    CO_rect.topleft = (50, 350)
 
     #CO2%
     CO2per = fontS.render(f'CO2: {CO2sens}', True, (0, 142, 0))
     CO2_rect = CO2per.get_rect()
-    CO2_rect.center = (150, 450)
+    CO2_rect.topleft = (50, 450)
 
     #O2%
     O2per = fontS.render(f'O2: {O2sens}', True, (0, 142, 0))
     O2_rect = O2per.get_rect()
-    O2_rect.center = (150, 550)
+    O2_rect.topleft = (50, 550)
 
     #VOC
     VOCper = fontS.render(f'VOC: {VOCsens}', True, (0, 142, 0))
     VOC_rect = VOCper.get_rect()
-    VOC_rect.center = (600, 150)
+    #VOC_rect.center = (600, 150) #Centers the coordinates of the box at these x,y coordinates
+    VOC_rect.topleft = (600,150)
 
     #Air Quality Warning Box
 
