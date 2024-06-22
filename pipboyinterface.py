@@ -1,8 +1,10 @@
 import pygame
 import sys
 from datetime import datetime
+import os
 
 #Initial Variables
+dir_path = os.path.dirname(os.path.realpath(__file__)) #This function creates a relational path to the object.
 resol = (800, 600) #sets resolution
 current = datetime.now()
 clock = pygame.time.Clock() #Clock manages how fast the screen updates
@@ -10,6 +12,7 @@ clock = pygame.time.Clock() #Clock manages how fast the screen updates
 #This program as 06/18/2024 was initially built verbatim by ChatGPT 4, has been worked on and improved over time by the stated author.
 #Initialize Pygame
 pygame.init()
+image_path = os.path.join(dir_path, 'VaultBoy2fill.png')
 lastUpdate = pygame.time.get_ticks() #To check how much time has passed
 
 #Set up the display
