@@ -16,7 +16,7 @@ image_path = os.path.join(dir_path, 'VaultBoy2fill.png')
 lastUpdate = pygame.time.get_ticks() #To check how much time has passed
 
 #Set up the display
-screen = pygame.display.set_mode(resol) #Adust resolution to fit your display
+screen = pygame.display.set_mode((0.0), pygame.FULLSCREEN) #Adust resolution to fit your display
 pygame.display.set_caption('Pip-Boy Hand-Held Environment Monitor') #Sets Window caption
 
 #Setting up Font
@@ -226,10 +226,10 @@ current_screen = main_screen
 while running:
 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.FINGERUP:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.FINGERDOWN:
                 current_screen = air_screen if current_screen == main_screen else main_screen
     
     now = pygame.time.get_ticks() #get current time
