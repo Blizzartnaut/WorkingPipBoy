@@ -61,7 +61,7 @@ def main_screen(screen):
     #main screen content
     #Background Image
     screen.fill((0, 0, 0)) #Fill screen with blanking
-    screen1 = pygame.image.load(r'C:\Users\marc\OneDrive\Desktop\Projects Remote\Raspberry Pi projects\PipBoy\VaultBoy2fill.png') #Image location to show on the screen
+    screen1 = pygame.image.load('VaultBoy2fill.png') #Image location to show on the screen
     screen1_rect = screen1.get_rect() #Gets image width/height information
     screen1_resi = pygame.transform.scale(screen1, (500, 500)) #Resizes image
     screen.fill((0, 0, 0)) #Fill screen with blanking color to essentially refresh the screen
