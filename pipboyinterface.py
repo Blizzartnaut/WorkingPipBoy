@@ -16,7 +16,7 @@ image_path = os.path.join(dir_path, 'VaultBoy2fill.png')
 lastUpdate = pygame.time.get_ticks() #To check how much time has passed
 
 #Set up the display
-screen = pygame.display.set_mode((0.0), pygame.FULLSCREEN) #Adust resolution to fit your display
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN) #Adust resolution to fit your display
 pygame.display.set_caption('Pip-Boy Hand-Held Environment Monitor') #Sets Window caption
 
 #Setting up Font
