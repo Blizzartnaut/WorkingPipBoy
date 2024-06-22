@@ -16,7 +16,7 @@ image_path = os.path.join(dir_path, 'VaultBoy2fill.png')
 lastUpdate = pygame.time.get_ticks() #To check how much time has passed
 
 #Set up the display
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN) #Adust resolution to fit your display
+screen = pygame.display.set_mode((resol), pygame.FULLSCREEN) #Adust resolution to native
 pygame.display.set_caption('Pip-Boy Hand-Held Environment Monitor') #Sets Window caption
 
 #Setting up Font
@@ -114,7 +114,7 @@ def main_screen(screen):
     #Time
     textTime = font.render(f'Time: {hour}:{minute}:{sec}', True, (0, 142, 0))
     textTime_rect = textTime.get_rect()
-    textTime_rect.center = (150, 550)
+    textTime_rect.center = (150, 440)
     screen.blit(textTime, textTime_rect)
 
     #Date
@@ -123,7 +123,7 @@ def main_screen(screen):
     year = current.year         #Grabs the year data from the date time function
     datetext = font.render(f'{month}/{day}/{year}', True, (0, 142, 0))
     datetext_rect = datetext.get_rect()
-    datetext_rect.center = (650, 550)
+    datetext_rect.center = (650, 440)
     screen.blit(datetext, datetext_rect)
 
 def air_screen(screen):
@@ -178,33 +178,33 @@ def air_screen(screen):
     #Temp
     temp = fontS.render(f'Temp: {tempsens}', True, (0, 142, 0))
     temp_rect = temp.get_rect()
-    temp_rect.topleft = (50, 150) #Places the topleft portion of the box at these x,y coordinates
+    temp_rect.topleft = (50, 145) #Places the topleft portion of the box at these x,y coordinates
 
     #Humidity
     humid = fontS.render(f'Humidity: {humidsens}', True, (0, 142, 0))
     humid_rect = humid.get_rect()
-    humid_rect.topleft =(50, 250)
+    humid_rect.topleft =(50, 210)
 
     #CO%
     COper = fontS.render(f'CO: {COsens}', True, (0, 142, 0))
     CO_rect = COper.get_rect()
-    CO_rect.topleft = (50, 350)
+    CO_rect.topleft = (50, 275)
 
     #CO2%
     CO2per = fontS.render(f'CO2: {CO2sens}', True, (0, 142, 0))
     CO2_rect = CO2per.get_rect()
-    CO2_rect.topleft = (50, 450)
+    CO2_rect.topleft = (50, 340)
 
     #O2%
     O2per = fontS.render(f'O2: {O2sens}', True, (0, 142, 0))
     O2_rect = O2per.get_rect()
-    O2_rect.topleft = (50, 550)
+    O2_rect.topleft = (50, 405)
 
     #VOC
     VOCper = fontS.render(f'VOC: {VOCsens}', True, (0, 142, 0))
     VOC_rect = VOCper.get_rect()
     #VOC_rect.center = (600, 150) #Centers the coordinates of the box at these x,y coordinates
-    VOC_rect.topleft = (600,150)
+    VOC_rect.topleft = (600, 145)
 
     #Air Quality Warning Box
 
@@ -218,7 +218,6 @@ def air_screen(screen):
     screen.blit(VOCper, VOC_rect)
 
 
-
 #Main Loop
 running = True
 clock.tick(1) #Limits to 30 frames per second
@@ -226,10 +225,10 @@ current_screen = main_screen
 while running:
 
     for event in pygame.event.get():
-        if event.type == pygame.FINGERUP:
+        if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.FINGERDOWN:
+        if event.type == pygame.KEYDOWN: #Checks for key press
+            if event.key == pygame.FINGERMOTION: #Switches motions if 
                 current_screen = air_screen if current_screen == main_screen else main_screen
     
     now = pygame.time.get_ticks() #get current time
