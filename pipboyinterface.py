@@ -5,7 +5,7 @@ import os
 
 #Initial Variables
 dir_path = os.path.dirname(os.path.realpath(__file__)) #This function creates a relational path to the object.
-resol = (800, 600) #sets resolution
+resol = (800, 480) #sets resolution
 current = datetime.now()
 clock = pygame.time.Clock() #Clock manages how fast the screen updates
 
