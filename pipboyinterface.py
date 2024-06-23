@@ -426,7 +426,7 @@ while running:
     print("Counter: {}".format(counter))
     #print(f"clkst={clkSt}, dtst={dtSt}, counter={counter}") #prints the status for debugging
     clkLstSt = GPIO.input(clk)
-    time.sleep(0.03) #Debouncing with software delay
+    time.sleep(0.1) #Debouncing with software delay
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
