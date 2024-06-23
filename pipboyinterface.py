@@ -233,27 +233,6 @@ def air_screen(screen):
     screen.blit(O2per, O2_rect)
     screen.blit(VOCper, VOC_rect)
 
-# try:
-#     while True:
-#         counter = 0
-#         clkSt = GPIO.input(clk) #Checks the current state of the clk pin
-#         dtSt = GPIO.input(dt)
-#         if clkSt != clkLstSt: #Compares current clkst to clklstst
-#             if dtSt != clkSt: #Compares dtst to clkst if not equal, increases counter
-#                 counter += 1
-#             elif counter > 4: #Should make it so if counter goes above 5 it goes to zero
-#                 counter = 0
-#             elif counter < 0: #Should make it so if counter goes below 0 it goes to five
-#                 counter = 4
-#             else:             #if equal, decreases counter
-#                 counter -= 1
-#             print("Counter: {}".format(counter))
-#         clkLstSt = clkSt
-#         time.sleep(0.01)
-    
-# finally:
-#     GPIO.cleanup()
-
 #Main Loop
 running = True
 clock.tick(1) #Limits to 30 frames per second
@@ -266,28 +245,37 @@ while running:
     if clkSt != clkLstSt: #Compares current clkst to clklstst
         if dtSt != clkSt: #Compares dtst to clkst if not equal, increases counter
             counter += 1
-        elif counter > 4: #Should make it so if counter goes above 5 it goes to zero
-            counter = 0
-        elif counter < 0: #Should make it so if counter goes below 0 it goes to five
-            counter = 4
         else:             #if equal, decreases counter
             counter -= 1
+
+        #Check for Wrap around conditions
+        if counter >= 5:
+            counter = 0
+        elif counter < 0:
+            counter = 4
+
         print("Counter: {}".format(counter))
-    clkLstSt = clkSt
-    time.sleep(0.01)
+        print(f"clkst={clkSt}, dtst={dtSt}, counter={counter}") #prints the status for debugging
+        clkLstSt = clkSt
+        time.sleep(0.01)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        #if event.type == pygame.KEYDOWN: #Checks for key press
-        #    if event.key == pygame.FINGERMOTION: #Switches motions if 
-        #        current_screen = air_screen if current_screen == main_screen else main_screen
-        if counter == 0:
-            current_screen = main_screen
-        if counter == 1:
-            current_screen = air_screen
-            
 
+    #Update Screen Based on counter value        
+    if counter == 0:
+        current_screen = main_screen
+    elif counter == 1:
+        current_screen = air_screen
+    #elif counter == 2:
+    #    current_screen = rad_screen
+    #elif counter == 3:
+    #    current_screen = map_screen
+    #elif counter == 4:
+    #    current_screen = radio_screen
+    else:
+        current_screen = main_screen
 
     now = pygame.time.get_ticks() #get current time
 
