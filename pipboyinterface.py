@@ -5,11 +5,24 @@ import os
 import RPi.GPIO as GPIO
 import time
 
+#GPIO Pin Set up
+clk = 17 #Variable set at pin location
+dt = 18
+button = 27
+
+#GPIO Setup
+GPIO.setmode(GPIO.BCM) #Board Control Module?
+GPIO.setup(clk, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #Sets up a pin, input, active high
+GPIO.setup(dt, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP) #Sets up a pin, input, active low
+
 #Initial Variables
 dir_path = os.path.dirname(os.path.realpath(__file__)) #This function creates a relational path to the object.
 resol = (800, 480) #sets resolution
 current = datetime.now()
 clock = pygame.time.Clock() #Clock manages how fast the screen updates
+counter = 0 #Used for counting from zero
+clkLstSt = GPIO.input(clk) #Checks last state of clk pin
 
 #This program as 06/18/2024 was initially built verbatim by ChatGPT 4, has been worked on and improved over time by the stated author.
 #Initialize Pygame
@@ -227,13 +240,38 @@ clock.tick(1) #Limits to 30 frames per second
 current_screen = main_screen
 while running:
 
+    try:
+        while True:
+            clkSt = GPIO.input(clk) #Checks the current state of the clk pin
+            dtSt = GPIO.input(dt)
+            if clkSt != clkLstSt: #Compares current clkst to clklstst
+                if dtSt != clkSt: #Compares dtst to clkst if not equal, increases counter
+                    counter += 1
+                elif counter < 4: #Should make it so if counter goes above 5 it goes to zero
+                    counter = 0
+                elif counter > 0: #Should make it so if counter goes below 0 it goes to five
+                    counter = 4
+                else:             #if equal, decreases counter
+                    counter -= 1
+                print("Counter: {}".format(counter))
+            clkLstSt = clkSt
+            time.sleep(0.01)
+    
+    finally:
+        GPIO.cleanup()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN: #Checks for key press
-            if event.key == pygame.FINGERMOTION: #Switches motions if 
-                current_screen = air_screen if current_screen == main_screen else main_screen
-    
+        #if event.type == pygame.KEYDOWN: #Checks for key press
+        #    if event.key == pygame.FINGERMOTION: #Switches motions if 
+        #        current_screen = air_screen if current_screen == main_screen else main_screen
+        if counter == 0:
+            current_screen = main_screen
+        if counter == 1:
+            current_screen = air_screen
+
+
     now = pygame.time.get_ticks() #get current time
 
     #Update the display
@@ -244,3 +282,4 @@ while running:
 #Clean up and exit
 pygame.quit()
 sys.exit()
+GPIO.cleanup()
