@@ -246,6 +246,8 @@ def air_screen(screen):
 
 def rad_screen(screen):
     
+    screen.fill((0, 0, 0)) #Fill screen with blanking
+
     #delete once find answer
     ############
     #Main
@@ -290,6 +292,8 @@ def rad_screen(screen):
 
 def map_screen(screen):
 
+    screen.fill((0, 0, 0)) #Fill screen with blanking
+
     #delete once find answer
     ############
     #Main
@@ -333,6 +337,8 @@ def map_screen(screen):
     screen.blit(WIPi, WIP_rect)
 
 def radio_screen(screen):
+
+    screen.fill((0, 0, 0)) #Fill screen with blanking
 
     #delete once find answer
     ############
