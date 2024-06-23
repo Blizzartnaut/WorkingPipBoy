@@ -274,7 +274,7 @@ def rad_screen(screen):
 
     #WIP
     WIPi = fontW.render("W I P", True, (0, 142, 0))
-    WIP_rect = WIP.get_rect()
+    WIP_rect = WIPi.get_rect()
     WIP_rect.center = (400, 240)
     screen.blit(WIPi, WIP_rect)
 
@@ -318,7 +318,7 @@ def map_screen(screen):
 
     #WIP
     WIPi = fontW.render("W I P", True, (0, 142, 0))
-    WIP_rect = WIP.get_rect()
+    WIP_rect = WIPi.get_rect()
     WIP_rect.center = (400, 240)
     screen.blit(WIPi, WIP_rect)
 
@@ -362,7 +362,7 @@ def radio_screen(screen):
 
     #WIP
     WIPi = fontW.render("W I P", True, (0, 142, 0))
-    WIP_rect = WIP.get_rect()
+    WIP_rect = WIPi.get_rect()
     WIP_rect.center = (400, 240)
     screen.blit(WIPi, WIP_rect)
 
