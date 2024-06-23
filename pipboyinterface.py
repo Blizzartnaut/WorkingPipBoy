@@ -233,32 +233,48 @@ def air_screen(screen):
     screen.blit(O2per, O2_rect)
     screen.blit(VOCper, VOC_rect)
 
-try:
-    while True:
-        counter = 0
-        clkSt = GPIO.input(clk) #Checks the current state of the clk pin
-        dtSt = GPIO.input(dt)
-        if clkSt != clkLstSt: #Compares current clkst to clklstst
-            if dtSt != clkSt: #Compares dtst to clkst if not equal, increases counter
-                counter += 1
-            elif counter < 4: #Should make it so if counter goes above 5 it goes to zero
-                counter = 0
-            elif counter > 0: #Should make it so if counter goes below 0 it goes to five
-                counter = 4
-            else:             #if equal, decreases counter
-                counter -= 1
-            print("Counter: {}".format(counter))
-        clkLstSt = clkSt
-        time.sleep(0.01)
+# try:
+#     while True:
+#         counter = 0
+#         clkSt = GPIO.input(clk) #Checks the current state of the clk pin
+#         dtSt = GPIO.input(dt)
+#         if clkSt != clkLstSt: #Compares current clkst to clklstst
+#             if dtSt != clkSt: #Compares dtst to clkst if not equal, increases counter
+#                 counter += 1
+#             elif counter > 4: #Should make it so if counter goes above 5 it goes to zero
+#                 counter = 0
+#             elif counter < 0: #Should make it so if counter goes below 0 it goes to five
+#                 counter = 4
+#             else:             #if equal, decreases counter
+#                 counter -= 1
+#             print("Counter: {}".format(counter))
+#         clkLstSt = clkSt
+#         time.sleep(0.01)
     
-finally:
-    GPIO.cleanup()
+# finally:
+#     GPIO.cleanup()
 
 #Main Loop
 running = True
 clock.tick(1) #Limits to 30 frames per second
 current_screen = main_screen
 while running:
+
+    counter = 0
+    clkSt = GPIO.input(clk) #Checks the current state of the clk pin
+    dtSt = GPIO.input(dt)
+    if clkSt != clkLstSt: #Compares current clkst to clklstst
+        if dtSt != clkSt: #Compares dtst to clkst if not equal, increases counter
+            counter += 1
+        elif counter > 4: #Should make it so if counter goes above 5 it goes to zero
+            counter = 0
+        elif counter < 0: #Should make it so if counter goes below 0 it goes to five
+            counter = 4
+        else:             #if equal, decreases counter
+            counter -= 1
+        print("Counter: {}".format(counter))
+    clkLstSt = clkSt
+    time.sleep(0.01)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -270,6 +286,7 @@ while running:
             current_screen = main_screen
         if counter == 1:
             current_screen = air_screen
+            
 
 
     now = pygame.time.get_ticks() #get current time
