@@ -2,6 +2,8 @@ import pygame
 import sys
 from datetime import datetime
 import os
+import RPi.GPIO as GPIO
+import time
 
 #Initial Variables
 dir_path = os.path.dirname(os.path.realpath(__file__)) #This function creates a relational path to the object.
@@ -16,7 +18,8 @@ image_path = os.path.join(dir_path, 'VaultBoy2fill.png')
 lastUpdate = pygame.time.get_ticks() #To check how much time has passed
 
 #Set up the display
-screen = pygame.display.set_mode((resol), pygame.FULLSCREEN) #Adust resolution to native
+#screen = pygame.display.set_mode((resol), pygame.FULLSCREEN) #Adust resolution to native
+screen = pygame.display.set_mode(resol) #REMOVE BEFORE PUSH, TESTING
 pygame.display.set_caption('Pip-Boy Hand-Held Environment Monitor') #Sets Window caption
 
 #Setting up Font
