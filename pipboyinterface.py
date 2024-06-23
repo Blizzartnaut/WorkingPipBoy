@@ -12,8 +12,8 @@ button = 27
 
 #GPIO Setup
 GPIO.setmode(GPIO.BCM) #Board Control Module?
-GPIO.setup(clk, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #Sets up a pin, input, active high
-GPIO.setup(dt, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(clk, GPIO.IN, pull_up_down=GPIO.PUD_UP) #Sets up a pin, input, active high
+GPIO.setup(dt, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP) #Sets up a pin, input, active low
 
 #Initial Variables
@@ -66,12 +66,15 @@ def bootstraps(): #Why wont this work?
     text_rect5 = text5.get_rect()
     text_rect5.center = (720, 45)
 
-    #Draw Screen
-    screen.blit(text1, text_rect1)
-    screen.blit(text2, text_rect2)
-    screen.blit(text3, text_rect3)
-    screen.blit(text4, text_rect4)
-    screen.blit(text5, text_rect5)
+    return text1, text2, text3, text4, text5, text_rect1, text_rect2, text_rect3, text_rect4, text_rect5
+
+    # #Draw Screen
+    # screen.blit(text1, text_rect1)
+    # screen.blit(text2, text_rect2)
+    # screen.blit(text3, text_rect3)
+    # screen.blit(text4, text_rect4)
+    # screen.blit(text5, text_rect5)
+
     
 
 def main_screen(screen):
@@ -156,6 +159,7 @@ def air_screen(screen):
     O2sens = 19.4
     VOCsens = 0.01
 
+    # bootstraps()
     #delete once find answer
     ############
     #Main
@@ -233,6 +237,12 @@ def air_screen(screen):
     screen.blit(CO2per, CO2_rect)
     screen.blit(O2per, O2_rect)
     screen.blit(VOCper, VOC_rect)
+
+    screen.blit(text1, text_rect1)
+    screen.blit(text2, text_rect2)
+    screen.blit(text3, text_rect3)
+    screen.blit(text4, text_rect4)
+    screen.blit(text5, text_rect5)
 
 def rad_screen(screen):
     
@@ -366,31 +376,51 @@ def radio_screen(screen):
     WIP_rect.center = (400, 240)
     screen.blit(WIPi, WIP_rect)
 
+def update_counter():
+    global counter
+    clkSt = GPIO.input(clk)
+    dtSt = GPIO.input(dt)
+    if clkSt != clkLstSt:
+        if dtSt != clkSt:
+            counter += 1
+        else:
+            counter -= 1
+    
+        if counter >= 5:
+            counter = 0
+        elif counter < 0:
+            counter = 4
+    return counter
+
+#Loop Variables
+counter = 0
+clkLstSt = GPIO.input(clk)
+
 #Main Loop
 running = True
 clock.tick(1) #Limits to 30 frames per second
 current_screen = main_screen
 while running:
 
-    counter = 0
-    clkSt = GPIO.input(clk) #Checks the current state of the clk pin
-    dtSt = GPIO.input(dt)
-    if clkSt != clkLstSt: #Compares current clkst to clklstst
-        if dtSt != clkSt: #Compares dtst to clkst if not equal, increases counter
-            counter += 1
-        else:             #if equal, decreases counter
-            counter -= 1
+    # clkSt = GPIO.input(clk) #Checks the current state of the clk pin
+    # dtSt = GPIO.input(dt)
+    # if clkSt != clkLstSt: #Compares current clkst to clklstst
+    #     if dtSt != clkSt: #Compares dtst to clkst if not equal, increases counter
+    #         counter += 1
+    #     else:             #if equal, decreases counter
+    #         counter -= 1
 
-        #Check for Wrap around conditions
-        if counter >= 5:
-            counter = 0
-        elif counter < 0:
-            counter = 4
+    #     #Check for Wrap around conditions
+    #     if counter >= 5:
+    #         counter = 0
+    #     elif counter < 0:
+    #         counter = 4
+    update_counter()
 
-        print("Counter: {}".format(counter))
-        print(f"clkst={clkSt}, dtst={dtSt}, counter={counter}") #prints the status for debugging
-        clkLstSt = clkSt
-        time.sleep(0.01)
+    print("Counter: {}".format(counter))
+    #print(f"clkst={clkSt}, dtst={dtSt}, counter={counter}") #prints the status for debugging
+    clkLstSt = GPIO.input(clk)
+    time.sleep(0.03) #Debouncing with software delay
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
