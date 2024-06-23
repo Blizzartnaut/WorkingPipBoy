@@ -31,8 +31,8 @@ image_path = os.path.join(dir_path, 'VaultBoy2fill.png')
 lastUpdate = pygame.time.get_ticks() #To check how much time has passed
 
 #Set up the display
-#screen = pygame.display.set_mode((resol), pygame.FULLSCREEN) #Adust resolution to native
-screen = pygame.display.set_mode(resol) #REMOVE BEFORE PUSH, TESTING
+screen = pygame.display.set_mode((resol), pygame.FULLSCREEN) #Adust resolution to native
+#screen = pygame.display.set_mode(resol) #REMOVE BEFORE PUSH, TESTING
 pygame.display.set_caption('Pip-Boy Hand-Held Environment Monitor') #Sets Window caption
 
 #Setting up Font
@@ -242,6 +242,7 @@ while running:
 
     try:
         while True:
+            counter = 0
             clkSt = GPIO.input(clk) #Checks the current state of the clk pin
             dtSt = GPIO.input(dt)
             if clkSt != clkLstSt: #Compares current clkst to clklstst
