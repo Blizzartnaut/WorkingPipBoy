@@ -38,6 +38,7 @@ pygame.display.set_caption('Pip-Boy Hand-Held Environment Monitor') #Sets Window
 #Setting up Font
 font = pygame.font.Font(None, 50) #Sets Text Font, default font, size 36
 fontS = pygame.font.Font(None, 32)
+fontW = pygame.font.Font(None, 75)
 
 def bootstraps(): #Why wont this work?
     #Main
@@ -233,6 +234,138 @@ def air_screen(screen):
     screen.blit(O2per, O2_rect)
     screen.blit(VOCper, VOC_rect)
 
+def rad_screen(screen):
+    
+    #delete once find answer
+    ############
+    #Main
+    text1 = font.render("MAIN", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect1 = text1.get_rect()
+    text_rect1.center = (80, 45)
+
+    #Air
+    text2 = font.render("AIR", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect2 = text2.get_rect()
+    text_rect2.center = (240, 45)
+
+    #Rad
+    text3 = font.render("RAD", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect3 = text3.get_rect()
+    text_rect3.center = (400, 45)
+
+    #Map
+    text4 = font.render("MAP", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect4 = text4.get_rect()
+    text_rect4.center = (560, 45)
+
+    #Radio
+    text5 = font.render("RADIO", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect5 = text5.get_rect()
+    text_rect5.center = (720, 45)
+
+    #Draw Screen
+    screen.blit(text1, text_rect1)
+    screen.blit(text2, text_rect2)
+    screen.blit(text3, text_rect3)
+    screen.blit(text4, text_rect4)
+    screen.blit(text5, text_rect5)
+    #################
+    #delete once find answer
+
+    #WIP
+    WIPi = fontW.render("W I P", True, (0, 142, 0))
+    WIP_rect = WIP.get_rect()
+    WIP_rect.center = (400, 240)
+    screen.blit(WIPi, WIP_rect)
+
+def map_screen(screen):
+
+    #delete once find answer
+    ############
+    #Main
+    text1 = font.render("MAIN", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect1 = text1.get_rect()
+    text_rect1.center = (80, 45)
+
+    #Air
+    text2 = font.render("AIR", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect2 = text2.get_rect()
+    text_rect2.center = (240, 45)
+
+    #Rad
+    text3 = font.render("RAD", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect3 = text3.get_rect()
+    text_rect3.center = (400, 45)
+
+    #Map
+    text4 = font.render("MAP", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect4 = text4.get_rect()
+    text_rect4.center = (560, 45)
+
+    #Radio
+    text5 = font.render("RADIO", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect5 = text5.get_rect()
+    text_rect5.center = (720, 45)
+
+    #Draw Screen
+    screen.blit(text1, text_rect1)
+    screen.blit(text2, text_rect2)
+    screen.blit(text3, text_rect3)
+    screen.blit(text4, text_rect4)
+    screen.blit(text5, text_rect5)
+    #################
+    #delete once find answer
+
+    #WIP
+    WIPi = fontW.render("W I P", True, (0, 142, 0))
+    WIP_rect = WIP.get_rect()
+    WIP_rect.center = (400, 240)
+    screen.blit(WIPi, WIP_rect)
+
+def radio_screen(screen):
+
+    #delete once find answer
+    ############
+    #Main
+    text1 = font.render("MAIN", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect1 = text1.get_rect()
+    text_rect1.center = (80, 45)
+
+    #Air
+    text2 = font.render("AIR", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect2 = text2.get_rect()
+    text_rect2.center = (240, 45)
+
+    #Rad
+    text3 = font.render("RAD", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect3 = text3.get_rect()
+    text_rect3.center = (400, 45)
+
+    #Map
+    text4 = font.render("MAP", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect4 = text4.get_rect()
+    text_rect4.center = (560, 45)
+
+    #Radio
+    text5 = font.render("RADIO", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
+    text_rect5 = text5.get_rect()
+    text_rect5.center = (720, 45)
+
+    #Draw Screen
+    screen.blit(text1, text_rect1)
+    screen.blit(text2, text_rect2)
+    screen.blit(text3, text_rect3)
+    screen.blit(text4, text_rect4)
+    screen.blit(text5, text_rect5)
+    #################
+    #delete once find answer
+
+    #WIP
+    WIPi = fontW.render("W I P", True, (0, 142, 0))
+    WIP_rect = WIP.get_rect()
+    WIP_rect.center = (400, 240)
+    screen.blit(WIPi, WIP_rect)
+
 #Main Loop
 running = True
 clock.tick(1) #Limits to 30 frames per second
@@ -268,12 +401,12 @@ while running:
         current_screen = main_screen
     elif counter == 1:
         current_screen = air_screen
-    #elif counter == 2:
-    #    current_screen = rad_screen
-    #elif counter == 3:
-    #    current_screen = map_screen
-    #elif counter == 4:
-    #    current_screen = radio_screen
+    elif counter == 2:
+        current_screen = rad_screen
+    elif counter == 3:
+        current_screen = map_screen
+    elif counter == 4:
+        current_screen = radio_screen
     else:
         current_screen = main_screen
 
