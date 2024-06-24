@@ -499,10 +499,20 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            #Check if touchscreen click is within any of menu rects
-            pos = pygame.mouse.get_pos() #Checks position of click and returns value
-            if pos ==  #Check if position matches any values within the menu rects, and if so set the "Counter" to that screen detail
+        # elif event.type == pygame.MOUSEBUTTONDOWN:
+        #     #Check if touchscreen click is within any of menu rects
+        #     pos = pygame.mouse.get_pos() #Checks position of click and returns value
+        #     if pos ==  #Check if position matches any values within the menu rects, and if so set the "Counter" to that screen detail
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
+                counter += 1
+            elif event.key == pygame.K_LEFT:
+                counter -= 1
+
+            if counter >= 5:
+                counter = 0
+            elif counter < 0:
+                counter = 4
 
     #Update Screen Based on counter value        
     if counter == 0:
