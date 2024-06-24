@@ -7,6 +7,8 @@ import time
 from collections import deque
 from threading import Timer
 
+#NEED TO FIX TIMER ISSUE BEFORE NEXT COMMIT
+
 #GPIO Pin Set up
 clk = 17 #Variable set at pin location
 dt = 18
@@ -59,7 +61,7 @@ image_path = os.path.join(dir_path, 'VaultBoy2fill.png')
 lastUpdate = pygame.time.get_ticks() #To check how much time has passed
 
 #Set up the display
-screen = pygame.display.set_mode((resol), pygame.FULLSCREEN) #Adust resolution to native
+screen = pygame.display.set_mode((resol), pygame.FULLSCREEN) #Adust resolution to native #Do not test on home machine
 #screen = pygame.display.set_mode(resol) #REMOVE BEFORE PUSH, TESTING
 pygame.display.set_caption('Pip-Boy Hand-Held Environment Monitor') #Sets Window caption
 
@@ -73,7 +75,7 @@ def handle_interrupt(channel):
     global totalCounts
     totalCounts += 1
 
-GPIO.add_event_detect(radPin, GPIO.RISING, callback=handle_interrupt)
+#GPIO.add_event_detect(radPin, GPIO.RISING, callback=handle_interrupt) #This line is crashing the script for some reason, INVESTIGATE
 
 def calculate_sieverts():
     #Run every 60 seconds
@@ -141,13 +143,6 @@ def bootstraps(): #Why wont this work?
 
     return text1, text2, text3, text4, text5, text_rect1, text_rect2, text_rect3, text_rect4, text_rect5
 
-    # #Draw Screen
-    # screen.blit(text1, text_rect1)
-    # screen.blit(text2, text_rect2)
-    # screen.blit(text3, text_rect3)
-    # screen.blit(text4, text_rect4)
-    # screen.blit(text5, text_rect5)
-
 global hed
 hed = bootstraps()
 
@@ -161,41 +156,12 @@ def main_screen(screen):
     screen.fill((0, 0, 0)) #Fill screen with blanking color to essentially refresh the screen
     screen.blit(screen1_resi, (150, 75))    #This function takes a pygame surface (some "image" data) and displays it on top of everything before it, requires arguments, (the image data, the coordinates
 
-    # #delete once find answer
-    # ############
-    # #Main
-    # text1 = font.render("MAIN", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect1 = text1.get_rect()
-    # text_rect1.center = (80, 45)
-
-    # #Air
-    # text2 = font.render("AIR", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect2 = text2.get_rect()
-    # text_rect2.center = (240, 45)
-
-    # #Rad
-    # text3 = font.render("RAD", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect3 = text3.get_rect()
-    # text_rect3.center = (400, 45)
-
-    # #Map
-    # text4 = font.render("MAP", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect4 = text4.get_rect()
-    # text_rect4.center = (560, 45)
-
-    # #Radio
-    # text5 = font.render("RADIO", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect5 = text5.get_rect()
-    # text_rect5.center = (720, 45)
-
     #Draw Screen
     screen.blit(hed[0], hed[5])
     screen.blit(hed[1], hed[6])
     screen.blit(hed[2], hed[7])
     screen.blit(hed[3], hed[8])
     screen.blit(hed[4], hed[9])
-    #################
-    #delete once find answer
 
     #Update Sensor Values Here
     current = datetime.now()    #Runs the datetime function, getting the exact time and date from the system clock, as its in the looping structure it updates every tick
@@ -233,42 +199,12 @@ def air_screen(screen):
     O2sens = 19.4
     VOCsens = 0.01
 
-    # bootstraps()
-    #delete once find answer
-    ############
-    # #Main
-    # text1 = font.render("MAIN", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect1 = text1.get_rect()
-    # text_rect1.center = (80, 45)
-
-    # #Air
-    # text2 = font.render("AIR", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect2 = text2.get_rect()
-    # text_rect2.center = (240, 45)
-
-    # #Rad
-    # text3 = font.render("RAD", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect3 = text3.get_rect()
-    # text_rect3.center = (400, 45)
-
-    # #Map
-    # text4 = font.render("MAP", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect4 = text4.get_rect()
-    # text_rect4.center = (560, 45)
-
-    # #Radio
-    # text5 = font.render("RADIO", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect5 = text5.get_rect()
-    # text_rect5.center = (720, 45)
-
     #Draw Screen
     screen.blit(hed[0], hed[5])
     screen.blit(hed[1], hed[6])
     screen.blit(hed[2], hed[7])
     screen.blit(hed[3], hed[8])
     screen.blit(hed[4], hed[9])
-    #################
-    #delete once find answer
 
     #Temp
     temp = fontS.render(f'Temp: {tempsens}', True, (0, 142, 0))
@@ -337,27 +273,27 @@ def rad_screen(screen):
     radlif = lifeSv
 
     #Rad Level 4 second
-    rad4txt = fontS.render(f'O2: {rad4}', True, (0, 142, 0))
+    rad4txt = fontS.render(f'4 Second Average Counts: {rad4}', True, (0, 142, 0))
     rad4txt_rect = rad4txt.get_rect()
     rad4txt_rect.topleft = (600, 145)
 
     #Rad Level 60 second
-    rad60txt = fontS.render(f'O2: {rad60}', True, (0, 142, 0))
+    rad60txt = fontS.render(f'60 Second Average: {rad60} Sv', True, (0, 142, 0))
     rad60txt_rect = rad60txt.get_rect()
     rad60txt_rect.topleft = (600, 210)
 
     #Rad Level 1 hour
-    rad1txt = fontS.render(f'O2: {rad1}', True, (0, 142, 0))
+    rad1txt = fontS.render(f'Last Hour Average: {rad1} Sv', True, (0, 142, 0))
     rad1txt_rect = rad1txt.get_rect()
     rad1txt_rect.topleft = (50, 145)
 
     #Rad Level 24 Hour
-    rad24txt = fontS.render(f'O2: {rad24}', True, (0, 142, 0))
+    rad24txt = fontS.render(f'Last 24 Hours Average: {rad24} Sv', True, (0, 142, 0))
     rad24txt_rect = rad24txt.get_rect()
     rad24txt_rect.topleft = (50, 210)
 
     #Rad Level Life
-    radliftxt = fontS.render(f'O2: {radlif}', True, (0, 142, 0))
+    radliftxt = fontS.render(f'Lifetime Exposure: {radlif} Sv', True, (0, 142, 0))
     radliftxt_rect = radliftxt.get_rect()
     radliftxt_rect.topleft = (50, 405)
 
@@ -372,42 +308,12 @@ def map_screen(screen):
 
     screen.fill((0, 0, 0)) #Fill screen with blanking
 
-    # #delete once find answer
-    # ############
-    # #Main
-    # text1 = font.render("MAIN", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect1 = text1.get_rect()
-    # text_rect1.center = (80, 45)
-
-    # #Air
-    # text2 = font.render("AIR", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect2 = text2.get_rect()
-    # text_rect2.center = (240, 45)
-
-    # #Rad
-    # text3 = font.render("RAD", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect3 = text3.get_rect()
-    # text_rect3.center = (400, 45)
-
-    # #Map
-    # text4 = font.render("MAP", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect4 = text4.get_rect()
-    # text_rect4.center = (560, 45)
-
-    # #Radio
-    # text5 = font.render("RADIO", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect5 = text5.get_rect()
-    # text_rect5.center = (720, 45)
-
     #Draw Screen
     screen.blit(hed[0], hed[5])
     screen.blit(hed[1], hed[6])
     screen.blit(hed[2], hed[7])
     screen.blit(hed[3], hed[8])
     screen.blit(hed[4], hed[9])
-    #################
-    #delete once find answer
-
     #WIP
     WIPi = fontW.render("W I P", True, (0, 142, 0))
     WIP_rect = WIPi.get_rect()
@@ -418,44 +324,14 @@ def radio_screen(screen):
 
     screen.fill((0, 0, 0)) #Fill screen with blanking
 
-    # #delete once find answer
-    # ############
-    # #Main
-    # text1 = font.render("MAIN", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect1 = text1.get_rect()
-    # text_rect1.center = (80, 45)
-
-    # #Air
-    # text2 = font.render("AIR", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect2 = text2.get_rect()
-    # text_rect2.center = (240, 45)
-
-    # #Rad
-    # text3 = font.render("RAD", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect3 = text3.get_rect()
-    # text_rect3.center = (400, 45)
-
-    # #Map
-    # text4 = font.render("MAP", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect4 = text4.get_rect()
-    # text_rect4.center = (560, 45)
-
-    # #Radio
-    # text5 = font.render("RADIO", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
-    # text_rect5 = text5.get_rect()
-    # text_rect5.center = (720, 45)
-
-    #Draw Screen
     screen.blit(hed[0], hed[5])
     screen.blit(hed[1], hed[6])
     screen.blit(hed[2], hed[7])
     screen.blit(hed[3], hed[8])
     screen.blit(hed[4], hed[9])
-    #################
-    #delete once find answer
 
     #WIP
-    WIPi = fontW.render("W I P", True, (0, 142, 0))
+    WIPi = font.render("I LOVE YOU KEITH", True, (0, 142, 0))
     WIP_rect = WIPi.get_rect()
     WIP_rect.center = (400, 240)
     screen.blit(WIPi, WIP_rect)
@@ -539,3 +415,6 @@ while running:
 pygame.quit()
 sys.exit()
 GPIO.cleanup()
+Timer.join()
+
+#NEED TO FIX TIMER ISSUE
