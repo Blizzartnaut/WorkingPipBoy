@@ -6,9 +6,9 @@ import RPi.GPIO as GPIO
 import time
 from collections import deque
 from threading import Timer
-from osgeo import gdal, osr
+#from osgeo import gdal, osr
 import matplotlib.pyplot as plt
-import pynmea2
+#import pynmea2
 
 #NEED TO FIX TIMER ISSUE BEFORE NEXT COMMIT
 
@@ -79,14 +79,14 @@ def handle_interrupt(channel):
     totalCounts += 1
 
 #Load map file so it can be displayed
-def load_displaymap(filepath):
-    # Load geospatial raster file and display it using matplotlib.
-    dataset = gdal.Open(filepath)
-    band = dataset.GetRasterBand(1)
-    arr = band.ReadAsArrary()
+# def load_displaymap(filepath):
+#     # Load geospatial raster file and display it using matplotlib.
+#     dataset = gdal.Open(filepath)
+#     band = dataset.GetRasterBand(1)
+#     arr = band.ReadAsArrary()
 
-    plt.imshow(arr, cmap="gray")
-    plt.show()
+#     plt.imshow(arr, cmap="gray")
+#     plt.show()
 
 #GPIO.add_event_detect(radPin, GPIO.RISING, callback=handle_interrupt) #This line is crashing the script for some reason, INVESTIGATE
 
@@ -104,20 +104,20 @@ def calculate_sieverts():
         minCounts.clear() #Reset minute counts
 
     #Repeat every minute
-    Timer(60, calculate_sieverts).start()
+    # Timer(60, calculate_sieverts).start()
 
 def lifetime_sieverts():
     #Run every 60 seconds
     lifeSv = totalCounts * conv
-    Timer(60, lifetime_sieverts).start()
+    # Timer(60, lifetime_sieverts).start()
 
 def monitor_environment():
     #Run every 4 seconds to check for rapid changes
     startCount = totalCounts
-    time.sleep(4)
+    # time.sleep(4)
     endCount = totalCounts
     changeCount = endCount - startCount
-    Timer(4, monitor_environment).start()
+    # Timer(4, monitor_environment).start()
 
 def bootstraps(): #Why wont this work?
     #Main
@@ -375,8 +375,8 @@ clock.tick(1) #Limits to 30 frames per second
 current_screen = main_screen
 while running:
 
-    Timer(60, calculate_sieverts).start()
-    Timer(4, monitor_environment).start()
+    # Timer(60, calculate_sieverts).start()
+    # Timer(4, monitor_environment).start()
 
     update_counter()
 
@@ -431,6 +431,6 @@ while running:
 pygame.quit()
 sys.exit()
 GPIO.cleanup()
-Timer.join()
+# Timer.join()
 
 #NEED TO FIX TIMER ISSUE
