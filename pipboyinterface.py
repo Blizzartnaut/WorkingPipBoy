@@ -8,6 +8,7 @@ from collections import deque
 from threading import Timer
 from osgeo import gdal, osr
 import matplotlib.pyplot as plt
+import pynmea2
 
 #NEED TO FIX TIMER ISSUE BEFORE NEXT COMMIT
 
@@ -391,6 +392,9 @@ while running:
         #     #Check if touchscreen click is within any of menu rects
         #     pos = pygame.mouse.get_pos() #Checks position of click and returns value
         #     if pos ==  #Check if position matches any values within the menu rects, and if so set the "Counter" to that screen detail
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
                 counter += 1
