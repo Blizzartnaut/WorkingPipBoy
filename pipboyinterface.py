@@ -395,7 +395,7 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
-        elif event.type == pygame.KEYDOWN:
+                
             if event.key == pygame.K_RIGHT:
                 counter += 1
             elif event.key == pygame.K_LEFT:
