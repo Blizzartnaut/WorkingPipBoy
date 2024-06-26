@@ -6,6 +6,8 @@ import RPi.GPIO as GPIO
 import time
 from collections import deque
 from threading import Timer
+from osgeo import gdal, osr
+import matplotlib.pyplot as plt
 
 #NEED TO FIX TIMER ISSUE BEFORE NEXT COMMIT
 
@@ -74,6 +76,16 @@ fontW = pygame.font.Font(None, 75)
 def handle_interrupt(channel):
     global totalCounts
     totalCounts += 1
+
+#Load map file so it can be displayed
+def load_displaymap(filepath):
+    # Load geospatial raster file and display it using matplotlib.
+    dataset = gdal.Open(filepath)
+    band = dataset.GetRasterBand(1)
+    arr = band.ReadAsArrary()
+
+    plt.imshow(arr, cmap="gray")
+    plt.show()
 
 #GPIO.add_event_detect(radPin, GPIO.RISING, callback=handle_interrupt) #This line is crashing the script for some reason, INVESTIGATE
 
