@@ -2,8 +2,9 @@ import pygame
 import sys
 from datetime import datetime
 import os
-import RPi.GPIO as GPIO
-import time
+import numpy as np
+from rtlsdr import RtlSdr
+#import RPi.GPIO as GPIO    #Uncomment before pushing
 from collections import deque
 from threading import Timer
 #from osgeo import gdal, osr
@@ -11,21 +12,25 @@ import matplotlib.pyplot as plt
 #import pynmea2
 
 #NEED TO FIX TIMER ISSUE BEFORE NEXT COMMIT
+# GPIO.setup(1, GPIO.OUT, 0)    #Uncomment before pushing
+# GPIO.output(1, GPIO.HIGH)     #Uncomment before pushing
 
 #GPIO Pin Set up
-clk = 17 #Variable set at pin location
-dt = 18
-button = 27
-radPin = 15
-radlight = 5 #Lights up a light every time the gieger counter measures a count
+pin1 = 17 #Variable set at GPIO pin location        #pin 11
+pin2 = 18 #pin 12
+pin3 = 27 #pin 13
+pin4 = 23 #pin 16
+pin5 = 24 #pin 18
+radPin = 15 #pin 10
+radlight = 5 #Lights up a light every time the gieger counter measures a count  #pin 29
 
 #GPIO Setup
-GPIO.setmode(GPIO.BCM) #Board Control Module?
-GPIO.setup(clk, GPIO.IN, pull_up_down=GPIO.PUD_UP) #Sets up a pin, input, active high
-GPIO.setup(dt, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
-GPIO.setup(radPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #Sets up a pin, input, active low
-#GPIO.setup(radlight, GPIO.OUT, )
+# GPIO.setmode(GPIO.BCM) #Board Control Module?                                                 #Uncomment before pushing
+# GPIO.setup(clk, GPIO.IN, pull_up_down=GPIO.PUD_UP) #Sets up a pin, input, active high         #Uncomment before pushing
+# GPIO.setup(dt, GPIO.IN, pull_up_down=GPIO.PUD_UP)                                             #Uncomment before pushing
+# GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)                                         #Uncomment before pushing
+# GPIO.setup(radPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #Sets up a pin, input, active low     #Uncomment before pushing
+#GPIO.setup(radlight, GPIO.OUT, )   #Figure out how to get led working with this
 
 #Initial Variables
 dir_path = os.path.dirname(os.path.realpath(__file__)) #This function creates a relational path to the object.
@@ -33,7 +38,7 @@ resol = (800, 480) #sets resolution
 current = datetime.now()
 clock = pygame.time.Clock() #Clock manages how fast the screen updates
 counter = 0 #Used for counting from zero
-clkLstSt = GPIO.input(clk) #Checks last state of clk pin
+# clkLstSt = GPIO.input(clk) #Checks last state of clk pin          #Uncomment before pushing
 conv = 0.008120370 #Conversion factor from counts to Sieverts per minute
 global counts
 global sv
@@ -51,8 +56,8 @@ sv = 0
 daycounts = 0
 hourSv = 0
 changeCount = 0
-minCounts = deque(maxlen = 60)
-hourCounts = deque(maxlen = 1440)
+minCounts = 0#deque(maxlen = 60)
+hourCounts = 0#deque(maxlen = 1440)
 totalCounts = 0
 lifeSv = 0
 menuRects = {}
@@ -119,7 +124,30 @@ def monitor_environment():
     changeCount = endCount - startCount
     # Timer(4, monitor_environment).start()
 
-def bootstraps(): #Why wont this work?
+def fm_tuner(frequency):
+    sdr = RtlSdr()
+
+    try:
+        #Configure Device
+        sdr.sample_rate = 2.4e6 #Hz
+        sdr.center_freq = frequency #Hz
+        sdr.freq_correction = 60    #PPM
+        sdr.gain = 'auto'
+
+        #Read Samples
+        samples = sdr.read_samples(256*1024)
+    finally:
+        sdr.close()
+
+    plt.figure()
+    plt.psd(samples, NFFT=1024, Fs=sdr.sample_rate/1e6, Fc=sdr.center_freq/1e6) #Reads from samples, Fast Fourier Transform (I think), how to divy it, where to center it (both in MHz)
+    plt.title(f'FM Tuning to {frequency/1e6} MHz')
+    plt.xlabel('Frequency (MHz)')
+    plt.ylabel('Relative power (dB)')
+    plt.show
+
+
+def bootstraps():
     #Main
     text1 = font.render("MAIN", True, (0, 142, 0)) #Text, anti-aliasign, color (RBG)
     text_rect1 = text1.get_rect()
@@ -156,6 +184,10 @@ def bootstraps(): #Why wont this work?
 
     return text1, text2, text3, text4, text5, text_rect1, text_rect2, text_rect3, text_rect4, text_rect5
 
+def menu_selection(menuitem):
+    borderRect = menuitem.inflate(20,10)
+    return borderRect
+
 global hed
 hed = bootstraps()
 
@@ -170,6 +202,7 @@ def main_screen(screen):
     screen.blit(screen1_resi, (150, 75))    #This function takes a pygame surface (some "image" data) and displays it on top of everything before it, requires arguments, (the image data, the coordinates
 
     #Draw Screen
+    pygame.draw.rect(screen, pygame.Color(0, 142, 0), menu_selection(hed[5]), 3)
     screen.blit(hed[0], hed[5])
     screen.blit(hed[1], hed[6])
     screen.blit(hed[2], hed[7])
@@ -213,6 +246,7 @@ def air_screen(screen):
     VOCsens = 0.01
 
     #Draw Screen
+    pygame.draw.rect(screen, pygame.Color(0, 142, 0), menu_selection(hed[6]), 3)
     screen.blit(hed[0], hed[5])
     screen.blit(hed[1], hed[6])
     screen.blit(hed[2], hed[7])
@@ -273,6 +307,7 @@ def rad_screen(screen):
     screen.fill((0, 0, 0)) #Fill screen with blanking
 
     #Draw Screen
+    pygame.draw.rect(screen, pygame.Color(0, 142, 0), menu_selection(hed[7]), 3)
     screen.blit(hed[0], hed[5])
     screen.blit(hed[1], hed[6])
     screen.blit(hed[2], hed[7])
@@ -322,6 +357,7 @@ def map_screen(screen):
     screen.fill((0, 0, 0)) #Fill screen with blanking
 
     #Draw Screen
+    pygame.draw.rect(screen, pygame.Color(0, 142, 0), menu_selection(hed[8]), 3)
     screen.blit(hed[0], hed[5])
     screen.blit(hed[1], hed[6])
     screen.blit(hed[2], hed[7])
@@ -337,37 +373,43 @@ def radio_screen(screen):
 
     screen.fill((0, 0, 0)) #Fill screen with blanking
 
+    #Draw Screen
+    pygame.draw.rect(screen, pygame.Color(0, 142, 0), menu_selection(hed[9]), 3)
     screen.blit(hed[0], hed[5])
     screen.blit(hed[1], hed[6])
     screen.blit(hed[2], hed[7])
     screen.blit(hed[3], hed[8])
     screen.blit(hed[4], hed[9])
 
+    frequency = 99.9e6
+
+    fm_tuner(frequency)
+
     #WIP
-    WIPi = font.render("I LOVE YOU KEITH", True, (0, 142, 0))
+    WIPi = fontW.render("W I P", True, (0, 142, 0))
     WIP_rect = WIPi.get_rect()
     WIP_rect.center = (400, 240)
     screen.blit(WIPi, WIP_rect)
 
 def update_counter():
     global counter
-    clkSt = GPIO.input(clk)
-    dtSt = GPIO.input(dt)
-    if clkSt != clkLstSt:
-        if dtSt != clkSt:
-            counter += 1
-        else:
-            counter -= 1
+    # clkSt = GPIO.input(clk)       #Uncomment this entire section before pushing
+    # dtSt = GPIO.input(dt)
+    # if clkSt != clkLstSt:
+    #     if dtSt != clkSt:
+    #         counter += 1
+    #     else:
+    #         counter -= 1
     
-        if counter >= 5:
-            counter = 0
-        elif counter < 0:
-            counter = 4
-    return counter
+    #     if counter >= 5:
+    #         counter = 0
+    #     elif counter < 0:
+    #         counter = 4
+    # return counter
 
 #Loop Variables
 counter = 0
-clkLstSt = GPIO.input(clk)
+# clkLstSt = GPIO.input(clk)        #Uncomment before pushing
 
 #Main Loop
 running = True
@@ -382,8 +424,8 @@ while running:
 
     print("Counter: {}".format(counter))
     #print(f"clkst={clkSt}, dtst={dtSt}, counter={counter}") #prints the status for debugging
-    clkLstSt = GPIO.input(clk)
-    time.sleep(0.1) #Debouncing with software delay
+    # clkLstSt = GPIO.input(clk)                                         #Uncomment before pushing
+    # time.sleep(0.1) #Debouncing with software delay
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
