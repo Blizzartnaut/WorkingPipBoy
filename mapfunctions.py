@@ -8,9 +8,9 @@ import gps
 session = gps.gps('localhost', '2947') #Local machine Port 2947 (default port gpsd listens to)
 session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
 
-from PyQt5.QtCore import QUrl, QTimer
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout #pip install PyQt5
-from PyQt5.QtWebEngineWidgets import QWebEngineView #pip install PyQtWebEngine
+from PySide6.QtCore import QUrl, QTimer
+from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout #pip install PyQt5
+from PySide6.QtWebEngineWidgets import QWebEngineView #pip install PyQtWebEngine
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 mapPath = os.path.join(dir_path, 'map.html')
