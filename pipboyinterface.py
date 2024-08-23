@@ -10,6 +10,7 @@ from threading import Timer
 #from osgeo import gdal, osr
 import matplotlib.pyplot as plt
 #import pynmea2
+from pipboy import Ui_MainWindow #Importing UI elements from
 
 #NEED TO FIX TIMER ISSUE BEFORE NEXT COMMIT
 # GPIO.setup(1, GPIO.OUT, 0)    #Uncomment before pushing
@@ -410,6 +411,14 @@ def update_counter():
 #Loop Variables
 counter = 0
 # clkLstSt = GPIO.input(clk)        #Uncomment before pushing
+
+class MainWindow(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+        #in here you can update a QLabel with the current time or whatever
+        self.DATE.setText(QDateTime)
 
 #Main Loop
 running = True
