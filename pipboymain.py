@@ -4,6 +4,7 @@ import platform
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 from io import BytesIO
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel
 from PySide6.QtCore import QTimer, QDate, QTime, QIODevice
@@ -14,7 +15,9 @@ from osgeo import gdal
 import pynmea2
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-
+global os_name
+global serial_portGPS
+global serial_port
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
@@ -24,24 +27,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data_sens2 = np.zeros(720)
         self.data_sens3 = np.zeros(720)
 
-        os_name = platform.system() #Detects current system
+        self.os_name = platform.system() #Detects current system
 
         # self.data = np.zeros(720)  #Collects 1440 data points for 24 hours
 
-        if os_name == "Windows":
+        if self.os_name == "Windows":
             self.serial_port = serial.Serial('COM3', baudrate=19200, timeout=1) #For testing
-        elif os_name == "Linux":
+        elif self.os_name == "Linux":
             self.serial_port = serial.Serial('/dev/ttyUSB0', baudrate=19200, timeout=1) #For the Raspberry Pi
-            serial_port = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
-
-            while True:
-                #Read data from serial port
-                line = serial_port.readline().decode('ascii', errors='replace')
-
-                #Parse nmea sentance
-                if line.startswith('$GPGGA'):
-                    msg = pynmea2.parse(line)
-                    print(f"Latitude: {msg.latitude}, Longitude: {msg.longitude}")
+            serial_portGPS = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
+            self.timer = QTimer(self)
+            self.timer.timeout.connect(self.read_gps_data)
+            self.timer.start(100)
         else:
             raise Exception("Unsupported Operating System")
         
@@ -60,6 +57,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)         #Updates time and date every second
         self.timer.start(1000)
+
+        # self.timer = QTimer(self)
+        # self.timer.timeout.connect(self.read_gps_data)
+        # self.timer.start(100)
+
+
 
     def update(self):
         #Example: Update a QLabel with current date and time
@@ -127,10 +130,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         plt.close(fig)
 
     def update_map(self):
-        #Create folium map on current coordinates
-        lat, lon = self.get_current_gps_coordinates()
-        # m = folium.Map(location=[lat,lon], zoom_start=14)
-        zoom = 14
+        #Create map on current coordinates
+        
+        if self.os_name == "Windows":
+            lat, lon = self.get_current_gps_coordinates()
+            zoom = 14
+            print(f"lat: {lat}, lon: {lon}") #debug
+        else:
+            return
+
 
         #Add Marker
         #Get Paths to the relevant tiles
@@ -147,31 +155,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.MAP.setPixmap(QPixmap('stitched_map.png'))
 
     def get_current_gps_coordinates(self):
-        return 40.7128, -74.0060
+        return 41.0120, -76.8477
     
     def get_tile_paths(self, zoom, lat, lon):
         #calculate x and y tile coordinates
         x = int((lon + 180.0) / 360.0 * (2.0 ** zoom))
-        y = int((1.0 - (lat + 90) / 180.0) * (2.0 ** zoom))
+        lat_rad = math.radians(lat)
+        y = int((1.0 - (math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi)) / 2.0 * (2.0 ** zoom))
 
         #Return paths to four tiles around coordinates
         tile_coords = [(x,y),(x + 1,y), (x,y+1),(x+1,y+1)]
-        tile_paths = [f"tiles/{zoom}/{coord[0]}/{coord[1]}.png" for coord in tile_coords]
+        tile_paths = [f"PipBoyMapOfflineTile_2024/USGS National Map Topo/{zoom}/{coord[0]}/{coord[1]}.png" for coord in tile_coords]
+        for path in tile_paths:
+            print(f"Tile Path: {path} - Exists: {os.path.exists(path)}")
         return tile_paths
     
-    # def read_gps_data():
-        #open serial port
-        # serial_port = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
+    def read_gps_data(self): #Enable on Raspberry Pi
+        # open serial port
 
-        # while True:
-        #     #Read data from serial port
-        #     line = serial_port.readline().decode('ascii', errors='replace')
+        while True:
+            #Read data from serial port
+            line = serial_portGPS.readline().decode('ascii', errors='replace')
 
-        #     #Parse nmea sentance
-        #     if line.startswith('$GPGGA'):
-        #         msg = pynmea2.parse(line)
-        #         print(f"Latitude: {msg.latitude}, Longitude: {msg.longitude}")
-    #             return msg.latitude, msg.longitude
+            #Parse nmea sentance
+            if line.startswith('$GPGGA'):
+                msg = pynmea2.parse(line)
+                print(f"Latitude: {msg.latitude}, Longitude: {msg.longitude}")
+                return msg.latitude, msg.longitude
             
     # def print_gps():
     #     latitude, longitude = read_gps_data()

@@ -43,27 +43,27 @@ void loop() {
   else if(val5 == 4){
     screen = 5;}
 
-  Serial.print("MQ4="); //Sets up reciever to parse message correctly using white space for seperate values
+  //Serial.print("MQ4,"); //Sets up reciever to parse message correctly using white space for seperate values
   Serial.print(sens4);
-  Serial.print("\t");
+  Serial.print(",");
 
-  Serial.print("MQ6=");
+  //Serial.print("MQ6,");
   Serial.print(sens6);
-  Serial.print("\t");
+  Serial.print(",");
 
-  Serial.print("MQ135="); //Sets up reciever to parse message correctly using white space for seperate values
+  //Serial.print("MQ135,"); //Sets up reciever to parse message correctly using white space for seperate values
   Serial.print(sens135);
-  Serial.print("\t");
+  Serial.print(",");
 
-  Serial.print("RAD="); //Sets up reciever to parse message correctly using white space for seperate values
+  //Serial.print("RAD,"); //Sets up reciever to parse message correctly using white space for seperate values
   Serial.print(rad);
-  Serial.print("\t");
+  Serial.print(",");
 
-  Serial.print("Screen="); //Sets up reciever to parse message correctly using white space for seperate values
+  //Serial.print("Screen,"); //Sets up reciever to parse message correctly using white space for seperate values
   Serial.print(screen);
   Serial.print("\n");
 
-  delay(500); //Allows for Radiation count of 6000CPM (delay of 10)
+  delay(1000); //Allows for Radiation count of 6000CPM (delay of 10)
 
   //100CPM is warning level
   //

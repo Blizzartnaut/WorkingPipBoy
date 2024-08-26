@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>803</width>
+    <height>650</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>800</width>
+      <height>600</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>15</pointsize>
+     </font>
+    </property>
+    <property name="tabShape">
+     <enum>QTabWidget::Triangular</enum>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="main">
+     <attribute name="title">
+      <string>MAIN</string>
+     </attribute>
+     <widget class="QProgressBar" name="progressBar">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>61</width>
+        <height>171</height>
+       </rect>
+      </property>
+      <property name="value">
+       <number>24</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="format">
+       <string>%p%</string>
+      </property>
+     </widget>
+     <widget class="QProgressBar" name="progressBar_2">
+      <property name="geometry">
+       <rect>
+        <x>720</x>
+        <y>10</y>
+        <width>61</width>
+        <height>171</height>
+       </rect>
+      </property>
+      <property name="value">
+       <number>24</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="TIME">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>490</y>
+        <width>201</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TIME: HH:MM:SS</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="DATE">
+      <property name="geometry">
+       <rect>
+        <x>540</x>
+        <y>490</y>
+        <width>241</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>DATE: DD/MM/YYYY</string>
+      </property>
+     </widget>
+     <widget class="QFrame" name="alarm_rad">
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>330</y>
+        <width>200</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 0, 0);</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QLabel" name="radSensorStatus">
+       <property name="geometry">
+        <rect>
+         <x>4</x>
+         <y>5</y>
+         <width>191</width>
+         <height>111</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="alarm_airsensor">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>330</y>
+        <width>200</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 0, 0);</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QLabel" name="airSensorStatus">
+       <property name="geometry">
+        <rect>
+         <x>4</x>
+         <y>5</y>
+         <width>191</width>
+         <height>111</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="air">
+     <attribute name="title">
+      <string>AIR</string>
+     </attribute>
+     <widget class="QWidget" name="verticalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>171</width>
+        <height>541</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="SENS1">
+         <property name="text">
+          <string>SENSOR 1</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="SENS2">
+         <property name="text">
+          <string>SENSOR 2</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="SENS3">
+         <property name="text">
+          <string>SENSOR 3</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="SENS4">
+         <property name="text">
+          <string>SENSOR 4</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="SENS5">
+         <property name="text">
+          <string>SENSOR 5</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="SENS6">
+         <property name="text">
+          <string>SENSOR 6</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="SENS7">
+         <property name="text">
+          <string>SENSOR 7</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="SENS8">
+         <property name="text">
+          <string>SENSOR 8</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QLabel" name="TEMP">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>10</y>
+        <width>261</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TEMPERATURE: fff deg</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="SENSGRAPH">
+      <property name="geometry">
+       <rect>
+        <x>254</x>
+        <y>115</y>
+        <width>521</width>
+        <height>431</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>GRAPH</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="rad">
+     <attribute name="title">
+      <string>RAD</string>
+     </attribute>
+     <widget class="QWidget" name="verticalLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>170</y>
+        <width>141</width>
+        <height>361</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="sec4">
+         <property name="text">
+          <string>4 SEC AVG</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="min">
+         <property name="text">
+          <string>1 MIN AVG</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="hour">
+         <property name="text">
+          <string>1 HOUR AVG</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="hour24">
+         <property name="text">
+          <string>24 HOUR AVG</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lifetime">
+         <property name="text">
+          <string>LIFETIME S</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QLabel" name="SELGRAPHRAD">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>100</y>
+        <width>441</width>
+        <height>451</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>GRAPH</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>160</y>
+        <width>187</width>
+        <height>391</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QRadioButton" name="sel_4">
+         <property name="text">
+          <string>4 SEC AVG</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="sel_1min">
+         <property name="text">
+          <string>1 MIN AVG</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="sel_1hour">
+         <property name="text">
+          <string>1 HOUR AVG</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="sel_24h">
+         <property name="text">
+          <string>24 HOUR AVG</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="sel_life">
+         <property name="text">
+          <string>LIFETIME S</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="map">
+     <attribute name="title">
+      <string>MAP</string>
+     </attribute>
+     <widget class="QRadioButton" name="OSM">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>420</y>
+        <width>131</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>OSM</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="TERRAIN">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>470</y>
+        <width>131</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TERRAIN</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="HILL">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>520</y>
+        <width>131</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>HILL MAP</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="ZOOM_SLIDER">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>119</y>
+        <width>41</width>
+        <height>261</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="MAP">
+      <property name="geometry">
+       <rect>
+        <x>204</x>
+        <y>19</y>
+        <width>581</width>
+        <height>531</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>MAP PLACEHOLDER</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="radio">
+     <attribute name="title">
+      <string>RADIO</string>
+     </attribute>
+     <widget class="QTabWidget" name="MENU2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>800</width>
+        <height>565</height>
+       </rect>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="RADIO">
+       <attribute name="title">
+        <string>RADIO</string>
+       </attribute>
+       <widget class="QLabel" name="FREQ">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>341</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>FREQUENCY: ###.### MHz</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="FREQ_GRAPH">
+        <property name="geometry">
+         <rect>
+          <x>14</x>
+          <y>55</y>
+          <width>761</width>
+          <height>451</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>FREQUENCY GRAPH PLACE-HOLDER</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="SOURCE_FIND">
+       <attribute name="title">
+        <string>SOURCE FINDER</string>
+       </attribute>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>803</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
