@@ -11,7 +11,7 @@ from PySide6.QtCore import QTimer, QDate, QTime, QIODevice
 from PySide6.QtGui import QPixmap
 from PipBoyMenu import Ui_MainWindow #Importing UI elements from the UI file
 from PIL import Image
-from osgeo import gdal
+#from osgeo import gdal #DEPRECIATED ON RASPI
 import pynmea2
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -34,11 +34,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.os_name == "Windows":
             self.serial_port = serial.Serial('COM3', baudrate=19200, timeout=1) #For testing
         elif self.os_name == "Linux":
-            self.serial_port = serial.Serial('/dev/ttyUSB0', baudrate=19200, timeout=1) #For the Raspberry Pi
-            serial_portGPS = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
-            self.timer = QTimer(self)
-            self.timer.timeout.connect(self.read_gps_data)
-            self.timer.start(100)
+            self.serial_port = serial.Serial('/dev/ttyACM0', baudrate=19200, timeout=1) #For the Raspberry Pi
+            #Wait until GDAL fix found
+            #serial_portGPS = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
+            #self.timer = QTimer(self)
+            #self.timer.timeout.connect(self.read_gps_data)
+            #self.timer.start(100)
         else:
             raise Exception("Unsupported Operating System")
         
@@ -62,7 +63,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.timer.timeout.connect(self.read_gps_data)
         # self.timer.start(100)
 
-
+    def start_fullscreen(self):
+        self.show_fullscreen()
 
     def update(self):
         #Example: Update a QLabel with current date and time
@@ -190,5 +192,5 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 app = QApplication([])
 window = MainWindow()
-window.show()
+window.start_fullscreen()
 sys.exit(app.exec())
