@@ -7,11 +7,11 @@ const int MQ135 = 11;  //Pins for analog signals
 const int RAD = 4;  //Digital Pin for counting rads
 
 //Pins for screen selector
-const int s1 = 13;  //Pins for D13 - D9
-const int s2 = 12;
-const int s3 = 11;
-const int s4 = 10;
-const int s5 = 9;
+const int s1 = 44;  //Pins for D(44, 46, 48, 50, 52)
+const int s2 = 46;
+const int s3 = 48;
+const int s4 = 50;
+const int s5 = 52;
 int screen = 1;
 
 void setup() {
