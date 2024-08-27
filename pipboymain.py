@@ -18,6 +18,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 global os_name
 global serial_portGPS
 global serial_port
+global menuScreen
+menuScreen = 1
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
@@ -94,6 +96,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.SENS3.setText(f"MQ135: {values[2]}")
                 self.sel_4.setText(f"RAD: {values[3]}")
                 menuScreen = values[4]
+                self.update_tab()
 
             self.update_graph()
 
@@ -130,6 +133,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #Close figure to free memory
         plt.close(fig)
+
+    def update_tab(self):
+        try:
+            tabW = menuScreen - 1
+            if tabW != self.tabWidget.currentIndex():
+                self.tabWidget.setCurrentIndex(tabW)
+        
+        except ValueError:
+            #In case an error with serial data
+            print('Not Integer Recieved')
 
     def update_map(self):
         #Create map on current coordinates
