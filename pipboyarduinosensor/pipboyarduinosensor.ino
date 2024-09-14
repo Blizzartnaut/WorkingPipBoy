@@ -14,9 +14,36 @@ const int s4 = 50;
 const int s5 = 52;
 int screen = 1;
 
+#include <dht_nonblocking.h>
+
+/* Uncomment according to your sensortype. */
+#define DHT_SENSOR_TYPE DHT_TYPE_11
+//#define DHT_SENSOR_TYPE DHT_TYPE_21
+//#define DHT_SENSOR_TYPE DHT_TYPE_22
+
+static const int DHT_SENSOR_PIN = 2;
+DHT_nonblocking dht_sensor( DHT_SENSOR_PIN, DHT_SENSOR_TYPE );
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(19200); //Starts serial port with Baud of 9600 bits per second
+}
+
+static bool measure_environment( float *temperature, float *humidity )
+{
+  static unsigned long measurement_timestamp = millis( );
+
+  /* Measure once every four seconds. */
+  if( millis( ) - measurement_timestamp > 3000ul )
+  {
+    if( dht_sensor.measure( temperature, humidity ) == true )
+    {
+      measurement_timestamp = millis( );
+      return( true );
+    }
+  }
+
+  return( false );
 }
 
 void loop() {
@@ -31,6 +58,12 @@ void loop() {
   int val3 = digitalRead(s3);
   int val4 = digitalRead(s4);
   int val5 = digitalRead(s5);
+
+  float temperature;
+  float humidity;
+
+  /* Measure temperature and humidity.  If the functions returns
+     true, then a measurement is available. */
 
   if (val1 == 1){
     screen = 1;}
@@ -59,6 +92,13 @@ void loop() {
   Serial.print(rad);
   Serial.print(",");
 
+  //Serial.print("RAD,"); //Sets up reciever to parse message correctly using white space for seperate values
+  Serial.print(temperature);
+  Serial.print(",");
+
+  Serial.print(humidity);
+  Serial.print(",");
+  
   //Serial.print("Screen,"); //Sets up reciever to parse message correctly using white space for seperate values
   Serial.print(screen);
   Serial.print("\n");
