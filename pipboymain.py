@@ -19,7 +19,7 @@ global os_name
 global serial_portGPS
 global serial_port
 global menuScreen
-menuScreen = 1
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
@@ -29,33 +29,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data_sens2 = np.zeros(720)
         self.data_sens3 = np.zeros(720)
 
+        self.menuScreen = 1
+        # self.DATE = QLabel(self)
+        # self.TIME = QLabel(self)
+
         self.os_name = platform.system() #Detects current system
 
         # self.data = np.zeros(720)  #Collects 1440 data points for 24 hours
 
-        if self.os_name == "Windows":
-            self.serial_port = serial.Serial('COM3', baudrate=19200, timeout=1) #For testing
-        elif self.os_name == "Linux":
-            self.serial_port = serial.Serial('/dev/ttyACM0', baudrate=19200, timeout=1) #For the Raspberry Pi
-            #Wait until GDAL fix found
-            #serial_portGPS = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
-            #self.timer = QTimer(self)
-            #self.timer.timeout.connect(self.read_gps_data)
-            #self.timer.start(100)
-        else:
-            raise Exception("Unsupported Operating System")
+        # if self.os_name == "Windows":
+        #     self.serial_port = serial.Serial('COM3', baudrate=19200, timeout=1) #For testing
+        # elif self.os_name == "Linux":
+        #     self.serial_port = serial.Serial('/dev/ttyACM0', baudrate=19200, timeout=1) #For the Raspberry Pi
+        #     #Wait until GDAL fix found
+        #     #serial_portGPS = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
+        #     #self.timer = QTimer(self)
+        #     #self.timer.timeout.connect(self.read_gps_data)
+        #     #self.timer.start(100)
+        # else:
+        #     raise Exception("Unsupported Operating System")
         
-        self.map_timer = QTimer(self)
-        self.map_timer.timeout.connect(self.update_map)
-        self.map_timer.start(5000) #Updates map every minute
+        # self.map_timer = QTimer(self)
+        # self.map_timer.timeout.connect(self.update_map)
+        # self.map_timer.start(5000) #Updates map every minute
         
         self.graph_timer = QTimer(self)
         self.graph_timer.timeout.connect(self.update_graph)
         self.graph_timer.start(10000) #Updates graph every minute
 
-        self.time_timer = QTimer(self)
-        self.time_timer.timeout.connect(self.read_Serial)    #Reads the serial every 100 ms
-        self.time_timer.start(100)
+        # self.time_timer = QTimer(self)
+        # self.time_timer.timeout.connect(self.read_Serial)    #Reads the serial every 100 ms
+        # self.time_timer.start(100)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)         #Updates time and date every second
@@ -66,7 +70,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.timer.start(100)
 
     def start_fullscreen(self):
-        self.show_fullscreen()
+        self.showFullScreen()
 
     def update(self):
         #Example: Update a QLabel with current date and time
@@ -74,7 +78,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.TIME.setText("Time: " + QTime().currentTime().toString())
 
     def read_Serial(self):
-        if self.serial_port.in_waiting > 0:
+        if hasattr(self, 'serial_port') and self.serial_port.in_waiting > 0:
             #Read Data from Serial Port
             data = self.serial_port.readline().decode('utf-8').strip() #Gets rid of both before and after
             values = data.split(',') #CSV
@@ -99,6 +103,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.update_tab()
 
             self.update_graph()
+        else:
+            #passes if serial port isnt active
+            pass
 
     def update_graph(self):
         #Creates new figure and axis
@@ -124,9 +131,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         buf.seek(0)
 
         #Load image into QPixmap and display it on QLabel
-        # self.graph_pixmap = QPixmap()
-        # self.graph_pixmap.loadFromData(buf.getvalue())
-        # self.SENSGRAPH.setPixmap(self.graph_pixmap)
+        self.graph_pixmap = QPixmap()
+        self.graph_pixmap.loadFromData(buf.getvalue())
+        self.SENSGRAPH.setPixmap(self.graph_pixmap)
         qimage = QPixmap()
         qimage.loadFromData(buf.getvalue())
         self.SENSGRAPH.setPixmap(qimage)
@@ -138,7 +145,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         try:
             tabW = menuScreen - 1
             if tabW != self.tabWidget.currentIndex():
-                self.tabWidget.setCurrentIndex(tabW)
+                self.tabWidget.setCurrentIndex(int(tabW)) #Explicit Conversion might be needed
         
         except ValueError:
             #In case an error with serial data
@@ -203,7 +210,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #     print(f"Current location: Latitude = {latitude}, Longitude = {longitude}")
     
 
-app = QApplication([])
+#app = QApplication([])
+app = QApplication(sys.argv)
 window = MainWindow()
 window.start_fullscreen()
 sys.exit(app.exec())
