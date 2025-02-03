@@ -25,6 +25,36 @@ try:
 except ImportError:
     gdal = None
 
+#for HTML Serving
+import threading
+import http.server
+import socketserver
+
+# Dangerous do not use
+# os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--allow-file-access-from-files"
+
+def start_local_server(port=8000, directory="."):
+    """
+    Start an HTTP server serving files from the specified directory.
+    The server runs in a background daemon thread.
+    """
+    # Save current working directory and change to the desired directory.
+    cwd = os.getcwd()
+    os.chdir(directory)
+    
+    handler = http.server.SimpleHTTPRequestHandler
+    # Allow address reuse so that you can restart the server without waiting.
+    socketserver.TCPServer.allow_reuse_address = True
+    httpd = socketserver.TCPServer(("", port), handler)
+    
+    # Start the server in a daemon thread (so it closes when your main app closes).
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    
+    os.chdir(cwd)
+    print(f"Local HTTP server started on port {port}, serving directory: {directory}")
+    return httpd
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
@@ -42,7 +72,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menuScreen = 1
 
         #Map placement
-        # self.MAP = QWebEngineView(self)
+        server = start_local_server(port=8000, directory=".")
         
         # Detect the operating system for conditional functionality
         self.os_name = platform.system()
@@ -99,7 +129,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # layout = QVBoxLayout(self.MAP)
         self.mapView = QWebEngineView()
         local_map_path = os.path.abspath("pipboy_map.html")
-        self.mapView.load(QUrl.fromLocalFile(local_map_path))
+        self.mapView.load(QUrl("http://localhost:8000/pipboy_map.html"))
         layout.addWidget(self.mapView)
         
         # NEW: Timer to update GPS marker (calls update_gps_marker method)
@@ -253,7 +283,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             print("GPS serial port not initialized.")
             return None, None
-
+        
 if __name__ == "__main__":
     # Use sys.argv for proper argument parsing in PySide6
     app = QApplication(sys.argv)
