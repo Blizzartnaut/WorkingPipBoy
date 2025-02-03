@@ -3,11 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <title>Pip-Boy GPS Map</title>
-    <!-- Include Leaflet CSS -->
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet/dist/leaflet.css"
-    />
+    <!-- Use local Leaflet CSS -->
+    <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
     <style>
       html, body, #map {
         height: 100%;
@@ -18,27 +15,25 @@
   </head>
   <body>
     <div id="map"></div>
-    <!-- Include Leaflet JS -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Use local Leaflet JS -->
+    <script src="lib/leaflet/leaflet.js"></script>
     <script>
-      // Initialize the map at a default location and zoom level.
+      // Initialize the map at the default coordinates and zoom.
       var map = L.map('map').setView([41.0120, -76.8477], 14);
 
-      // Define the local tile layer. Adjust the path accordingly.
-      L.tileLayer('file:///absolute/path/to/tiles/{z}/{x}/{y}.png', {
+      // Load the local tile layer.
+      L.tileLayer('file:///XYZTiles/{z}/{x}/{y}.png', {
         minZoom: 9,
         maxZoom: 16,
-        attribution: 'Map data © OpenStreetMap contributors'
+        attribution: 'Map data © USGS contributors'
       }).addTo(map);
 
-      // Add a marker for the current position. It starts at the default location.
+      // Add a marker for the current position.
       var currentMarker = L.marker([41.0120, -76.8477]).addTo(map);
 
-      // This function will be called from Python to update the marker.
+      // Function to update the marker's position.
       function updateMarker(lat, lon) {
         currentMarker.setLatLng([lat, lon]);
-        // Optionally, recenter the map on the new position:
-        // map.panTo(new L.LatLng(lat, lon));
       }
     </script>
   </body>

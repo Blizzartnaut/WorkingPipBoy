@@ -7,7 +7,12 @@ map.html
 map.png
 mapfunction.py
 pipboyinterface.py
-
-
-
-
+/XYZTiles/
+Art_of_Fo4_Pip-Boy_concept_art.webp
+*.webp
+PipBoyMenu-old.py
+PipBoyMenu-OLD.ui
+PipBoyMenu.py
+RPi.py
+testing.py
+pipboymain.py
