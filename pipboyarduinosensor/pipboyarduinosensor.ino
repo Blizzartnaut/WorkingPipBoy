@@ -59,9 +59,6 @@ void loop() {
   int val4 = digitalRead(s4);
   int val5 = digitalRead(s5);
 
-  float temperature;
-  float humidity;
-
   /* Measure temperature and humidity.  If the functions returns
      true, then a measurement is available. */
 
@@ -73,8 +70,15 @@ void loop() {
     screen = 3;}
   else if(val4 == 1){
     screen = 4;}
-  else if(val5 == 4){
+  else if(val5 == 1){
     screen = 5;}
+
+  float temperature = 0.0;
+  float humidity = 0.0;
+
+  // Try to measure environment (temp and humidity)
+  bool envMeasured = measure_environment(&temperature, &humidity)
+  //if not measured keep previous reading or send 0
 
   //Serial.print("MQ4,"); //Sets up reciever to parse message correctly using white space for seperate values
   Serial.print(sens4);

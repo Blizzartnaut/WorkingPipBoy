@@ -176,11 +176,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.SENS2.setText(f"MQ6: {values[1]}")
                     self.SENS3.setText(f"MQ135: {values[2]}")
                     self.sel_4.setText(f"RAD: {values[3]}")
-                    try:
-                        self.menuScreen = int(values[4])
-                    except ValueError:
-                        print("Invalid menuScreen value received:", values[4])
-                    self.update_tab()
+                    # try:
+                    #     self.menuScreen = int(values[4])
+                    # except ValueError:
+                    #     print("Invalid menuScreen value received:", values[4])
+                    # self.update_tab()
                 
                 # Update the graph with the new data
                 self.update_graph()
