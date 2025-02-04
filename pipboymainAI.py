@@ -85,11 +85,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.serial_port = serial.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
             except Exception as e:
                 print("Error initializing serial port on Linux:", e)
-            # Uncomment and configure the following for GPS on Raspberry Pi:
-            # try:
-            #     self.serial_portGPS = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
-            # except Exception as e:
-            #     print("Error initializing GPS serial port on Linux:", e)
+            try:
+                self.serial_portGPS = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
+            except Exception as e:
+                print("Error initializing GPS serial port on Linux:", e)
         else:
             raise Exception("Unsupported Operating System")
         
@@ -257,32 +256,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def get_current_gps_coordinates(self):
         """
-        Return the current GPS coordinates.
-        Replace this placeholder with your actual GPS retrieval logic.
+        Return the current GPS coordinates as (latitude, longitude).
+        This function calls read_gps_data() to obtain data from the GPS hat.
+        If no valid data is received, it falls back to fixed demo coordinates.
         """
-        # For demonstration, return fixed coordinates.
-        return 41.0120, -76.8477
+        coords = self.read_gps_data()
+        if coords != (None, None):
+            return coords
+        else:
+            # Fallback fixed coordinates (for testing or if GPS data is unavailable)
+            return 41.0120, -76.8477
     # ---------------------------------------------------------------------
     
     def read_gps_data(self):
         """
-        Continuously read and parse GPS data from the serial port.
-        This function is intended for use on the Raspberry Pi.
+        Attempt to read one line from the GPS serial port and parse it.
+        Returns a tuple (latitude, longitude) if a valid GPGGA sentence is found.
+        If no valid data is available, returns (None, None).
         """
         if hasattr(self, 'serial_portGPS'):
-            while True:
-                try:
-                    line = self.serial_portGPS.readline().decode('ascii', errors='replace')
+            try:
+                # Check if data is available to prevent blocking
+                if self.serial_portGPS.in_waiting > 0:
+                    line = self.serial_portGPS.readline().decode('ascii', errors='replace').strip()
                     if line.startswith('$GPGGA'):
                         msg = pynmea2.parse(line)
-                        print(f"GPS Data - Latitude: {msg.latitude}, Longitude: {msg.longitude}")
-                        return msg.latitude, msg.longitude
-                except Exception as e:
-                    print("Error reading GPS data:", e)
-                    break
+                        return (msg.latitude, msg.longitude)
+            except Exception as e:
+                print("Error reading GPS data:", e)
+            return (None, None)
         else:
             print("GPS serial port not initialized.")
-            return None, None
+            return (None, None)
         
 if __name__ == "__main__":
     # Use sys.argv for proper argument parsing in PySide6
