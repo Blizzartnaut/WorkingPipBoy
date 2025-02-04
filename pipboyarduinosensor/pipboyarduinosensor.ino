@@ -5,6 +5,8 @@ const int MQ4 = 9;   //Pin for Sensor Package
 const int MQ6 = 10; //These are ADC
 const int MQ135 = 11;  //Pins for analog signals
 const int RAD = 4;  //Digital Pin for counting rads
+const int Humid = 7;
+const int Temp = 6;
 
 //Pins for screen selector
 const int s1 = 44;  //Pins for D(44, 46, 48, 50, 52)

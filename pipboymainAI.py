@@ -30,6 +30,12 @@ import threading
 import http.server
 import socketserver
 
+#Battery Status
+try:
+    from pijuice import PiJuice
+except ImportError:
+    pijuice = None
+
 # Dangerous do not use
 # os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--allow-file-access-from-files"
 
@@ -202,8 +208,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             ax.plot(self.data_sens3, color="green", label="MQ135")
             
             #Set Labales and title
-            ax.set_title('Past 24 Hours')
-            ax.set_xlabel('Time (min)')
+            ax.set_title('Past 5 Minutes')
+            ax.set_xlabel('Time (sec)')
             ax.set_ylabel('Value')
             #add legend
             ax.set_xlim(max(0, len(self.data_sens1) - 300), len(self.data_sens1))
@@ -265,6 +271,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return coords
         else:
             # Fallback fixed coordinates (for testing or if GPS data is unavailable)
+            print('GPS data not found')
             return 41.0120, -76.8477
     # ---------------------------------------------------------------------
     
@@ -288,6 +295,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             print("GPS serial port not initialized.")
             return (None, None)
+        
+    def get_battery_status():
+        try:
+            pj = PiJuice(1, 0x14) #Adjust I2C bus and address as needed
+            status = pj.GetBatteryStatus()
+            #
         
 if __name__ == "__main__":
     # Use sys.argv for proper argument parsing in PySide6
