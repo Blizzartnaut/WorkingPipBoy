@@ -1,11 +1,11 @@
 #activate the virtual environment
-if self.os_name == "Windows":
-    pass
-elif self.os_name == "Linux":
-    try:
-        source /home/marceversole/WorkingPipBoy/PipBoyVenv/bin/activate
-    except Exception as e:
-        print("Error loading venv")
+# if self.os_name == "Windows":
+#     pass
+# elif self.os_name == "Linux":
+#     try:
+#         source /home/marceversole/WorkingPipBoy/PipBoyVenv/bin/activate
+#     except Exception as e:
+#         print("Error loading venv")
 
 import sys
 import serial
