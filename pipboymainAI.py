@@ -166,16 +166,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.canvas = FigureCanvas(self.figure)
         graph_layout.addWidget(self.canvas)
 
-        #Plot the data
-        self.line1, = self.ax.plot(self.data_sens1, color="blue", label="MQ4")
-        self.line2, = self.ax.plot(self.data_sens2, color="red", label="MQ6")
-        self.line3, = self.ax.plot(self.data_sens3, color="green", label="MQ135")
-        
         #Set Labales and title
         self.ax = self.figure.add_subplot(111)
         self.ax.set_title('Past 5 Minutes')
         self.ax.set_xlabel('Time (sec)')
         self.ax.set_ylabel('Value')
+
+        #Plot the data
+        self.line1, = self.ax.plot(self.data_sens1, color="blue", label="MQ4")
+        self.line2, = self.ax.plot(self.data_sens2, color="red", label="MQ6")
+        self.line3, = self.ax.plot(self.data_sens3, color="green", label="MQ135")
+            
         #add legend
         # self.ax.set_xlim(max(0, len(self.data_sens1) - 300), len(self.data_sens1))
         self.ax.legend()
