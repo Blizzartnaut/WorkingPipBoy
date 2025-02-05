@@ -172,6 +172,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.line3, = self.ax.plot(self.data_sens3, color="green", label="MQ135")
         
         #Set Labales and title
+        self.ax = self.figure.add_subplot(111)
         self.ax.set_title('Past 5 Minutes')
         self.ax.set_xlabel('Time (sec)')
         self.ax.set_ylabel('Value')
