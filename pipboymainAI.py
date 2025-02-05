@@ -1,3 +1,12 @@
+#activate the virtual environment
+if self.os_name == "Windows":
+    pass
+elif self.os_name == "Linux":
+    try:
+        source ~/PIPBOY/PipBoyVenv/bin/activate
+    except Exception as e:
+        print("Error loading venv")
+
 import sys
 import serial
 import platform
@@ -31,10 +40,27 @@ import http.server
 import socketserver
 
 #Battery Status
+# try:
+#     from pijuice import PiJuice
+# except ImportError:
+#     pijuice = None
+
+#Import UPSPro stuff
 try:
-    from pijuice import PiJuice
+    import time
+    import smbus2
+    import logging
+    from ina219 import INA219, DeviceRangeError
 except ImportError:
-    pijuice = None
+    time = None
+    smbus2 = None
+    logging = None
+    ina219 = None
+
+#Will do at a later time, need to make the fuel gage and plug it into the program
+# DEVICE_BUS = 1
+# DEVICE_ADDR = 0x17
+
 
 # Dangerous do not use
 # os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--allow-file-access-from-files"
@@ -296,11 +322,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("GPS serial port not initialized.")
             return (None, None)
         
-    def get_battery_status():
-        try:
-            pj = PiJuice(1, 0x14) #Adjust I2C bus and address as needed
-            status = pj.GetBatteryStatus()
-            #
+    # def get_battery_status():
+    #     try:
+    #         pj = PiJuice(1, 0x14) #Adjust I2C bus and address as needed
+    #         status = pj.GetBatteryStatus()
+    #         #
         
 if __name__ == "__main__":
     # Use sys.argv for proper argument parsing in PySide6
