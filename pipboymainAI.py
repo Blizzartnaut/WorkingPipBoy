@@ -3,7 +3,7 @@ if self.os_name == "Windows":
     pass
 elif self.os_name == "Linux":
     try:
-        source ~/PIPBOY/PipBoyVenv/bin/activate
+        source /home/marceversole/WorkingPipBoy/PipBoyVenv/bin/activate
     except Exception as e:
         print("Error loading venv")
 
@@ -17,7 +17,7 @@ import math
 from io import BytesIO
 
 # PySide6 imports
-from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QProgressBar
 from PySide6.QtCore import QTimer, QDate, QTime, QIODevice, QUrl
 from PySide6.QtGui import QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -27,6 +27,14 @@ from PipBoyMenu import Ui_MainWindow
 
 from PIL import Image
 import pynmea2
+import psutil #For monitoring memory
+
+try:
+    from matplotlib.backends.backend_qt6agg import FigureCanvasQTAgg as FigureCanvas
+except ImportError:
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+
+from matplotlib.figure import Figure
 
 # Attempt to import GDAL if available; if not, set to None.
 try:
@@ -129,7 +137,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Graph update timer: refresh graph every 10 seconds.
         self.graph_timer = QTimer(self)
         self.graph_timer.timeout.connect(self.update_graph)
-        self.graph_timer.start(5000)
+        # self.graph_timer.start(5000)
         
         # Serial data reading timer: check for serial data every 100 ms.
         self.serial_timer = QTimer(self)
@@ -140,7 +148,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.datetime_timer = QTimer(self)
         self.datetime_timer.timeout.connect(self.update)
         self.datetime_timer.start(1000)
-    
+
+        #To update memory every 5 seconds
+        self.memory_timer = QTimer(Self)
+        self.memory_timer.timeout.connect(self.update)
+        self.memory_timer.start(5000)
+        
+        #Matplotlib persistant canvas
+        self.graphWidget = self.findChild(QWidget, "SENSGRAPH")
+        if self.graphWidget is None:
+            self.graph_timer.start(5000)
+        
+        graph_layout = QVBoxLayout(self.graphWidget)
+        self.graphWidget.setLayout(graph_layout)
+
+        self.figure = Figure(figsize=(6,4))
+        self.canvas = FigureCanvas(self.figure)
+        graph_layout.addWidget(self.canvas)
+
+        #Plot the data
+        self.line1, = self.ax.plot(self.data_sens1, color="blue", label="MQ4")
+        self.line2, = self.ax.plot(self.data_sens2, color="red", label="MQ6")
+        self.line3, = self.ax.plot(self.data_sens3, color="green", label="MQ135")
+        
+        #Set Labales and title
+        self.ax.set_title('Past 5 Minutes')
+        self.ax.set_xlabel('Time (sec)')
+        self.ax.set_ylabel('Value')
+        #add legend
+        # self.ax.set_xlim(max(0, len(self.data_sens1) - 300), len(self.data_sens1))
+        self.ax.legend()
+        self.canvas.draw()
+            
         # # # Look for a placeholder widget named "MAP" in your UI.
         # self.MAP = self.findChild(QWidget, "MAP")
         # if self.MAP is None:
@@ -228,34 +267,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         fig, ax = plt.subplots()
         try:
-            #Plot the data
-            ax.plot(self.data_sens1, color="blue", label="MQ4")
-            ax.plot(self.data_sens2, color="red", label="MQ6")
-            ax.plot(self.data_sens3, color="green", label="MQ135")
+            # #Plot the data
+            # ax.plot(self.data_sens1, color="blue", label="MQ4")
+            # ax.plot(self.data_sens2, color="red", label="MQ6")
+            # ax.plot(self.data_sens3, color="green", label="MQ135")
             
-            #Set Labales and title
-            ax.set_title('Past 5 Minutes')
-            ax.set_xlabel('Time (sec)')
-            ax.set_ylabel('Value')
-            #add legend
+            # #Set Labales and title
+            # ax.set_title('Past 5 Minutes')
+            # ax.set_xlabel('Time (sec)')
+            # ax.set_ylabel('Value')
+            # #add legend
             ax.set_xlim(max(0, len(self.data_sens1) - 300), len(self.data_sens1))
-            ax.legend()
+            # ax.legend()
             
-            #Save as BytesIO object
-            buf = BytesIO()
-            plt.savefig(buf, format="png")
-            buf.seek(0)
-            
-            #Load image into QPixmap and display it on QLabel
-            graph_pixmap = QPixmap()
-            # Convert buffer data to bytes for PySide6 compatibility.
-            graph_pixmap.loadFromData(bytes(buf.getvalue()))
-            self.SENSGRAPH.setPixmap(graph_pixmap)
-            self.SENSGRAPH.setScaledContents(True)
+            self.line1.set_ydata(self.data_sens1)            
+            self.line2.set_ydata(self.data_sens2)            
+            self.line3.set_ydata(self.data_sens3)
+
+            self.canvas.draw_idle()
         except Exception as e:
-            print("Error updating graph:", e)
-        finally:
-            plt.close(fig)  # Close the figure to prevent memory leaks.
+            print("Error Updating Graph", e)
+        #     #Save as BytesIO object
+        #     buf = BytesIO()
+        #     plt.savefig(buf, format="png")
+        #     buf.seek(0)
+            
+        #     #Load image into QPixmap and display it on QLabel
+        #     graph_pixmap = QPixmap()
+        #     # Convert buffer data to bytes for PySide6 compatibility.
+        #     graph_pixmap.loadFromData(bytes(buf.getvalue()))
+        #     self.SENSGRAPH.setPixmap(graph_pixmap)
+        #     self.SENSGRAPH.setScaledContents(True)
+        # except Exception as e:
+        #     print("Error updating graph:", e)
+        # finally:
+        #     plt.close(fig)  # Close the figure to prevent memory leaks.
     
     def update_tab(self):
         """
@@ -322,6 +368,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("GPS serial port not initialized.")
             return (None, None)
         
+    def update_memory_usage(self):
+    # """
+    # Use psutil to get current memory usage and update the progress bar.
+    # This example assumes that the total memory is 1840 MB.
+    # """
+    mem = psutil.virtual_memory()
+    # Calculate used memory in MB
+    used_mb = mem.used / (1024 * 1024)
+    # Calculate percentage based on a maximum of 1840 MB
+    percent_usage = (used_mb / 1840) * 100
+
+    # Print memory usage for debugging (optional)
+    print(f"Memory Usage: {percent_usage:.1f}% ({used_mb:.1f} MB used out of 1840 MB)")
+
+    # Update the progress bar
+    # Option 1: If your progress bar's range is 0-100, set the value to the percentage:
+    self.progressBar_2.setValue(int(percent_usage))
+
+    # Option 2: If you want the progress bar to show MB directly, first set its maximum to 1840:
+    # self.progressBar_2.setMaximum(1840)
+    # self.progressBar_2.setValue(int(used_mb))
+    
     # def get_battery_status():
     #     try:
     #         pj = PiJuice(1, 0x14) #Adjust I2C bus and address as needed
