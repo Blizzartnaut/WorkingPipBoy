@@ -150,7 +150,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.datetime_timer.start(1000)
 
         #To update memory every 5 seconds
-        self.memory_timer = QTimer(Self)
+        self.memory_timer = QTimer(self)
         self.memory_timer.timeout.connect(self.update)
         self.memory_timer.start(5000)
         
