@@ -369,26 +369,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return (None, None)
         
     def update_memory_usage(self):
-    # """
-    # Use psutil to get current memory usage and update the progress bar.
-    # This example assumes that the total memory is 1840 MB.
-    # """
-    mem = psutil.virtual_memory()
-    # Calculate used memory in MB
-    used_mb = mem.used / (1024 * 1024)
-    # Calculate percentage based on a maximum of 1840 MB
-    percent_usage = (used_mb / 1840) * 100
+        # """
+        # Use psutil to get current memory usage and update the progress bar.
+        # This example assumes that the total memory is 1840 MB.
+        # """
+        mem = psutil.virtual_memory()
+        # Calculate used memory in MB
+        used_mb = mem.used / (1024 * 1024)
+        # Calculate percentage based on a maximum of 1840 MB
+        percent_usage = (used_mb / 1840) * 100
 
-    # Print memory usage for debugging (optional)
-    print(f"Memory Usage: {percent_usage:.1f}% ({used_mb:.1f} MB used out of 1840 MB)")
+        # Print memory usage for debugging (optional)
+        print(f"Memory Usage: {percent_usage:.1f}% ({used_mb:.1f} MB used out of 1840 MB)")
 
-    # Update the progress bar
-    # Option 1: If your progress bar's range is 0-100, set the value to the percentage:
-    self.progressBar_2.setValue(int(percent_usage))
+        # Update the progress bar
+        # Option 1: If your progress bar's range is 0-100, set the value to the percentage:
+        self.progressBar_2.setValue(int(percent_usage))
 
-    # Option 2: If you want the progress bar to show MB directly, first set its maximum to 1840:
-    # self.progressBar_2.setMaximum(1840)
-    # self.progressBar_2.setValue(int(used_mb))
+        # Option 2: If you want the progress bar to show MB directly, first set its maximum to 1840:
+        # self.progressBar_2.setMaximum(1840)
+        # self.progressBar_2.setValue(int(used_mb))
     
     # def get_battery_status():
     #     try:
