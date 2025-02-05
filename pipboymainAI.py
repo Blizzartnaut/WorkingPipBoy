@@ -101,6 +101,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Set up UI elements (ensure the .ui file has been updated for PySide6)
         self.setupUi(self)
 
+        self.progressBar_2.setMinimum
+        self.progressBar_2.setMaximum
+
         from PySide6.QtWidgets import QVBoxLayout, QWidget
         
         # Initialize sensor data arrays (720 data points per sensor)
@@ -151,7 +154,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #To update memory every 5 seconds
         self.memory_timer = QTimer(self)
-        self.memory_timer.timeout.connect(self.update)
+        self.memory_timer.timeout.connect(self.update_memory_usage)
         self.memory_timer.start(5000)
         
         #Matplotlib persistant canvas
@@ -161,6 +164,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         graph_layout = QVBoxLayout(self.graphWidget)
         self.graphWidget.setLayout(graph_layout)
+        self.graphWidget.setScaledContents(True)
 
         self.figure = Figure(figsize=(6,4))
         self.canvas = FigureCanvas(self.figure)
@@ -281,7 +285,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # #add legend
             ax.set_xlim(max(0, len(self.data_sens1) - 300), len(self.data_sens1))
             # ax.legend()
-            
+            self.ax.set_ylim(0, 1000)
+
             self.line1.set_ydata(self.data_sens1)            
             self.line2.set_ydata(self.data_sens2)            
             self.line3.set_ydata(self.data_sens3)
@@ -386,7 +391,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Update the progress bar
         # Option 1: If your progress bar's range is 0-100, set the value to the percentage:
+        
         self.progressBar_2.setValue(int(percent_usage))
+
 
         # Option 2: If you want the progress bar to show MB directly, first set its maximum to 1840:
         # self.progressBar_2.setMaximum(1840)
