@@ -1,11 +1,11 @@
-import subprocess
+# import subprocess
 
-#setup venv
-def activate_venv():
-    subprocess.run(["source", "PipBoyVenv/bin/activate"])  # On Linux/Mac
+# #setup venv
+# def activate_venv():
+#     subprocess.run(["source", "PipBoyVenv/bin/activate"])  # On Linux/Mac
 
-#Activate venv
-activate_venv()
+# #Activate venv
+# activate_venv()
 
 import sys
 import serial
