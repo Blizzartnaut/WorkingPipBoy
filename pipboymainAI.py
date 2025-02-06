@@ -142,10 +142,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.memory_timer.timeout.connect(self.update_memory_usage)
         self.memory_timer.start(5000)
 
-        #Manual Triggering of Garbage Collection
-        self.gacl = QTimer(self)
-        self.gacl.timeout.connect(self.run_gc)
-        self.gacl.start(10000)
+        # #Manual Triggering of Garbage Collection #did something weird, disabled for further investigation, suspect
+        # self.gacl = QTimer(self)
+        # self.gacl.timeout.connect(self.run_gc)
+        # self.gacl.start(10000)
         
         #Matplotlib persistant canvas
         self.graphWidget = self.findChild(QWidget, "SENSGRAPH")
