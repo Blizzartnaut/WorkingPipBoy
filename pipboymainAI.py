@@ -142,10 +142,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.memory_timer.timeout.connect(self.update_memory_usage)
         self.memory_timer.start(5000)
 
-        # #Manual Triggering of Garbage Collection #did something weird, disabled for further investigation, suspect
-        # self.gacl = QTimer(self)
-        # self.gacl.timeout.connect(self.run_gc)
-        # self.gacl.start(10000)
+        #Manual Triggering of Garbage Collection #did something weird, disabled for further investigation, suspect
+        self.gacl = QTimer(self)
+        self.gacl.timeout.connect(self.run_gc)
+        self.gacl.start(30000)
         
         #Matplotlib persistant canvas
         self.graphWidget = self.findChild(QWidget, "SENSGRAPH")
@@ -367,6 +367,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def update_battery_status(self):
         capacity = self.read_capacity()
+        #realcap = capacity * 2
         print(f'Current Capacity = {capacity}')
         self.progressBar.setValue(int(capacity))
         
