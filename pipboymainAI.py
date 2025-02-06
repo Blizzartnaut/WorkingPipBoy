@@ -346,7 +346,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         percent_usage = (used_mb / 1840) * 100
 
         # Print memory usage for debugging (optional)
-        # print(f"Memory Usage: {percent_usage:.1f}% ({used_mb:.1f} MB used out of 1840 MB)")
+        print(f"Memory Usage: {percent_usage:.1f}% ({used_mb:.1f} MB used out of 1840 MB)")
 
         if percent_usage >= 90:
             quit()
@@ -368,7 +368,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def update_battery_status(self):
         capacity = self.read_capacity()
         #realcap = capacity * 2
-        print(f'Current Capacity = {capacity}')
+        # print(f'Current Capacity = {capacity}')
         self.progressBar.setValue(int(capacity))
         
 if __name__ == "__main__":

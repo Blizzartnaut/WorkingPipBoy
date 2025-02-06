@@ -16,6 +16,6 @@ RPi.py
 testing.py
 pipboymain.py
 /myvenv/
-testinrtl-sdr.py
+#testinrtl-sdr.py
 c_cpp_properties.json
-testing-rtlsdrpy.py
+#testing-rtlsdrpy.py
