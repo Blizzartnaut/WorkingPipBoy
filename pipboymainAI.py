@@ -348,7 +348,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Print memory usage for debugging (optional)
         # print(f"Memory Usage: {percent_usage:.1f}% ({used_mb:.1f} MB used out of 1840 MB)")
 
-        if percent_usage <= 90:
+        if percent_usage >= 90:
             quit()
 
         # Update the progress bar
