@@ -258,7 +258,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Render a matplotlib graph of the sensor data and display it in the UI.
         The graph is saved to a BytesIO buffer, then loaded into a QPixmap.
         """
-        fig, ax = plt.subplots()
+        #fig, ax = plt.subplots()
         try:
             self.ax.set_ylim(0, 1000)
             self.line1.set_ydata(self.data_sens1)            
