@@ -51,27 +51,10 @@ import socketserver
 #Battery Status
 
 
-#Import UPSPro stuff
-try:
-    import time
-    import smbus2
-    # import logging
-    # from ina219 import INA219, DeviceRangeError
-except ImportError:
-    time = None
-    smbus2 = None
-    # logging = None
-    # ina219 = None
-
-#Will do at a later time, need to make the fuel gage and plug it into the program
-DEVICE_BUS = 1
-DEVICE_ADDR = 0x17 #used in example code from repo code
-
-bus = smbus2.SMBus(DEVICE_BUS)
-
-
-# Dangerous do not use
-# os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--allow-file-access-from-files"
+#Import x728 stuff
+import struct
+import smbus
+import time
 
 def start_local_server(port=8000, directory="."):
     """
@@ -116,6 +99,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #Map placement
         server = start_local_server(port=8000, directory=".")
+
+        #Bus for battery capacity gauge
+        self.bus = smbus.SMBus(1) #0 = /dev/i2c-0 (port I@C0), 1 = /dev/i2c-1 (port I2C1)
         
         # Detect the operating system for conditional functionality
         self.os_name = platform.system()
@@ -140,7 +126,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Graph update timer: refresh graph every 10 seconds.
         self.graph_timer = QTimer(self)
         self.graph_timer.timeout.connect(self.update_graph)
-        # self.graph_timer.start(5000)
         
         # Serial data reading timer: check for serial data every 100 ms.
         self.serial_timer = QTimer(self)
@@ -213,7 +198,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Battery Capacity Update
         self.battery_timer = QTimer(self)
         self.battery_timer.timeout.connect(self.update_battery_status)
-        self.battery_timer.start(15000)
+        self.battery_timer.start(10000)
 
     def start_fullscreen(self):
         self.showFullScreen()
@@ -373,36 +358,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def run_gc(self):
         gc.collect()
 
-    def get_remaining_capacity(self):
-        """
-        Reads data from the UPS HAT registers and returns the remaining battery capacity as a percentage.
-        
-        This function reads registers 1 through 254 (as in the demo code) into a buffer,
-        then computes the battery remaining capacity using the values at indices 19 and 20.
-        """
-        aReceiveBuf = []
-        # The demo code uses a dummy value at index 0
-        aReceiveBuf.append(0x00)  # Placeholder for index 0
-
-        # Read registers 1 to 254 from the UPS device.
-        # (This is what the demo code does; you might optimize this to read only the needed registers.)
-        for i in range(1, 255):
-            try:
-                byte_value = bus.read_byte_data(DEVICE_ADDR, i)
-                aReceiveBuf.append(byte_value)
-            except Exception as e:
-                print(f"Error reading register {i}: {e}")
-                # Append a default value in case of error to keep the indices in place.
-                aReceiveBuf.append(0)
-
-        # Compute remaining capacity:
-        # Note: aReceiveBuf[19] corresponds to the lower byte and [20] to the upper byte.
-        remaining_capacity = (aReceiveBuf[20] << 8) | aReceiveBuf[19]
-        return remaining_capacity
+    def read_capacity(self):
+        address = 0x36
+        read = self.bus.read_word_data(address, 4)
+        swapped = struct.unpack("<H", struct.pack(">H", read))[0]
+        capacity = swapped/256
+        return capacity
     
     def update_battery_status(self):
-        capacity = self.get_remaining_capacity()
+        capacity = self.read_capacity()
         print(f'Current Capacity = {capacity}')
+        self.progressBar.setValue(int(capacity))
         
 if __name__ == "__main__":
     # Use sys.argv for proper argument parsing in PySide6
