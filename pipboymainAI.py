@@ -264,40 +264,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         colorbar.setImageItem(imageitem) # connects the bar to the waterfall imageitem
         colorbar.item.gradient.loadPreset('viridis') # set the color map, also sets the imageitem
         imageitem.setLevels((-30, 20)) # needs to come after colorbar is created for some reason
-        # waterfall_layout.addWidget(colorbar)
-
-        #Select Widget To display on frequency graph (may do something else in the future) [removes all widgets for gc, then places the desired widget]
-        def display_colorbar(self):
-            self.freqlayout.removeWidget(time_plot)
-            self.freqlayout.removeWidget(freq_plot)
-            self.freqlayout.removeWidget(waterfall)
-            self.freqlayout.removeWidget(colorbar)
-            self.freqlayout.addWidget(colorbar)
-            self.FREQ_GRAPH.setScaledContents(True)
-
-        def display_timeplot(self):
-            self.freqlayout.removeWidget(time_plot)
-            self.freqlayout.removeWidget(freq_plot)
-            self.freqlayout.removeWidget(waterfall)
-            self.freqlayout.removeWidget(colorbar)
-            self.freqlayout.addWidget(time_plot)
-            self.FREQ_GRAPH.setScaledContents(True)
-        
-        def display_freqplot(self):
-            self.freqlayout.removeWidget(time_plot)
-            self.freqlayout.removeWidget(freq_plot)
-            self.freqlayout.removeWidget(waterfall)
-            self.freqlayout.removeWidget(colorbar)
-            self.freqlayout.addWidget(freq_plot)
-            self.FREQ_GRAPH.setScaledContents(True)
-
-        def display_waterfall(self):
-            self.freqlayout.removeWidget(time_plot)
-            self.freqlayout.removeWidget(freq_plot)
-            self.freqlayout.removeWidget(waterfall)
-            self.freqlayout.removeWidget(colorbar)
-            self.freqlayout.addWidget(waterfall)
-            self.FREQ_GRAPH.setScaledContents(True)            
+        # waterfall_layout.addWidget(colorbar)         
 
         worker.time_plot_update.connect(time_plot_callback) # connect the signal to the callback
         worker.freq_plot_update.connect(freq_plot_callback)
@@ -429,6 +396,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return freq_val
             except ValueError:
                 self.freqInput.setText("750.00")
+
+    #Select Widget To display on frequency graph (may do something else in the future) [removes all widgets for gc, then places the desired widget]
+    def display_colorbar(self):
+        self.freqlayout.removeWidget(self.time_plot)
+        self.freqlayout.removeWidget(self.freq_plot)
+        self.freqlayout.removeWidget(self.waterfall)
+        self.freqlayout.removeWidget(self.colorbar)
+        self.freqlayout.addWidget(self.colorbar)
+        self.FREQ_GRAPH.setScaledContents(True)
+
+    def display_timeplot(self):
+        self.freqlayout.removeWidget(self.time_plot)
+        self.freqlayout.removeWidget(self.freq_plot)
+        self.freqlayout.removeWidget(self.waterfall)
+        self.freqlayout.removeWidget(self.colorbar)
+        self.freqlayout.addWidget(self.time_plot)
+        self.FREQ_GRAPH.setScaledContents(True)
+    
+    def display_freqplot(self):
+        self.freqlayout.removeWidget(self.time_plot)
+        self.freqlayout.removeWidget(self.freq_plot)
+        self.freqlayout.removeWidget(self.waterfall)
+        self.freqlayout.removeWidget(self.colorbar)
+        self.freqlayout.addWidget(self.freq_plot)
+        self.FREQ_GRAPH.setScaledContents(True)
+
+    def display_waterfall(self):
+        self.freqlayout.removeWidget(self.time_plot)
+        self.freqlayout.removeWidget(self.freq_plot)
+        self.freqlayout.removeWidget(self.waterfall)
+        self.freqlayout.removeWidget(self.colorbar)
+        self.freqlayout.addWidget(self.waterfall)
+        self.FREQ_GRAPH.setScaledContents(True)   
     
     def update(self):
         """
