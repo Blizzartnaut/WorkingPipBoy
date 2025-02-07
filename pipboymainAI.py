@@ -1,13 +1,3 @@
-#!/usr/bin/env python3
-import subprocess
-
-#setup venv
-def activate_venv():
-    subprocess.run(["source", "PipBoyVenv/bin/activate"])  # On Linux/Mac
-
-#Activate venv
-activate_venv()
-
 import sys
 import serial
 import platform
