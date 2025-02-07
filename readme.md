@@ -13,3 +13,5 @@ To activate the power features including battery capacity
 https://suptronics.com/miniPCkits/x728-software.html
 
 https://github.com/sbcshop/GPS-Hat-for-Raspberry-Pi
+
+https://pysdr.org/content/pyqt.html #needed for the sdr feature

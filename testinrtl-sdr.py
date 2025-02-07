@@ -1,4 +1,4 @@
-from PySide6.QtCore import QSize, Qt, QThread, pyqtSignal, QObject, QTimer
+from PySide6.QtCore import QSize, Qt, QThread, Signal, QObject, QTimer
 from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QWidget, QSlider, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QComboBox  # tested with PyQt6==6.7.0
 import pyqtgraph as pg # tested with pyqtgraph==0.13.7
 import numpy as np
@@ -60,10 +60,10 @@ class SDRWorker(QObject):
         self.PSD_avg = -50*np.ones(fft_size)
 
     # PyQt Signals
-    time_plot_update = pyqtSignal(np.ndarray)
-    freq_plot_update = pyqtSignal(np.ndarray)
-    waterfall_plot_update = pyqtSignal(np.ndarray)
-    end_of_run = pyqtSignal() # happens many times a second
+    time_plot_update = Signal(np.ndarray)
+    freq_plot_update = Signal(np.ndarray)
+    waterfall_plot_update = Signal(np.ndarray)
+    end_of_run = Signal() # happens many times a second
 
     # PyQt Slots
     def update_freq(self, val): # TODO: WE COULD JUST MODIFY THE SDR IN THE GUI THREAD
