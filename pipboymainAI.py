@@ -205,9 +205,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         worker.moveToThread(self.sdr_thread)
 
         #Create lineEdit to type in frequency for testing until we can implement additional hardware
+        FREQ_geom = self.FREQ.geometry()
         self.freqInput = QLineEdit(self)
-        self.freqInput.setObjectName("FREQ")
-        self.FREQ.layout().addWidget(self.freqInput)
+        self.freqInput.setGeometry(FREQ_geom)
+        self.FREQ.deleteLater()
+        # self.freqInput.setObjectName("FREQ")
+        # self.FREQ.layout().addWidget(self.freqInput)
         self.freqInput.setPlaceholderText("Frequency (MHZ): ")
         self.freqInput.setInputMask("000.00")
 
