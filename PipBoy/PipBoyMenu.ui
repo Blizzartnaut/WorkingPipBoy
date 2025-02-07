@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>803</width>
-    <height>520</height>
+    <width>811</width>
+    <height>538</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="main">
      <attribute name="title">
@@ -183,6 +183,55 @@
        </property>
       </widget>
      </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_4">
+      <property name="geometry">
+       <rect>
+        <x>229</x>
+        <y>19</y>
+        <width>331</width>
+        <height>351</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="pipboygif"/>
+     </widget>
+     <widget class="QLabel" name="batteryLabel">
+      <property name="geometry">
+       <rect>
+        <x>14</x>
+        <y>190</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Battery</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="memoryLabel">
+      <property name="geometry">
+       <rect>
+        <x>694</x>
+        <y>190</y>
+        <width>91</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Memory Usage</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="air">
      <attribute name="title">
@@ -271,8 +320,17 @@
         <height>361</height>
        </rect>
       </property>
+      <property name="inputMethodHints">
+       <set>Qt::ImhNone</set>
+      </property>
       <property name="text">
        <string>GRAPH</string>
+      </property>
+      <property name="scaledContents">
+       <bool>false</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </widget>
@@ -456,6 +514,9 @@
       <property name="text">
        <string>MAP PLACEHOLDER</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="radio">
@@ -483,12 +544,12 @@
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>341</width>
-          <height>41</height>
+          <width>111</width>
+          <height>31</height>
          </rect>
         </property>
         <property name="text">
-         <string>FREQUENCY: ###.### MHz</string>
+         <string>FREQUENCY:</string>
         </property>
        </widget>
        <widget class="QLabel" name="FREQ_GRAPH">
@@ -501,7 +562,84 @@
          </rect>
         </property>
         <property name="text">
-         <string>FREQUENCY GRAPH PLACE-HOLDER</string>
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="freqInput">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>10</y>
+          <width>91</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="inputMask">
+         <string>0000.00</string>
+        </property>
+        <property name="text">
+         <string>750.00</string>
+        </property>
+        <property name="maxLength">
+         <number>7</number>
+        </property>
+        <property name="echoMode">
+         <enum>QLineEdit::Normal</enum>
+        </property>
+        <property name="placeholderText">
+         <string>750.00</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="FREQ_2">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>10</y>
+          <width>41</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>MHz</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="time_plot_butt">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>10</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Time Plot</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="freq_plot_butt">
+        <property name="geometry">
+         <rect>
+          <x>440</x>
+          <y>10</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Freq Plot</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="waterfall_butt">
+        <property name="geometry">
+         <rect>
+          <x>580</x>
+          <y>10</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Waterfall</string>
         </property>
        </widget>
       </widget>
@@ -519,8 +657,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>803</width>
-     <height>26</height>
+     <width>811</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

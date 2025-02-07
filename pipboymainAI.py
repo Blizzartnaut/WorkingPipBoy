@@ -10,7 +10,7 @@ from io import BytesIO
 import gc
 
 # PySide6 imports
-from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton
 from PySide6.QtCore import QTimer, QDate, QTime, QIODevice, QUrl, Signal, QSize, Qt, QThread, QObject
 from PySide6.QtGui import QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -203,17 +203,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         worker.moveToThread(self.sdr_thread)
 
         #Create lineEdit to type in frequency for testing until we can implement additional hardware
-        FREQ_geom = self.FREQ.geometry()
-        self.freqInput = QLineEdit(self)
-        self.freqInput.setGeometry(FREQ_geom)
-        self.FREQ.deleteLater()
-        # self.freqInput.setObjectName("FREQ")
-        # self.FREQ.layout().addWidget(self.freqInput)
-        self.freqInput.setPlaceholderText("Frequency (MHZ): ")
-        self.freqInput.setInputMask("000.00")
-
-        self.freqInput.setText("750.00")
         self.freqInput.returnPressed.connect(self.handle_freq_input)
+        self.freq_plot_butt.clicked.connect(self.display_freqplot)
+        self.time_plot_butt.clicked.connect(self.display_timeplot)
+        self.waterfall_butt.clicked.connect(self.display_colorbar)
 
         # Signals and slots connections:
 
@@ -241,7 +234,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Add Layout to QLabel = FREQ_GRAPH
         freqlayout = QHBoxLayout(self.FREQ_GRAPH)
         self.FREQ_GRAPH.setLayout(freqlayout)
-        self.FREQ_GRAPH.setScaledContents(True)
+        # self.FREQ_GRAPH.setScaledContents(True)
 
         # Time plot
         time_plot = pg.PlotWidget(labels={'left': 'Amplitude', 'bottom': 'Time [microseconds]'})
@@ -274,36 +267,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # waterfall_layout.addWidget(colorbar)
 
         #Select Widget To display on frequency graph (may do something else in the future) [removes all widgets for gc, then places the desired widget]
-        if radioval == 0:
-            freqlayout.removeWidget(time_plot)
-            freqlayout.removeWidget(freq_plot)
-            freqlayout.removeWidget(waterfall)
-            freqlayout.removeWidget(colorbar)
-            freqlayout.addWidget(colorbar)
+        def display_colorbar(self):
+            self.freqlayout.removeWidget(time_plot)
+            self.freqlayout.removeWidget(freq_plot)
+            self.freqlayout.removeWidget(waterfall)
+            self.freqlayout.removeWidget(colorbar)
+            self.freqlayout.addWidget(colorbar)
             self.FREQ_GRAPH.setScaledContents(True)
 
-        elif radioval == 1:
-            freqlayout.removeWidget(time_plot)
-            freqlayout.removeWidget(freq_plot)
-            freqlayout.removeWidget(waterfall)
-            freqlayout.removeWidget(colorbar)
-            freqlayout.addWidget(time_plot)
+        def display_timeplot(self):
+            self.freqlayout.removeWidget(time_plot)
+            self.freqlayout.removeWidget(freq_plot)
+            self.freqlayout.removeWidget(waterfall)
+            self.freqlayout.removeWidget(colorbar)
+            self.freqlayout.addWidget(time_plot)
             self.FREQ_GRAPH.setScaledContents(True)
         
-        elif radioval == 2:
-            freqlayout.removeWidget(time_plot)
-            freqlayout.removeWidget(freq_plot)
-            freqlayout.removeWidget(waterfall)
-            freqlayout.removeWidget(colorbar)
-            freqlayout.addWidget(freq_plot)
+        def display_freqplot(self):
+            self.freqlayout.removeWidget(time_plot)
+            self.freqlayout.removeWidget(freq_plot)
+            self.freqlayout.removeWidget(waterfall)
+            self.freqlayout.removeWidget(colorbar)
+            self.freqlayout.addWidget(freq_plot)
             self.FREQ_GRAPH.setScaledContents(True)
 
-        else:
-            freqlayout.removeWidget(time_plot)
-            freqlayout.removeWidget(freq_plot)
-            freqlayout.removeWidget(waterfall)
-            freqlayout.removeWidget(colorbar)
-            freqlayout.addWidget(waterfall)
+        def display_waterfall(self):
+            self.freqlayout.removeWidget(time_plot)
+            self.freqlayout.removeWidget(freq_plot)
+            self.freqlayout.removeWidget(waterfall)
+            self.freqlayout.removeWidget(colorbar)
+            self.freqlayout.addWidget(waterfall)
             self.FREQ_GRAPH.setScaledContents(True)            
 
         worker.time_plot_update.connect(time_plot_callback) # connect the signal to the callback
