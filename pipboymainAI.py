@@ -243,7 +243,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         time_plot.setYRange(-1.1, 1.1)
         time_plot_curve_i = time_plot.plot([])
         time_plot_curve_q = time_plot.plot([])
-        self.time_layout.addWidget(time_plot, 1, 0)
+        self.time_layout.addWidget(time_plot)
 
         # Freq plot
         freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
@@ -251,7 +251,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         freq_plot_curve = freq_plot.plot([])
         freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
         freq_plot.setYRange(-30, 20)
-        self.freq_layout.addWidget(freq_plot, 2, 0)
+        self.freq_layout.addWidget(freq_plot)
 
         # Waterfall plot
         waterfall = pg.PlotWidget(labels={'left': 'Time [s]', 'bottom': 'Frequency [MHz]'})
