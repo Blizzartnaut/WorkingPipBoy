@@ -74,8 +74,6 @@ time_plot_samples = 500    # Number of samples to show in the time-domain plot
 gain = 50                  # Default gain (in dB)
 sdr_type = "sim"           # The type of SDR to use ("sim" means simulated data; could also be "usrp" or "pluto")
 
-global freq_val
-
 # Init SDR
 if sdr_type == "pluto":
     import adi
@@ -205,9 +203,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         worker.moveToThread(self.sdr_thread)
 
         #Create lineEdit to type in frequency for testing until we can implement additional hardware
+        FREQ_geom = self.FREQ.geometry()
         self.freqInput = QLineEdit(self)
-        self.freqInput.setObjectName("FREQ")
-        self.FREQ.layout().addWidget(self.freqInput)
+        self.freqInput.setGeometry(FREQ_geom)
+        self.FREQ.deleteLater()
+        # self.freqInput.setObjectName("FREQ")
+        # self.FREQ.layout().addWidget(self.freqInput)
         self.freqInput.setPlaceholderText("Frequency (MHZ): ")
         self.freqInput.setInputMask("000.00")
 
@@ -215,14 +216,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.freqInput.returnPressed.connect(self.handle_freq_input)
 
         # Signals and slots connections:
-        def handle_freq_input(val):
-            freq_text = val
-            try:
-                #convert to float
-                freq_val = float(freq_text)
-                # return freq_val
-            except ValueError:
-                self.freqInput.setText("750.00")
 
         def time_plot_callback(samples):
             time_plot_curve_i.setData(samples.real)
@@ -230,9 +223,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         def freq_plot_callback(PSD_avg):
             # TODO figure out if there's a way to just change the visual ticks instead of the actual x vals
-            f = np.linspace(freq_val*1e3 - worker.sample_rate/2.0, freq_val*1e3 + worker.sample_rate/2.0, fft_size) / 1e6
+            f = np.linspace(self.freq_val*1e3 - worker.sample_rate/2.0, self.freq_val*1e3 + worker.sample_rate/2.0, fft_size) / 1e6
             freq_plot_curve.setData(f, PSD_avg)
-            freq_plot.setXRange(freq_val*1e3/1e6 - worker.sample_rate/2e6, freq_val*1e3/1e6 + worker.sample_rate/2e6)
+            freq_plot.setXRange(self.freq_val*1e3/1e6 - worker.sample_rate/2e6, self.freq_val*1e3/1e6 + worker.sample_rate/2e6)
 
         def waterfall_plot_callback(spectrogram):
             imageitem.setImage(spectrogram, autoLevels=False)
@@ -434,6 +427,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def start_fullscreen(self):
         self.showFullScreen()
+    
+    def handle_freq_input(self):
+            freq_text = self.freqInput
+            try:
+                #convert to float
+                freq_val = float(freq_text)
+                return freq_val
+            except ValueError:
+                self.freqInput.setText("750.00")
     
     def update(self):
         """
