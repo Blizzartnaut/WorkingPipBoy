@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QLabel, QLineEdit,
-    QMainWindow, QMenuBar, QProgressBar, QPushButton,
-    QRadioButton, QSizePolicy, QSlider, QStatusBar,
-    QTabWidget, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
+    QLineEdit, QMainWindow, QMenuBar, QProgressBar,
+    QPushButton, QRadioButton, QSizePolicy, QSlider,
+    QStatusBar, QTabWidget, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -85,14 +85,17 @@ class Ui_MainWindow(object):
         self.pipboygif.setContentsMargins(0, 0, 0, 0)
         self.batteryLabel = QLabel(self.main)
         self.batteryLabel.setObjectName(u"batteryLabel")
-        self.batteryLabel.setGeometry(QRect(14, 190, 61, 20))
-        self.batteryLabel.setFont(font1)
-        self.memoryLabel = QLabel(self.main)
-        self.memoryLabel.setObjectName(u"memoryLabel")
-        self.memoryLabel.setGeometry(QRect(694, 190, 91, 20))
+        self.batteryLabel.setGeometry(QRect(14, 190, 81, 31))
         font2 = QFont()
         font2.setPointSize(10)
-        self.memoryLabel.setFont(font2)
+        font2.setBold(True)
+        self.batteryLabel.setFont(font2)
+        self.memoryLabel = QLabel(self.main)
+        self.memoryLabel.setObjectName(u"memoryLabel")
+        self.memoryLabel.setGeometry(QRect(674, 190, 111, 31))
+        font3 = QFont()
+        font3.setPointSize(10)
+        self.memoryLabel.setFont(font3)
         self.tabWidget.addTab(self.main, "")
         self.air = QWidget()
         self.air.setObjectName(u"air")
@@ -265,6 +268,24 @@ class Ui_MainWindow(object):
         self.waterfall_butt = QPushButton(self.RADIO)
         self.waterfall_butt.setObjectName(u"waterfall_butt")
         self.waterfall_butt.setGeometry(QRect(580, 10, 93, 28))
+        self.horizontalLayoutWidget = QWidget(self.RADIO)
+        self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
+        self.horizontalLayoutWidget.setGeometry(QRect(-1, 49, 411, 181))
+        self.freq_layout = QHBoxLayout(self.horizontalLayoutWidget)
+        self.freq_layout.setObjectName(u"freq_layout")
+        self.freq_layout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayoutWidget_2 = QWidget(self.RADIO)
+        self.horizontalLayoutWidget_2.setObjectName(u"horizontalLayoutWidget_2")
+        self.horizontalLayoutWidget_2.setGeometry(QRect(410, 50, 381, 351))
+        self.time_layout = QHBoxLayout(self.horizontalLayoutWidget_2)
+        self.time_layout.setObjectName(u"time_layout")
+        self.time_layout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayoutWidget_3 = QWidget(self.RADIO)
+        self.horizontalLayoutWidget_3.setObjectName(u"horizontalLayoutWidget_3")
+        self.horizontalLayoutWidget_3.setGeometry(QRect(-1, 229, 411, 171))
+        self.waterfall_layout = QHBoxLayout(self.horizontalLayoutWidget_3)
+        self.waterfall_layout.setObjectName(u"waterfall_layout")
+        self.waterfall_layout.setContentsMargins(0, 0, 0, 0)
         self.MENU2.addTab(self.RADIO, "")
         self.SOURCE_FIND = QWidget()
         self.SOURCE_FIND.setObjectName(u"SOURCE_FIND")

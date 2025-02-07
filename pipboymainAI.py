@@ -203,13 +203,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         worker.moveToThread(self.sdr_thread)
 
         #Create lineEdit to type in frequency for testing until we can implement additional hardware
+        # self.freq_plot_butt.clicked.connect(self.display_freqplot)
+        # self.time_plot_butt.clicked.connect(self.display_timeplot)
+        # self.waterfall_butt.clicked.connect(self.display_colorbar)
+
+        #Handle return pressed for frequency select
         self.freqInput.returnPressed.connect(self.handle_freq_input)
-        self.freq_plot_butt.clicked.connect(self.display_freqplot)
-        self.time_plot_butt.clicked.connect(self.display_timeplot)
-        self.waterfall_butt.clicked.connect(self.display_colorbar)
 
         # Signals and slots connections:
-
         def time_plot_callback(samples):
             time_plot_curve_i.setData(samples.real)
             time_plot_curve_q.setData(samples.imag)
@@ -232,8 +233,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #Plots To Call #addWidget adds plot #removeWidget removes plot to keep memory well
         #Add Layout to QLabel = FREQ_GRAPH
-        freqlayout = QHBoxLayout(self.FREQ_GRAPH)
-        self.FREQ_GRAPH.setLayout(freqlayout)
+        # freqlayout = QHBoxLayout(self.FREQ_GRAPH)
+        # self.FREQ_GRAPH.setLayout(freqlayout)
         # self.FREQ_GRAPH.setScaledContents(True)
 
         # Time plot
@@ -242,7 +243,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         time_plot.setYRange(-1.1, 1.1)
         time_plot_curve_i = time_plot.plot([])
         time_plot_curve_q = time_plot.plot([])
-        # layout.addWidget(time_plot, 1, 0)
+        self.time_layout.addWidget(time_plot, 1, 0)
 
         # Freq plot
         freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
@@ -250,21 +251,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         freq_plot_curve = freq_plot.plot([])
         freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
         freq_plot.setYRange(-30, 20)
-        # layout.addWidget(freq_plot, 2, 0)
+        self.freq_layout.addWidget(freq_plot, 2, 0)
 
         # Waterfall plot
         waterfall = pg.PlotWidget(labels={'left': 'Time [s]', 'bottom': 'Frequency [MHz]'})
         imageitem = pg.ImageItem(axisOrder='col-major') # this arg is purely for performance
         waterfall.addItem(imageitem)
         waterfall.setMouseEnabled(x=False, y=False)
-        # waterfall_layout.addWidget(waterfall)
+        self.waterfall_layout.addWidget(waterfall)
 
         # Colorbar for waterfall
         colorbar = pg.HistogramLUTWidget()
         colorbar.setImageItem(imageitem) # connects the bar to the waterfall imageitem
         colorbar.item.gradient.loadPreset('viridis') # set the color map, also sets the imageitem
         imageitem.setLevels((-30, 20)) # needs to come after colorbar is created for some reason
-        # waterfall_layout.addWidget(colorbar)         
+        self.waterfall_layout.addWidget(colorbar)         
 
         worker.time_plot_update.connect(time_plot_callback) # connect the signal to the callback
         worker.freq_plot_update.connect(freq_plot_callback)
@@ -389,46 +390,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.showFullScreen()
     
     def handle_freq_input(self):
-            freq_text = self.freqInput
+            freq_text = self.freqInput.text()
             try:
                 #convert to float
                 freq_val = float(freq_text)
                 return freq_val
             except ValueError:
                 self.freqInput.setText("750.00")
-
-    #Select Widget To display on frequency graph (may do something else in the future) [removes all widgets for gc, then places the desired widget]
-    def display_colorbar(self):
-        self.freqlayout.removeWidget(self.time_plot)
-        self.freqlayout.removeWidget(self.freq_plot)
-        self.freqlayout.removeWidget(self.waterfall)
-        self.freqlayout.removeWidget(self.colorbar)
-        self.freqlayout.addWidget(self.colorbar)
-        self.FREQ_GRAPH.setScaledContents(True)
-
-    def display_timeplot(self):
-        self.freqlayout.removeWidget(self.time_plot)
-        self.freqlayout.removeWidget(self.freq_plot)
-        self.freqlayout.removeWidget(self.waterfall)
-        self.freqlayout.removeWidget(self.colorbar)
-        self.freqlayout.addWidget(self.time_plot)
-        self.FREQ_GRAPH.setScaledContents(True)
-    
-    def display_freqplot(self):
-        self.freqlayout.removeWidget(self.time_plot)
-        self.freqlayout.removeWidget(self.freq_plot)
-        self.freqlayout.removeWidget(self.waterfall)
-        self.freqlayout.removeWidget(self.colorbar)
-        self.freqlayout.addWidget(self.freq_plot)
-        self.FREQ_GRAPH.setScaledContents(True)
-
-    def display_waterfall(self):
-        self.freqlayout.removeWidget(self.time_plot)
-        self.freqlayout.removeWidget(self.freq_plot)
-        self.freqlayout.removeWidget(self.waterfall)
-        self.freqlayout.removeWidget(self.colorbar)
-        self.freqlayout.addWidget(self.waterfall)
-        self.FREQ_GRAPH.setScaledContents(True)   
     
     def update(self):
         """
