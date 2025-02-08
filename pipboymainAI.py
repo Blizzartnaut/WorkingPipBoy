@@ -490,7 +490,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.data_sens2[-1] = float(values[1])
                 self.data_sens3[-1] = float(values[2])
                 self.data_sensrad[-1] = float(values[3])
-                self.cps = float(values[3])
+                self.cps = values[3]
                 # self.sec4.setText(self.cps)
                 
                 # Update UI if sufficient values are provided, if the if statement doesnt read all 5 values or more, it will shutoff all serial data!!! ask me how i know
