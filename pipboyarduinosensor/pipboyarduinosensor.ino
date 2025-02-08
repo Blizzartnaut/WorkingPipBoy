@@ -4,9 +4,15 @@
 const int MQ4 = 10;   //Pin for Sensor Package
 const int MQ6 = 11; //These are ADC
 const int MQ135 = 9;  //Pins for analog signals
-const int RAD = 4;  //Digital Pin for counting rads
+//const int RAD = 4;  //Digital Pin for counting rads
 //const int Humid = 7;
 //const int Temp = 6;
+
+//Geiger counter pin and setup
+volatile unsigned long pulseCount = 0; // counts pulses in the current interval
+unsigned long previousMillis = 0;
+const unsigned long interval = 1000;  // Interval for counting (in milliseconds)
+const int interruptPin = 2;           // Change this to the Arduino pin connected to the geiger tube's interrupt output
 
 static const int DHT_SENSOR_PIN = 7;
 
@@ -28,9 +34,17 @@ int screen = 1;
 static const int DHT_SENSOR_PIN = 2;
 DHT_nonblocking dht_sensor( DHT_SENSOR_PIN, DHT_SENSOR_TYPE );
 
+// Interrupt Service Routine (ISR): Called each time a rising edge is detected on interruptPin. For Geiger counter
+void IRAM_ATTR countPulse() {
+  pulseCount++;  // Increment the pulse counter
+}
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(19200); //Starts serial port with Baud of 9600 bits per second
+  pinMode(interruptPin, INPUT);       // Set the interruptPin as an input
+  // attachInterrupt tells the Arduino to call countPulse() whenever a rising edge occurs on the interruptPin.
+  attachInterrupt(digitalPinToInterrupt(interruptPin), countPulse, RISING);
 }
 
 static bool measure_environment( float *temperature, float *humidity )
@@ -63,6 +77,15 @@ void loop() {
   int val3 = digitalRead(s3);
   int val4 = digitalRead(s4);
   int val5 = digitalRead(s5);
+
+  unsigned long currentMillis = millis();  // Get the current time in milliseconds
+
+  // Check if one second has passed since the last measurement.
+  if (currentMillis - previousMillis >= interval) {
+    noInterrupts();              // Disable interrupts to ensure pulseCount is read atomically
+    unsigned long cps = pulseCount;  // Copy the current pulse count into a local variable (cps = counts per second)
+    pulseCount = 0;              // Reset the global pulse count for the next interval
+    interrupts();                // Re-enable interrupts
 
   /* Measure temperature and humidity.  If the functions returns
      true, then a measurement is available. */
@@ -101,8 +124,8 @@ void loop() {
   Serial.print(sens135);
   Serial.print(",");
 
-  //Serial.print("RAD,"); //Sets up reciever to parse message correctly using white space for seperate values
-  Serial.print(rad);
+  //Serial.print("CPS,"); //Sets up reciever to parse message correctly using white space for seperate values
+  Serial.print(cps);
   Serial.print(",");
 
   //Serial.print("RAD,"); //Sets up reciever to parse message correctly using white space for seperate values
@@ -115,6 +138,8 @@ void loop() {
   //Serial.print("Screen,"); //Sets up reciever to parse message correctly using white space for seperate values
   Serial.print(screen);
   Serial.print("\n");
+
+  previousMillis = currentMillis; // Update previousMillis to the current time for the next 1-second interval
 
   delay(1000); //Allows for Radiation count of 6000CPM (delay of 10)
 

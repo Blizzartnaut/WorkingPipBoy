@@ -8,6 +8,7 @@ import pyqtgraph as pg
 import math
 from io import BytesIO
 import gc
+from collections import deque
 
 # PySide6 imports
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton
@@ -333,6 +334,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gacl.timeout.connect(self.run_gc)
         self.gacl.start(30000)
         
+        #Gas Sensor Graph
         #Matplotlib persistant canvas
         self.graphWidget = self.findChild(QWidget, "SENSGRAPH")
         if self.graphWidget is None:
@@ -362,6 +364,53 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.ax.legend()
         self.canvas.draw()
 
+        #Geiger Sensor Graph
+        #Matplotlib persistant canvas
+        self.radGraphWidget = self.findChild(QWidget, "SELGRAPHRAD")
+        # if self.graphWidget is None:
+        #     self.graph_timer.start(5000)
+
+        #Radiation Counters for alerts
+        self.last_60_cps = deque(maxlen= 60)
+        self.current_cps = 0
+        self.last_60_cpm = deque(maxlen= 60)
+        self.current_cpm = 0
+        self.last_24_cph = deque(maxlen= 24)
+        self.current_cph = 0
+        
+        self.cpm_timer = QTimer(self)
+        self.cpm_timer.timeout.connect(self.update_cpm)
+        self.cpm_timer.start(1000)
+
+        self.cph_timer = QTimer(self)
+        self.cph_timer.timeout.connect(self.update_cph)
+        self.cph_timer.start(60000)
+
+        self.cpd_timer = QTimer(self)
+        self.cpd_timer.timeout.connect(self.update_cpd)
+        self.cpd_timer.start(36000000)
+        
+        rad_layout = QVBoxLayout(self.radGraphWidget)
+        self.radGraphWidget.setLayout(rad_layout)
+        self.radGraphWidget.setScaledContents(True)
+
+        self.radfigure = Figure(figsize=(6,4))
+        self.radcanvas = FigureCanvas(self.radfigure)
+        rad_layout.addWidget(self.radcanvas)
+
+        #Set Labales and title
+        self.radax = self.radfigure.add_subplot(111)
+        self.radax.set_title('Past 5 Minutes')
+        self.radax.set_xlabel('Time (sec)')
+        self.radax.set_ylabel('Value')
+
+        #Plot the data
+        self.radline, = self.radax.plot(self.data_sensrad, color="purple", label="CPS")
+            
+        #add legend
+        self.radax.legend()
+        self.radcanvas.draw()
+
         # Create a vertical layout for the container if not already set.
         if self.MAP.layout() is None:
             layout = QVBoxLayout(self.MAP)
@@ -385,6 +434,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.battery_timer = QTimer(self)
         self.battery_timer.timeout.connect(self.update_battery_status)
         self.battery_timer.start(10000)
+
+        # Update rad text
+        self.rad_timer = QTimer(self)
+        self.rad_timer.timeout.connect(self.update_rad_text)
+        self.rad_timer.start(1000)
+
+        self.radgraph_timer = QTimer(self)
+        self.radgraph_timer.timeout.connect(self.update_rad_graph)
 
     def start_fullscreen(self):
         self.showFullScreen()
@@ -422,18 +479,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.data_sens1 = np.roll(self.data_sens1, -1)
                 self.data_sens2 = np.roll(self.data_sens2, -1)
                 self.data_sens3 = np.roll(self.data_sens3, -1)
+                self.data_sensrad = np.roll(self.data_sensrad, -1)
                 
                 # Update sensor data (ensure values[0-2] are valid floats)
                 self.data_sens1[-1] = float(values[0])
                 self.data_sens2[-1] = float(values[1])
                 self.data_sens3[-1] = float(values[2])
+                self.data_sensrad[-1] = float(values[3])
+                self.cps = float(values[3])
+                self.sel_4.setText(self.cps)
                 
                 # Update UI if sufficient values are provided
                 if len(values) >= 5:
                     self.SENS1.setText(f"MQ4: {values[0]}")
                     self.SENS2.setText(f"MQ6: {values[1]}")
                     self.SENS3.setText(f"MQ135: {values[2]}")
-                    self.sel_4.setText(f"RAD: {values[3]}")
+                    # self.sel_4.setText(f"RAD: {values[3]}")
                     self.TEMP.setText(f'Temp: {values[4]} F')
                     # try:
                     #     self.menuScreen = int(values[4])
@@ -493,6 +554,57 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Run the JavaScript in the QWebEngineView.
         self.mapView.page().runJavaScript(js_code)
         # print(f"Updated GPS marker to lat: {lat}, lon: {lon}")
+
+    def update_cpm(self):
+        # Append the current CPS value to the rolling deque.
+        self.current_cps = self.cps
+        self.last_60_cps.append(self.current_cps)
+        # Compute CPM as the sum of the last 60 CPS values.
+        cpm = sum(self.last_60_cps)
+        # For example, update a UI element or print the CPM.
+        print("CPM:", cpm)
+        # Optionally, store the value in a variable for other processing:
+        self.cpm = cpm
+        self.sel_1min.setText(self.cpm)
+
+    def update_cph(self):
+        # Append the current CPS value to the rolling deque.
+        self.current_cpm = self.cpm
+        self.last_60_cpm.append(self.current_cpm)
+        # Compute CPM as the sum of the last 60 CPS values.
+        cph = sum(self.last_60_cpm)
+        # For example, update a UI element or print the CPM.
+        print("CPH:", cph)
+        # Optionally, store the value in a variable for other processing:
+        self.cph = cph
+        self.sel_1hour.setText(self.cph)
+
+    def update_cpd(self):
+        # Append the current CPS value to the rolling deque.
+        self.current_cph = self.cph
+        self.last_24_cph.append(self.current_cph)
+        # Compute CPM as the sum of the last 60 CPS values.
+        cpd = sum(self.last_24_cph)
+        # For example, update a UI element or print the CPM.
+        print("CPD:", cpd)
+        # Optionally, store the value in a variable for other processing:
+        self.cpd = cpd
+        self.sel_24h.setText(self.cpd)
+
+    def update_rad_graph(self):
+        """
+        Render a matplotlib graph of the sensor data and display it in the UI.
+        The graph is saved to a BytesIO buffer, then loaded into a QPixmap.
+        """
+        try:
+            self.radax.set_ylim(0, 20)
+            self.radline.set_ydata(self.data_sensrad)            
+
+            self.radax.set_xlim(max(0, len(self.data_sensrad) - 300), len(self.data_sensrad))
+
+            self.radcanvas.draw_idle()
+        except Exception as e:
+            print("Error Updating Graph", e)
     
     def get_current_gps_coordinates(self):
         """
