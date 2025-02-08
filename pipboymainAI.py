@@ -280,6 +280,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data_sens1 = np.zeros(720)  # Sensor 1 (e.g., MQ4)
         self.data_sens2 = np.zeros(720)  # Sensor 2 (e.g., MQ6)
         self.data_sens3 = np.zeros(720)  # Sensor 3 (e.g., MQ135)
+        self.data_sensrad = np.zeros(720) #Rad Sensor, Geiger Counter
         
         # Track the current menu screen as an instance attribute
         self.menuScreen = 1
