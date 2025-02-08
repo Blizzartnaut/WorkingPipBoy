@@ -485,25 +485,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.data_sens2[-1] = float(values[1])
                 self.data_sens3[-1] = float(values[2])
                 self.data_sensrad[-1] = float(values[3])
-                self.cps = values[3]
+                self.count = values[3]
                 # self.sec4.setText(self.cps)
+
+                self.SENS1.setText(f"MQ4: {values[0]}")
+                self.SENS2.setText(f"MQ6: {values[1]}")
+                self.SENS3.setText(f"MQ135: {values[2]}")
+                self.sel_4.setText(f"RAD: {values[3]} CPS")
                 
                 # Update UI if sufficient values are provided, if the if statement doesnt read all 5 values or more, it will shutoff all serial data!!! ask me how i know
-                if len(values) >= 3:
-                    self.SENS1.setText(f"MQ4: {values[0]}")
-                    self.SENS2.setText(f"MQ6: {values[1]}")
-                    self.SENS3.setText(f"MQ135: {values[2]}")
-                    self.sel_4.setText(f"RAD: {values[3]} CPS")
-                    self.TEMP.setText(f'Temp: {values[4]} F')
-                    print(f'{values[0],values[1],values[2],values[3]}')
-                    # try:
-                    #     self.menuScreen = int(values[4])
-                    # except ValueError:
-                    #     print("Invalid menuScreen value received:", values[4])
-                    # self.update_tab()
-                else:
-                    print('No serial in data recieved')
-                    print(f'{values[0],values[1],values[2],values[3]}')
+                # if len(values) >= 3:
+                #     self.SENS1.setText(f"MQ4: {values[0]}")
+                #     self.SENS2.setText(f"MQ6: {values[1]}")
+                #     self.SENS3.setText(f"MQ135: {values[2]}")
+                #     self.sel_4.setText(f"RAD: {values[3]} CPS")
+                #     print(f'CPS = {values[3]}')
+                #     self.TEMP.setText(f'Temp: {values[4]} F')
+                #     print(f'{values[0]},{values[1]},{values[2]},{values[3]}')
+                #     # try:
+                #     #     self.menuScreen = int(values[4])
+                #     # except ValueError:
+                #     #     print("Invalid menuScreen value received:", values[4])
+                #     # self.update_tab()
+                # else:
+                #     print('No serial in data recieved')
+                #     print(f'{values[0],values[1],values[2],values[3]}')
                 
                 # Update the graph with the new data
                 self.update_graph()
@@ -560,7 +566,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def update_cpm(self):
         # Append the current CPS value to the rolling deque.
-        self.current_cps = int(self.cps)
+        self.current_cps = int(self.count)
         self.last_60_cps.append(self.current_cps)
         #Currently returning a string, because of how we are displaying the cps, so that will need to be turned back into an int to work properly
         # Compute CPM as the sum of the last 60 CPS values.
