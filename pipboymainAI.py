@@ -434,6 +434,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.SENS2.setText(f"MQ6: {values[1]}")
                     self.SENS3.setText(f"MQ135: {values[2]}")
                     self.sel_4.setText(f"RAD: {values[3]}")
+                    self.TEMP.setText(f'Temp: {values[4]} F')
                     # try:
                     #     self.menuScreen = int(values[4])
                     # except ValueError:

@@ -1,12 +1,14 @@
 //Serial out for arduino sensor package
 //Pins for sensors
 
-const int MQ4 = 9;   //Pin for Sensor Package
-const int MQ6 = 10; //These are ADC
-const int MQ135 = 11;  //Pins for analog signals
+const int MQ4 = 10;   //Pin for Sensor Package
+const int MQ6 = 11; //These are ADC
+const int MQ135 = 9;  //Pins for analog signals
 const int RAD = 4;  //Digital Pin for counting rads
-const int Humid = 7;
-const int Temp = 6;
+//const int Humid = 7;
+//const int Temp = 6;
+
+static const int DHT_SENSOR_PIN = 7;
 
 //Pins for screen selector
 const int s1 = 44;  //Pins for D(44, 46, 48, 50, 52)
@@ -54,6 +56,7 @@ void loop() {
   int sens6 = analogRead(MQ6);   //^
   int sens135 = analogRead(MQ135);  //^
   int rad = digitalRead(RAD); //Reads Digital Pin (1 or 0) count or no count, higher baud rate?
+  int Humid = 
 
   int val1 = digitalRead(s1); //to store values for screen select
   int val2 = digitalRead(s2);
@@ -75,11 +78,15 @@ void loop() {
   else if(val5 == 1){
     screen = 5;}
 
-  float temperature = 0.0;
-  float humidity = 0.0;
+  float temp;
+  float humidity;
+
+  /* Measure temperature and humidity.  If the functions returns
+     true, then a measurement is available. */
+  if( measure_environment( &temp, &humidity ) == true )
 
   // Try to measure environment (temp and humidity)
-  bool envMeasured = measure_environment(&temperature, &humidity)
+  //bool envMeasured = measure_environment(&temperature, &humidity)
   //if not measured keep previous reading or send 0
 
   //Serial.print("MQ4,"); //Sets up reciever to parse message correctly using white space for seperate values
@@ -99,10 +106,10 @@ void loop() {
   Serial.print(",");
 
   //Serial.print("RAD,"); //Sets up reciever to parse message correctly using white space for seperate values
-  Serial.print(temperature);
+  Serial.print(temp);
   Serial.print(",");
 
-  Serial.print(humidity);
+  Serial.print( (int)round(1.8*temp+32));
   Serial.print(",");
   
   //Serial.print("Screen,"); //Sets up reciever to parse message correctly using white space for seperate values
