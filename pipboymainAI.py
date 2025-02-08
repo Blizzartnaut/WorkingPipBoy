@@ -437,9 +437,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.battery_timer.start(10000)
 
         # Update rad text
-        self.rad_timer = QTimer(self)
-        self.rad_timer.timeout.connect(self.update_rad_text)
-        self.rad_timer.start(1000)
+        # self.rad_timer = QTimer(self)
+        # self.rad_timer.timeout.connect(self.update_rad_text)
+        # self.rad_timer.start(1000)
 
         self.radgraph_timer = QTimer(self)
         self.radgraph_timer.timeout.connect(self.update_rad_graph)
