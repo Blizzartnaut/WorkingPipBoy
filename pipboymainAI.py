@@ -494,7 +494,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # self.sec4.setText(self.cps)
                 
                 # Update UI if sufficient values are provided, if the if statement doesnt read all 5 values or more, it will shutoff all serial data!!! ask me how i know
-                if len(values) >= 5:
+                if len(values) >= 4:
                     self.SENS1.setText(f"MQ4: {values[0]}")
                     self.SENS2.setText(f"MQ6: {values[1]}")
                     self.SENS3.setText(f"MQ135: {values[2]}")
