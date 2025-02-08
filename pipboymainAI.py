@@ -377,10 +377,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Radiation Counters for alerts
         self.last_60_cps = deque(maxlen= 60)
         self.current_cps = 0
-        self.last_60_cpm = deque(maxlen= 60)
-        self.current_cpm = 0
-        self.last_24_cph = deque(maxlen= 24)
-        self.current_cph = 0
+        # self.last_60_cpm = deque(maxlen= 60)
+        # self.current_cpm = 0
+        # self.last_24_cph = deque(maxlen= 24)
+        # self.current_cph = 0
         
         self.cpm_timer = QTimer(self)
         self.cpm_timer.timeout.connect(self.update_cpm)
@@ -438,11 +438,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.battery_timer = QTimer(self)
         self.battery_timer.timeout.connect(self.update_battery_status)
         self.battery_timer.start(10000)
-
-        # Update rad text
-        # self.rad_timer = QTimer(self)
-        # self.rad_timer.timeout.connect(self.update_rad_text)
-        # self.rad_timer.start(1000)
 
         self.radgraph_timer = QTimer(self)
         self.radgraph_timer.timeout.connect(self.update_rad_graph)
@@ -561,15 +556,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def update_cpm(self):
         # Append the current CPS value to the rolling deque.
-        self.current_cps = self.cps
+        self.current_cps = int(self.cps)
         self.last_60_cps.append(self.current_cps)
+        #Currently returning a string, because of how we are displaying the cps, so that will need to be turned back into an int to work properly
         # Compute CPM as the sum of the last 60 CPS values.
         cpm = sum(self.last_60_cps)
         # For example, update a UI element or print the CPM.
         print("CPM:", cpm)
         # Optionally, store the value in a variable for other processing:
         self.cpm = cpm
-        self.min.setText(str(self.cpm))
+        self.sel_1min.setText(str(self.cpm))
 
     def update_cph(self):
         # Append the current CPS value to the rolling deque.
@@ -601,7 +597,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         The graph is saved to a BytesIO buffer, then loaded into a QPixmap.
         """
         try:
-            self.radax.set_ylim(0, 100)
+            self.radax.set_ylim(0, 20)
             self.radline.set_ydata(self.data_sensrad)            
 
             self.radax.set_xlim(max(0, len(self.data_sensrad) - 300), len(self.data_sensrad))

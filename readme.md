@@ -19,6 +19,8 @@ https://github.com/sbcshop/GPS-Hat-for-Raspberry-Pi
 
 https://pysdr.org/content/pyqt.html #needed for the sdr feature
 
+https://github.com/SensorsIot/Geiger-Counter-RadiationD-v1.1-CAJOE-/tree/master/Geiger_Counter
+
 
 Inspiration for the housing
 https://ytec3d.com/pip-boy-3000-mark-iv-assembly/

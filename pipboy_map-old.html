@@ -28,25 +28,12 @@
         attribution: 'Map data © USGS contributors'
       }).addTo(map);
 
-      // Option to enable/disable the automatic centering (lock-on) feature.
-      var lockOnMarker = true;
-
       // Add a marker for the current position.
       var currentMarker = L.marker([41.0120, -76.8477]).addTo(map);
 
-      // Function to update the marker's position and recenter the map if lockOnMarker is true.
+      // Function to update the marker's position.
       function updateMarker(lat, lon) {
-        // Update marker's position.
         currentMarker.setLatLng([lat, lon]);
-        
-        // If the "lock on" feature is enabled, recenter the map on the marker.
-        if (lockOnMarker) {
-          // Smooth animated panning to the new marker location.
-          map.panTo([lat, lon]);
-          
-          // Alternatively, for an instant recentering (uncomment the line below):
-          // map.setView([lat, lon], map.getZoom());
-        }
       }
     </script>
   </body>
