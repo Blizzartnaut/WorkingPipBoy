@@ -489,14 +489,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.data_sens3[-1] = float(values[2])
                 self.data_sensrad[-1] = float(values[3])
                 self.cps = float(values[3])
-                self.sec4.setText(self.cps)
+                # self.sec4.setText(self.cps)
                 
                 # Update UI if sufficient values are provided
                 if len(values) >= 5:
                     self.SENS1.setText(f"MQ4: {values[0]}")
                     self.SENS2.setText(f"MQ6: {values[1]}")
                     self.SENS3.setText(f"MQ135: {values[2]}")
-                    # self.sel_4.setText(f"RAD: {values[3]}")
+                    self.sel_4.setText(f"RAD: {values[3]} CPS")
                     self.TEMP.setText(f'Temp: {values[4]} F')
                     # try:
                     #     self.menuScreen = int(values[4])
