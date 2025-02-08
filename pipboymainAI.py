@@ -368,8 +368,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Geiger Sensor Graph
         #Matplotlib persistant canvas
         self.radGraphWidget = self.findChild(QWidget, "SELGRAPHRAD")
-        # if self.graphWidget is None:
-        #     self.graph_timer.start(5000)
+        if self.graphWidget is None:
+            self.radGraphWidget = QWidget(self)
+            #self.graph_timer.start(5000)
 
         #Radiation Counters for alerts
         self.last_60_cps = deque(maxlen= 60)
@@ -401,9 +402,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #Set Labales and title
         self.radax = self.radfigure.add_subplot(111)
-        self.radax.set_title('Past 5 Minutes')
+        self.radax.set_title('Counts Per Second (Radiation)')
         self.radax.set_xlabel('Time (sec)')
-        self.radax.set_ylabel('Value')
+        self.radax.set_ylabel('CPS')
 
         #Plot the data
         self.radline, = self.radax.plot(self.data_sensrad, color="purple", label="CPS")
@@ -488,7 +489,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.data_sens3[-1] = float(values[2])
                 self.data_sensrad[-1] = float(values[3])
                 self.cps = float(values[3])
-                self.sel_4.setText(self.cps)
+                self.sec4.setText(self.cps)
                 
                 # Update UI if sufficient values are provided
                 if len(values) >= 5:
@@ -505,6 +506,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
                 # Update the graph with the new data
                 self.update_graph()
+                self.update_rad_graph()
             except Exception as e:
                 print("Error in read_Serial:", e)
         else:
@@ -516,7 +518,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Render a matplotlib graph of the sensor data and display it in the UI.
         The graph is saved to a BytesIO buffer, then loaded into a QPixmap.
         """
-        #fig, ax = plt.subplots()
         try:
             self.ax.set_ylim(0, 1000)
             self.line1.set_ydata(self.data_sens1)            
@@ -566,7 +567,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("CPM:", cpm)
         # Optionally, store the value in a variable for other processing:
         self.cpm = cpm
-        self.sel_1min.setText(self.cpm)
+        self.min.setText(self.cpm)
 
     def update_cph(self):
         # Append the current CPS value to the rolling deque.
@@ -578,7 +579,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("CPH:", cph)
         # Optionally, store the value in a variable for other processing:
         self.cph = cph
-        self.sel_1hour.setText(self.cph)
+        self.hour.setText(self.cph)
 
     def update_cpd(self):
         # Append the current CPS value to the rolling deque.
@@ -590,7 +591,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("CPD:", cpd)
         # Optionally, store the value in a variable for other processing:
         self.cpd = cpd
-        self.sel_24h.setText(self.cpd)
+        self.hour24.setText(self.cpd)
 
     def update_rad_graph(self):
         """
