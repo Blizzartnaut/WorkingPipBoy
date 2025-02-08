@@ -679,8 +679,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def update_battery_status(self):
         capacity = self.read_capacity()
         #realcap = capacity * 2
+        # Check if a previous capacity exists and compare.
+        if hasattr(self, 'previous_capacity'):
+            if capacity > self.previous_capacity:
+                self.flashProgressBar("green")
+            elif capacity < self.previous_capacity:
+                self.flashProgressBar("red")
+            # If equal, you might choose not to change the color.
+        # Store the new capacity for the next comparison.
+        self.previous_capacity = capacity
         # print(f'Current Capacity = {capacity}')
         self.progressBar.setValue(int(capacity))
+
+    def flashProgressBar(self, color):
+        # Change the color of the progress bar's "chunk" (the filled portion).
+        # You can customize the duration (here 500ms) as needed.
+        self.progressBar.setStyleSheet(f"""
+            QProgressBar::chunk {{
+                background-color: {color};
+            }}
+        """)
+        # After 500ms, reset the style sheet back to its default.
+        QTimer.singleShot(500, self.resetProgressBarColor)
+
+    def resetProgressBarColor(self):
+        # Revert to the original style (you can either set an empty style sheet
+        # or restore a predefined style if you have one).
+        self.progressBar.setStyleSheet("")
         
 if __name__ == "__main__":
     # Use sys.argv for proper argument parsing in PySide6
