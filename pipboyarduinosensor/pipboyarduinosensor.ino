@@ -31,11 +31,10 @@ int screen = 1;
 //#define DHT_SENSOR_TYPE DHT_TYPE_21
 //#define DHT_SENSOR_TYPE DHT_TYPE_22
 
-static const int DHT_SENSOR_PIN = 2;
 DHT_nonblocking dht_sensor( DHT_SENSOR_PIN, DHT_SENSOR_TYPE );
 
 // Interrupt Service Routine (ISR): Called each time a rising edge is detected on interruptPin. For Geiger counter
-void IRAM_ATTR countPulse() {
+void countPulse() {
   pulseCount++;  // Increment the pulse counter
 }
 
@@ -69,8 +68,8 @@ void loop() {
   int sens4 = analogRead(MQ4);  //Reads ADC Pin
   int sens6 = analogRead(MQ6);   //^
   int sens135 = analogRead(MQ135);  //^
-  int rad = digitalRead(RAD); //Reads Digital Pin (1 or 0) count or no count, higher baud rate?
-  int Humid = 
+  //int rad = digitalRead(interruptPin); //Reads Digital Pin (1 or 0) count or no count, higher baud rate?
+  //int Humid = 
 
   int val1 = digitalRead(s1); //to store values for screen select
   int val2 = digitalRead(s2);
@@ -141,10 +140,12 @@ void loop() {
 
   previousMillis = currentMillis; // Update previousMillis to the current time for the next 1-second interval
 
-  delay(1000); //Allows for Radiation count of 6000CPM (delay of 10)
+  //delay(1000); //Allows for Radiation count of 6000CPM (delay of 10)
 
   //100CPM is warning level
   //
   //10,000 is dangerous with an increase of cancer risk
   //Still tolerable for a day.
+
+  }
 }

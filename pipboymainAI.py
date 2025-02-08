@@ -340,8 +340,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Gas Sensor Graph
         #Matplotlib persistant canvas
         self.graphWidget = self.findChild(QWidget, "SENSGRAPH")
-        if self.graphWidget is None:
-            self.graph_timer.start(1000)
+        # if self.graphWidget is None:
+        #     self.graph_timer.start(1000)
         
         graph_layout = QVBoxLayout(self.graphWidget)
         self.graphWidget.setLayout(graph_layout)
@@ -386,13 +386,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cpm_timer.timeout.connect(self.update_cpm)
         self.cpm_timer.start(1000)
 
-        self.cph_timer = QTimer(self)
-        self.cph_timer.timeout.connect(self.update_cph)
-        self.cph_timer.start(60000)
+        #self.cph_timer = QTimer(self)
+        #self.cph_timer.timeout.connect(self.update_cph)
+        #self.cph_timer.start(60000)
 
-        self.cpd_timer = QTimer(self)
-        self.cpd_timer.timeout.connect(self.update_cpd)
-        self.cpd_timer.start(36000000)
+        #self.cpd_timer = QTimer(self)
+        #self.cpd_timer.timeout.connect(self.update_cpd)
+        #self.cpd_timer.start(36000000)
         
         rad_layout = QVBoxLayout(self.radGraphWidget)
         self.radGraphWidget.setLayout(rad_layout)
