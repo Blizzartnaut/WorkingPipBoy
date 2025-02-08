@@ -410,6 +410,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #Plot the data
         self.radline, = self.radax.plot(self.data_sensrad, color="purple", label="CPS")
+        self.cps = 0
             
         #add legend
         self.radax.legend()
