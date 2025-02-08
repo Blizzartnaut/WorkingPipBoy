@@ -209,7 +209,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.waterfall_butt.clicked.connect(self.display_colorbar)
 
         #Handle return pressed for frequency select
-        self.freqInput.returnPressed.connect(self.handle_freq_input)
+        # self.freqInput.returnPressed.connect(self.handle_freq_input)
+        # self.freqInput.
+        self.freq_val = 750.00 #Comment out when no longer testing
 
         # Signals and slots connections:
         def time_plot_callback(samples):
@@ -448,14 +450,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def start_fullscreen(self):
         self.showFullScreen()
     
-    def handle_freq_input(self):
-            freq_text = self.freqInput.text()
-            try:
-                #convert to float
-                self.freq_val = float(freq_text)
+    # def handle_freq_input(self):
+    #         freq_text = self.freqInput.text()
+    #         try:
+    #             #convert to float
+    #             self.freq_val = float(self.freqInput.text())
                 
-            except ValueError:
-                self.freqInput.setText("750.00")
+    #         except ValueError:
+    #             self.freqInput.setText("750.00")
     
     def update(self):
         """
