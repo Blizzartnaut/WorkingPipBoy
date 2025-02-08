@@ -407,6 +407,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.radax.set_title('Counts Per Second (Radiation)')
         self.radax.set_xlabel('Time (sec)')
         self.radax.set_ylabel('CPS')
+        self.count = 0
 
         #Plot the data
         self.radline, = self.radax.plot(self.data_sensrad, color="purple", label="CPS")
@@ -492,6 +493,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.SENS2.setText(f"MQ6: {values[1]}")
                 self.SENS3.setText(f"MQ135: {values[2]}")
                 self.sel_4.setText(f"RAD: {values[3]} CPS")
+                print(f'{values[0]},{values[1]},{values[2]},{values[3]}')
                 
                 # Update UI if sufficient values are provided, if the if statement doesnt read all 5 values or more, it will shutoff all serial data!!! ask me how i know
                 # if len(values) >= 3:
@@ -501,7 +503,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 #     self.sel_4.setText(f"RAD: {values[3]} CPS")
                 #     print(f'CPS = {values[3]}')
                 #     self.TEMP.setText(f'Temp: {values[4]} F')
-                #     print(f'{values[0]},{values[1]},{values[2]},{values[3]}')
                 #     # try:
                 #     #     self.menuScreen = int(values[4])
                 #     # except ValueError:
