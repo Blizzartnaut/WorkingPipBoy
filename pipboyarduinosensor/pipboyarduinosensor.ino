@@ -10,11 +10,14 @@ const int MQ135 = 9;  //Pins for analog signals
 
 //Geiger counter pin and setup
 volatile unsigned long pulseCount = 0; // counts pulses in the current interval
+volatile int pulseClicks = 0;           // Count pulses for click generation
 unsigned long previousMillis = 0;
 const unsigned long interval = 1000;  // Interval for counting (in milliseconds)
 const int interruptPin = 2;           // Change this to the Arduino pin connected to the geiger tube's interrupt output
 
-static const int DHT_SENSOR_PIN = 7;
+//Pin for piezo speaker
+const int piezoPin = 3;
+//static const int DHT_SENSOR_PIN = 7;
 
 //Pins for screen selector
 const int s1 = 44;  //Pins for D(44, 46, 48, 50, 52)
@@ -31,11 +34,12 @@ int screen = 1;
 //#define DHT_SENSOR_TYPE DHT_TYPE_21
 //#define DHT_SENSOR_TYPE DHT_TYPE_22
 
-DHT_nonblocking dht_sensor( DHT_SENSOR_PIN, DHT_SENSOR_TYPE );
+//DHT_nonblocking dht_sensor( DHT_SENSOR_PIN, DHT_SENSOR_TYPE );
 
 // Interrupt Service Routine (ISR): Called each time a rising edge is detected on interruptPin. For Geiger counter
 void countPulse() {
   pulseCount++;  // Increment the pulse counter
+  pulseClicks++;
 }
 
 void setup() {
@@ -46,12 +50,12 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(interruptPin), countPulse, RISING);
 }
 
-static bool measure_environment( float *temperature, float *humidity )
+/*static bool measure_environment( float *temperature, float *humidity )
 {
   static unsigned long measurement_timestamp = millis( );
 
   /* Measure once every four seconds. */
-  if( millis( ) - measurement_timestamp > 3000ul )
+  /*if( millis( ) - measurement_timestamp > 3000ul )
   {
     if( dht_sensor.measure( temperature, humidity ) == true )
     {
@@ -61,7 +65,11 @@ static bool measure_environment( float *temperature, float *humidity )
   }
 
   return( false );
-}
+}*/
+
+// --- Variables for managing click timing ---
+unsigned long lastClickTime = 0;
+const unsigned long clickInterval = 50;  // Minimum time (ms) between clicks
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -105,7 +113,7 @@ void loop() {
 
   /* Measure temperature and humidity.  If the functions returns
      true, then a measurement is available. */
-  if( measure_environment( &temp, &humidity ) == true )
+  //if( measure_environment( &temp, &humidity ) == true )
 
   // Try to measure environment (temp and humidity)
   //bool envMeasured = measure_environment(&temperature, &humidity)
@@ -140,12 +148,13 @@ void loop() {
 
   previousMillis = currentMillis; // Update previousMillis to the current time for the next 1-second interval
 
-  //delay(1000); //Allows for Radiation count of 6000CPM (delay of 10)
-
-  //100CPM is warning level
-  //
-  //10,000 is dangerous with an increase of cancer risk
-  //Still tolerable for a day.
-
+  }
+  
+  // --- Process Piezo Clicks ---
+  // Check if there are any pending pulse clicks and enough time has passed
+  if (pulseClicks > 0 && (currentMillis - lastClickTime > clickInterval)) {
+    tone(piezoPin, 1500, 10);  // Generate a 2000Hz tone for 20ms (adjust frequency/duration as desired)
+    lastClickTime = currentMillis; // Update last click time
+    pulseClicks--;  // Process one click
   }
 }
