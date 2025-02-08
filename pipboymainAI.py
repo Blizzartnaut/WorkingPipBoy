@@ -565,7 +565,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("CPM:", cpm)
         # Optionally, store the value in a variable for other processing:
         self.cpm = cpm
-        self.sel_1min.setText(str(self.cpm))
+        self.sel_1min.setText(f'CPM: {str(self.cpm)}')
+        #Adding in counter to sieverts calculation based on GM Tube M4011 conversion index 151
+        sieverts = self.cpm/151
+        self.min.setText(f'{sieverts} uSv/h')
 
     def update_cph(self):
         # Append the current CPS value to the rolling deque.
