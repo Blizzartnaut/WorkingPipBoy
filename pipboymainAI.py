@@ -601,7 +601,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         The graph is saved to a BytesIO buffer, then loaded into a QPixmap.
         """
         try:
-            self.radax.set_ylim(0, 20)
+            self.radax.set_ylim(0, 100)
             self.radline.set_ydata(self.data_sensrad)            
 
             self.radax.set_xlim(max(0, len(self.data_sensrad) - 300), len(self.data_sensrad))
