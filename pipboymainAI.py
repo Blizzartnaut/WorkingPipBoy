@@ -339,7 +339,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Matplotlib persistant canvas
         self.graphWidget = self.findChild(QWidget, "SENSGRAPH")
         if self.graphWidget is None:
-            self.graph_timer.start(5000)
+            self.graph_timer.start(1000)
         
         graph_layout = QVBoxLayout(self.graphWidget)
         self.graphWidget.setLayout(graph_layout)
@@ -452,8 +452,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             freq_text = self.freqInput.text()
             try:
                 #convert to float
-                freq_val = float(freq_text)
-                return freq_val
+                self.freq_val = float(freq_text)
+                
             except ValueError:
                 self.freqInput.setText("750.00")
     
@@ -491,7 +491,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.cps = float(values[3])
                 # self.sec4.setText(self.cps)
                 
-                # Update UI if sufficient values are provided
+                # Update UI if sufficient values are provided, if the if statement doesnt read all 5 values or more, it will shutoff all serial data!!! ask me how i know
                 if len(values) >= 5:
                     self.SENS1.setText(f"MQ4: {values[0]}")
                     self.SENS2.setText(f"MQ6: {values[1]}")
@@ -567,7 +567,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("CPM:", cpm)
         # Optionally, store the value in a variable for other processing:
         self.cpm = cpm
-        self.min.setText(self.cpm)
+        self.min.setText(str(self.cpm))
 
     def update_cph(self):
         # Append the current CPS value to the rolling deque.
@@ -579,7 +579,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("CPH:", cph)
         # Optionally, store the value in a variable for other processing:
         self.cph = cph
-        self.hour.setText(self.cph)
+        self.hour.setText(str(self.cph))
 
     def update_cpd(self):
         # Append the current CPS value to the rolling deque.
@@ -591,7 +591,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("CPD:", cpd)
         # Optionally, store the value in a variable for other processing:
         self.cpd = cpd
-        self.hour24.setText(self.cpd)
+        self.hour24.setText(str(self.cpd))
 
     def update_rad_graph(self):
         """
