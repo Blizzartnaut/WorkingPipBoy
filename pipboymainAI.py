@@ -184,7 +184,7 @@ class SDRWorker(QObject):
         self.spectrogram[:, 0] = PSD
         self.waterfall_plot_update.emit(self.spectrogram)
 
-        print("Frames per second:", 1 / (time.time() - start_t))
+        #print("Frames per second:", 1 / (time.time() - start_t))
         self.end_of_run.emit()  # Signal that one processing loop is done
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -410,7 +410,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #Plot the data
         self.radline, = self.radax.plot(self.data_sensrad, color="purple", label="CPS")
-        self.cps = 0
             
         #add legend
         self.radax.legend()
@@ -496,11 +495,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.SENS3.setText(f"MQ135: {values[2]}")
                     self.sel_4.setText(f"RAD: {values[3]} CPS")
                     self.TEMP.setText(f'Temp: {values[4]} F')
+                    print(f'{values[0],values[1],values[2],values[3]}')
                     # try:
                     #     self.menuScreen = int(values[4])
                     # except ValueError:
                     #     print("Invalid menuScreen value received:", values[4])
                     # self.update_tab()
+                else:
+                    print('No serial in data recieved')
+                    print(f'{values[0],values[1],values[2],values[3]}')
                 
                 # Update the graph with the new data
                 self.update_graph()
