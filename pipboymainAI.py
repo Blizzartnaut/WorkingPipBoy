@@ -762,7 +762,7 @@ if __name__ == "__main__":
     video_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoySplash.gif")
     audio_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoyStartSound.mp3")
     #Create and show the splash screen
-    splash = SplashScreen(video_path, audio_path, duration=3100)
+    splash = SplashScreen(video_path, audio_path, duration=3400)
     splash.show()
     
     def start_main_app():
@@ -770,5 +770,5 @@ if __name__ == "__main__":
         window.showFullScreen()
         window.show()
     
-    QTimer.singleShot(1500, start_main_app)
+    QTimer.singleShot(100, start_main_app)
     sys.exit(app.exec())
