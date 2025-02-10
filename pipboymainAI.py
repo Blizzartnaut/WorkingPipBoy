@@ -770,5 +770,5 @@ if __name__ == "__main__":
         window.showFullScreen()
         window.show()
     
-    QTimer.singleShot(100, start_main_app)
+    QTimer.singleShot(3400, start_main_app)
     sys.exit(app.exec())
