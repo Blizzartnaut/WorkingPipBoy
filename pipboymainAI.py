@@ -760,7 +760,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     #Build Absolute path to your MP4 File (in same folder as script)
     video_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoySplash.gif")
-    audio_path = None
+    audio_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoyStartSound.mp3")
     #Create and show the splash screen
     splash = SplashScreen(video_path, audio_path, duration=3400)
     splash.show()
