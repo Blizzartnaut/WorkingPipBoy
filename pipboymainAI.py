@@ -13,7 +13,7 @@ from collections import deque
 # PySide6 imports
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton, QSizePolicy
 from PySide6.QtCore import QTimer, QDate, QTime, QIODevice, QUrl, Signal, QSize, Qt, QThread, QObject
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QMovie
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PySide6.QtMultimediaWidgets import QVideoWidget
@@ -190,38 +190,38 @@ class SDRWorker(QObject):
         self.end_of_run.emit()  # Signal that one processing loop is done
 
 class SplashScreen(QMainWindow):
-    def __init__(self, video_path, duration=3400):
+    def __init__(self, gif_path, audio_path, duration=3400):
         super().__init__()
-        # Remove window borders and set to full-screen.
+        # Remove window borders and go full-screen
         self.setWindowFlags(Qt.FramelessWindowHint)
-
-        #Explicitly set geometry to match screen
-        screen_geometry = QApplication.primaryScreen().geometry()
-        self.setGeometry(screen_geometry)
-        # self.showFullScreen()
+        self.showFullScreen()
         
-        # Create a central widget and layout.
+        # Create a central widget and layout
         central_widget = QWidget(self)
-        layout = QVBoxLayout(central_widget)
         self.setCentralWidget(central_widget)
+        layout = QVBoxLayout(central_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
         
-        # Create and add the video widget.
-        self.videoWidget = QVideoWidget(self)
-        layout.addWidget(self.videoWidget)
-        self.videoWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # Create a label to hold the GIF
+        self.label = QLabel(self)
+        self.label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.label)
         
-        # Set up the media player for video and audio.
-        self.player = QMediaPlayer()
-        self.audioOutput = QAudioOutput()
-        self.player.setAudioOutput(self.audioOutput)
-        self.player.setVideoOutput(self.videoWidget)
-        self.audioOutput.setVolume(0.5)
+        # Load and start the GIF using QMovie
+        self.movie = QMovie(gif_path)
+        self.label.setMovie(self.movie)
+        self.movie.start()
         
-        # Set the media source and start playback.
-        self.player.setSource(QUrl.fromLocalFile(video_path))
-        self.player.play()
+        # Set up the audio player
+        self.audio_player = QMediaPlayer()
+        self.audio_output = QAudioOutput()
+        self.audio_player.setAudioOutput(self.audio_output)
+        self.audio_player.setSource(QUrl.fromLocalFile(os.path.abspath(audio_path)))
+        self.audio_output.setVolume(0.5)  # Adjust volume as needed
+        self.audio_player.play()
         
-        # Close the splash screen after the specified duration.
+        # Close the splash screen after the specified duration (milliseconds)
         QTimer.singleShot(duration, self.close)
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -759,9 +759,10 @@ if __name__ == "__main__":
     # Use sys.argv for proper argument parsing in PySide6
     app = QApplication(sys.argv)
     #Build Absolute path to your MP4 File (in same folder as script)
-    video_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoySplashScreenVid.mp4")
+    video_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoySplash.gif")
+    audio_path = None
     #Create and show the splash screen
-    splash = SplashScreen(video_path, duration=2900)
+    splash = SplashScreen(video_path, audio_path, duration=3400)
     splash.show()
     
     def start_main_app():
@@ -769,5 +770,5 @@ if __name__ == "__main__":
         window.showFullScreen()
         window.show()
     
-    QTimer.singleShot(3400, start_main_app)
+    QTimer.singleShot(3000, start_main_app)
     sys.exit(app.exec())
