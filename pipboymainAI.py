@@ -11,7 +11,7 @@ import gc
 from collections import deque
 
 # PySide6 imports
-from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton
+from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton, QSizePolicy
 from PySide6.QtCore import QTimer, QDate, QTime, QIODevice, QUrl, Signal, QSize, Qt, QThread, QObject
 from PySide6.QtGui import QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -194,7 +194,11 @@ class SplashScreen(QMainWindow):
         super().__init__()
         # Remove window borders and set to full-screen.
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.showFullScreen()
+
+        #Explicitly set geometry to match screen
+        screen_geometry = QApplication.primaryScreen().geometry()
+        self.setGeometry(screen_geometry)
+        # self.showFullScreen()
         
         # Create a central widget and layout.
         central_widget = QWidget(self)
@@ -204,6 +208,7 @@ class SplashScreen(QMainWindow):
         # Create and add the video widget.
         self.videoWidget = QVideoWidget(self)
         layout.addWidget(self.videoWidget)
+        # self.videoWidget.setSizePolicy(QSizePolicy.Expanding, Qsiz)
         
         # Set up the media player for video and audio.
         self.player = QMediaPlayer()
@@ -525,7 +530,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.SENS2.setText(f"MQ6: {values[1]}")
                 self.SENS3.setText(f"MQ135: {values[2]}")
                 self.sel_4.setText(f"RAD: {values[3]} CPS")
-                print(f'{values[0]},{values[1]},{values[2]},{values[3]}')
+                # print(f'{values[0]},{values[1]},{values[2]},{values[3]}')
                 
                 # Update UI if sufficient values are provided, if the if statement doesnt read all 5 values or more, it will shutoff all serial data!!! ask me how i know
                 # if len(values) >= 3:
@@ -756,7 +761,7 @@ if __name__ == "__main__":
     #Build Absolute path to your MP4 File (in same folder as script)
     video_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoySplashScreenVid.mp4")
     #Create and show the splash screen
-    splash = SplashScreen(video_path, duration=3400)
+    splash = SplashScreen(video_path, duration=2900)
     splash.show()
     
     def start_main_app():
