@@ -208,7 +208,7 @@ class SplashScreen(QMainWindow):
         # Create and add the video widget.
         self.videoWidget = QVideoWidget(self)
         layout.addWidget(self.videoWidget)
-        # self.videoWidget.setSizePolicy(QSizePolicy.Expanding, Qsiz)
+        self.videoWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
         # Set up the media player for video and audio.
         self.player = QMediaPlayer()
