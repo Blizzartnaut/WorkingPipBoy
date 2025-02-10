@@ -1,0 +1,6 @@
+{
+    "workbench.colorTheme": "Default Dark Modern",
+    "C_Cpp.errorSquiggles": "enabledIfIncludesResolve",
+    "C_Cpp.default.enableConfigurationSquiggles": true,
+    "arduino.disableIntelliSenseAutoGen": true
+}

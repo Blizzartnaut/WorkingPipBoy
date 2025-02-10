@@ -69,7 +69,7 @@ void setup() {
 
 // --- Variables for managing click timing ---
 unsigned long lastClickTime = 0;
-const unsigned long clickInterval = 50;  // Minimum time (ms) between clicks
+const unsigned long clickInterval = 13;  // Minimum time (ms) between clicks
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -153,7 +153,7 @@ void loop() {
   // --- Process Piezo Clicks ---
   // Check if there are any pending pulse clicks and enough time has passed
   if (pulseClicks > 0 && (currentMillis - lastClickTime > clickInterval)) {
-    tone(piezoPin, 1500, 10);  // Generate a 2000Hz tone for 20ms (adjust frequency/duration as desired)
+    tone(piezoPin, 1500, 10);  // Generate a 2000Hz tone for 10ms (adjust frequency/duration as desired)
     lastClickTime = currentMillis; // Update last click time
     pulseClicks--;  // Process one click
   }

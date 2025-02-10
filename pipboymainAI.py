@@ -15,6 +15,8 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBo
 from PySide6.QtCore import QTimer, QDate, QTime, QIODevice, QUrl, Signal, QSize, Qt, QThread, QObject
 from PySide6.QtGui import QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
+from PySide6.QtMultimediaWidgets import QVideoWidget
 
 # Import the UI file generated for PySide6 (ensure you ran pyside6-uic)
 from PipBoyMenu import Ui_MainWindow
@@ -186,6 +188,36 @@ class SDRWorker(QObject):
 
         #print("Frames per second:", 1 / (time.time() - start_t))
         self.end_of_run.emit()  # Signal that one processing loop is done
+
+class SplashScreen(QMainWindow):
+    def __init__(self, video_path, duration=3400):
+        super().__init__()
+        # Remove window borders and set to full-screen.
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.showFullScreen()
+        
+        # Create a central widget and layout.
+        central_widget = QWidget(self)
+        layout = QVBoxLayout(central_widget)
+        self.setCentralWidget(central_widget)
+        
+        # Create and add the video widget.
+        self.videoWidget = QVideoWidget(self)
+        layout.addWidget(self.videoWidget)
+        
+        # Set up the media player for video and audio.
+        self.player = QMediaPlayer()
+        self.audioOutput = QAudioOutput()
+        self.player.setAudioOutput(self.audioOutput)
+        self.player.setVideoOutput(self.videoWidget)
+        self.audioOutput.setVolume(0.5)
+        
+        # Set the media source and start playback.
+        self.player.setSource(QUrl.fromLocalFile(video_path))
+        self.player.play()
+        
+        # Close the splash screen after the specified duration.
+        QTimer.singleShot(duration, self.close)
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -721,6 +753,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 if __name__ == "__main__":
     # Use sys.argv for proper argument parsing in PySide6
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.start_fullscreen()
+    #Build Absolute path to your MP4 File (in same folder as script)
+    video_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoySplashScreenVid.mp4")
+    #Create and show the splash screen
+    splash = SplashScreen(video_path, duration=3400)
+    splash.show()
+    
+    def start_main_app():
+        window = MainWindow()
+        window.showFullScreen()
+        window.show()
+    
+    QTimer.singleShot(3400, start_main_app)
     sys.exit(app.exec())
