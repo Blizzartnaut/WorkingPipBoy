@@ -674,10 +674,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         coords = self.read_gps_data()
         if coords != (None, None):
             return coords
-        else:
-            # Fallback fixed coordinates (for testing or if GPS data is unavailable)
-            # print('GPS data not found')
-            return 41.0120, -76.8477
+        # else:
+        #     # Fallback fixed coordinates (for testing or if GPS data is unavailable)
+        #     # print('GPS data not found')
+        #     return 41.0120, -76.8477
     # ---------------------------------------------------------------------
     
     def read_gps_data(self):
@@ -688,12 +688,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if hasattr(self, 'serial_portGPS'):
             try:
-                # Check if data is available to prevent blocking
-                if self.serial_portGPS.in_waiting > 0:
+                # Check if data is available to prevent blocking (loop over data)
+                while self.serial_portGPS.in_waiting > 0:
                     line = self.serial_portGPS.readline().decode('ascii', errors='replace').strip()
                     if line.startswith('$GPGGA'):
-                        msg = pynmea2.parse(line)
-                        return (msg.latitude, msg.longitude)
+                        try:
+                            msg = pynmea2.parse(line)
+                            print(msg.latitude, msg.longitude)
+                            return (msg.latitude, msg.longitude)
+                        except Exception as parse_err:
+                            print("Parse Error:", parse_err)
             except Exception as e:
                 print("Error reading GPS data:", e)
             return (None, None)
