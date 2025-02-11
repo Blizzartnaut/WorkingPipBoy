@@ -3,6 +3,7 @@ Component List will be given after its finalized.
 https://suptronics.com/miniPCkits/x728.html
 
 https://shop.sb-components.co.uk/products/gps-hat-for-raspberry-pi?srsltid=AfmBOorg9ltRbocOCu-m2uV9KkdGrXocV9QHlCmNxTUOFLs0BwyfUn6d
+https://github.com/sbcshop/GPS-Hat-for-Raspberry-Pi/blob/main/README.md
 
 https://www.adafruit.com/product/2130
 
