@@ -344,10 +344,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.serial_port = serial.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
             except Exception as e:
                 print("Error initializing serial port on Linux:", e)
-            try:
-                self.serial_portGPS = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
-            except Exception as e:
-                print("Error initializing GPS serial port on Linux:", e)
+            # try:
+                # self.serial_portGPS = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
+            # except Exception as e:
+                # print("Error initializing GPS serial port on Linux:", e)
         else:
             raise Exception("Unsupported Operating System")
         
@@ -606,7 +606,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         or a simulation) and then update the marker on the Leaflet map via JavaScript.
         """
         # lat, lon = self.get_current_gps_coordinates()  # Replace with real GPS data when available
-        
+        self.get_current_gps_coordinates()
         # Build the JavaScript call to update the marker on the map.
         js_code = f"updateMarker({self.lat}, {self.lon});"
         # Run the JavaScript in the QWebEngineView.
@@ -678,6 +678,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.lat = self.gpsdat[0]
         self.lon = self.gpsdat[1]
         self.gpsqual = self.gpsdat[4]
+
+        print(f"GPS: Lat={self.lat}, Lon={self.lon}, Qual={self.gpsqual}")
         # coords = self.read_gps_data()
         # if coords != (None, None):
         #     return coords
