@@ -13,7 +13,7 @@ from collections import deque
 # PySide6 imports
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton, QSizePolicy
 from PySide6.QtCore import QTimer, QDate, QTime, QIODevice, QUrl, Signal, QSize, Qt, QThread, QObject
-from PySide6.QtGui import QPixmap, QMovie
+from PySide6.QtGui import QPixmap, QMovie, QImage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PySide6.QtMultimediaWidgets import QVideoWidget
@@ -479,6 +479,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.radgraph_timer = QTimer(self)
         self.radgraph_timer.timeout.connect(self.update_rad_graph)
+
+        #vault boy on main screen
+        self.vaultboy = QImage("/home/marceversole/WorkingPipBoy/VaultBoy.jpg")
+        self.vaultpix = QPixmap.fromImage(self.vaultboy)
+        self.vaultlabel = QLabel()
+        self.vaultlabel.setPixmap(self.vaultpix)
+        self.pipboygif.addWidget(self.vaultlabel)
+        self.vaultlabel.setScaledContents(True)
 
     def start_fullscreen(self):
         self.showFullScreen()

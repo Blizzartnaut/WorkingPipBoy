@@ -8,6 +8,8 @@ https://www.adafruit.com/product/2130
 
 https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CDS-40304-L1003/9699445?_gl=1*1qpcunr*_up*MQ..*_gs*MQ..&gclid=CjwKCAiA2JG9BhAuEiwAH_zf3riu03ec3nWH169lawSwrJrGfQTaxeWvGgedwM61h_wg8hIk6gTI3hoCNsAQAvD_BwE&gclsrc=aw.ds
 
+https://learn.adafruit.com/adafruit-pam8302-mono-2-5w-class-d-audio-amplifier/pinouts
+
 (maybe later) https://theelectronicgoldmine.com/products/c7061
 https://theelectronicgoldmine.com/collections/geiger-counters
 
