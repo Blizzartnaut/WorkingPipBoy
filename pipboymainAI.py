@@ -42,6 +42,9 @@ import struct
 import smbus
 import time
 
+#Import GPS Mapping Functions
+from gps_lib import GGA_Read, RMC_Read, GSV_Read
+
 #for testing
 radioval = 0
 
@@ -602,10 +605,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         This function should retrieve current GPS coordinates (via your existing GPS method
         or a simulation) and then update the marker on the Leaflet map via JavaScript.
         """
-        lat, lon = self.get_current_gps_coordinates()  # Replace with real GPS data when available
+        # lat, lon = self.get_current_gps_coordinates()  # Replace with real GPS data when available
         
         # Build the JavaScript call to update the marker on the map.
-        js_code = f"updateMarker({lat}, {lon});"
+        js_code = f"updateMarker({self.lat}, {self.lon});"
         # Run the JavaScript in the QWebEngineView.
         self.mapView.page().runJavaScript(js_code)
         # print(f"Updated GPS marker to lat: {lat}, lon: {lon}")
@@ -671,39 +674,43 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         This function calls read_gps_data() to obtain data from the GPS hat.
         If no valid data is received, it falls back to fixed demo coordinates.
         """
-        coords = self.read_gps_data()
-        if coords != (None, None):
-            return coords
+        self.gpsdat = GGA_Read()
+        self.lat = self.gpsdat[0]
+        self.lon = self.gpsdat[1]
+        self.gpsqual = self.gpsdat[4]
+        # coords = self.read_gps_data()
+        # if coords != (None, None):
+        #     return coords
         # else:
         #     # Fallback fixed coordinates (for testing or if GPS data is unavailable)
         #     # print('GPS data not found')
         #     return 41.0120, -76.8477
     # ---------------------------------------------------------------------
     
-    def read_gps_data(self):
-        """
-        Attempt to read one line from the GPS serial port and parse it.
-        Returns a tuple (latitude, longitude) if a valid GPGGA sentence is found.
-        If no valid data is available, returns (None, None).
-        """
-        if hasattr(self, 'serial_portGPS'):
-            try:
-                # Check if data is available to prevent blocking (loop over data)
-                while self.serial_portGPS.in_waiting > 0:
-                    line = self.serial_portGPS.readline().decode('ascii', errors='replace').strip()
-                    if line.startswith('$GPGGA'):
-                        try:
-                            msg = pynmea2.parse(line)
-                            print(msg.latitude, msg.longitude)
-                            return (msg.latitude, msg.longitude)
-                        except Exception as parse_err:
-                            print("Parse Error:", parse_err)
-            except Exception as e:
-                print("Error reading GPS data:", e)
-            return (None, None)
-        else:
-            # print("GPS serial port not initialized.")
-            return (None, None)
+    # def read_gps_data(self):
+    #     """
+    #     Attempt to read one line from the GPS serial port and parse it.
+    #     Returns a tuple (latitude, longitude) if a valid GPGGA sentence is found.
+    #     If no valid data is available, returns (None, None).
+    #     """
+    #     if hasattr(self, 'serial_portGPS'):
+    #         try:
+    #             # Check if data is available to prevent blocking (loop over data)
+    #             while self.serial_portGPS.in_waiting > 0:
+    #                 line = self.serial_portGPS.readline().decode('ascii', errors='replace').strip()
+    #                 if line.startswith('$GPGGA'):
+    #                     try:
+    #                         msg = pynmea2.parse(line)
+    #                         print(msg.latitude, msg.longitude)
+    #                         return (msg.latitude, msg.longitude)
+    #                     except Exception as parse_err:
+    #                         print("Parse Error:", parse_err)
+    #         except Exception as e:
+    #             print("Error reading GPS data:", e)
+    #         return (None, None)
+    #     else:
+    #         # print("GPS serial port not initialized.")
+    #         return (None, None)
         
     def update_memory_usage(self):
         # """

@@ -19,7 +19,7 @@
     <script src="lib/leaflet/leaflet.js"></script>
     <script>
       // Initialize the map at the default coordinates and zoom.
-      var map = L.map('map').setView([41.0120, -76.8477], 14);
+      var map = L.map('map').setView([41.0120, -76.8477], 10);
 
       // Load the local tile layer.
       L.tileLayer('XYZTiles/{z}/{x}/{y}.png', {
@@ -33,6 +33,7 @@
 
       // Add a marker for the current position.
       var currentMarker = L.marker([41.0120, -76.8477]).addTo(map);
+      //var currentMarker = L.
 
       // Function to update the marker's position and recenter the map if lockOnMarker is true.
       function updateMarker(lat, lon) {
