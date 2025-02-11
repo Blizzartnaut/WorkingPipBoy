@@ -481,7 +481,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.radgraph_timer.timeout.connect(self.update_rad_graph)
 
         #vault boy on main screen
-        self.vaultboy = QImage("/home/marceversole/WorkingPipBoy/VaultBoy.jpg")
+        self.vaultboy = QImage("/home/marceversole/WorkingPipBoy/VaultBoy.png")
         self.vaultpix = QPixmap.fromImage(self.vaultboy)
         self.vaultlabel = QLabel()
         self.vaultlabel.setPixmap(self.vaultpix)
