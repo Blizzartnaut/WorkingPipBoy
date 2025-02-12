@@ -292,25 +292,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # centralWidget.setLayout(mainLayout)
         # self.setCentralWidget(centralWidget)
     
-        # Load music files from a local directory
-        self.musicDir = os.path.abspath("/home/marceversole/WorkingPipBoy/music")  # Ensure you create a folder named "music"
+        # Playlist management: scan a local "music" directory for .mp3 files.
+        self.musicDir = os.path.abspath("music")  # Create this folder if it doesn't exist.
         self.musicFiles = []
+        self.currentIndex = 0  # The currently selected track index.
         if os.path.isdir(self.musicDir):
             for file in os.listdir(self.musicDir):
                 if file.lower().endswith(".mp3"):
                     fullPath = os.path.join(self.musicDir, file)
                     self.musicFiles.append(fullPath)
-                    self.playlist.addMedia(QUrl.fromLocalFile(fullPath))
-                    self.musicList.addItem(file)
+                    self.MusicList.addItem(file)
         
         # Setup QMediaPlayer (without QMediaPlaylist)
         self.player = QMediaPlayer()
         self.audioOutput = QAudioOutput()
         self.player.setAudioOutput(self.audioOutput)
-        self.audioOutput.setVolume(0.5)
+        self.audioOutput.setVolume(0.75)
 
+        # If there are files, set the initial source.
         if self.musicFiles:
-            self.playlist.setCurrentIndex(0)
+            self.set_current_track(self.currentIndex)
         self.updateLabels()
 
         # Connect signals to slots.
@@ -564,17 +565,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Update the 'Current Play' and 'Next Up' labels."""
         if self.musicFiles:
             current_song = os.path.basename(self.musicFiles[self.currentIndex])
-            self.currentPlayLabel.setText(f"Current Play: {current_song}")
+            self.CurrentPlay.setText(f"Current Play: {current_song}")
             next_index = (self.currentIndex + 1) % len(self.musicFiles)
             next_song = os.path.basename(self.musicFiles[next_index])
-            self.nextUpLabel.setText(f"Next Up: {next_song}")
+            self.NextUp.setText(f"Next Up: {next_song}")
         else:
-            self.currentPlayLabel.setText("Current Play: None")
-            self.nextUpLabel.setText("Next Up: None")
+            self.CurrentPlay.setText("Current Play: None")
+            self.NextUp.setText("Next Up: None")
     
     def listItemClicked(self, item):
         """When an item is clicked, update the current track and play it."""
-        row = self.musicList.row(item)
+        row = self.MusicList.row(item)
         self.set_current_track(row)
         self.updateLabels()
         self.player.play()
