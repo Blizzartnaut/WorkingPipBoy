@@ -270,7 +270,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #Media Player Code Below
         # UI Elements
-        # self.musicList = QListWidget()
+        self.musicList = QListWidget()
         # self.playButton = QPushButton("PLAY")
         # self.nextButton = QPushButton("NEXT")
         # self.stopButton = QPushButton("STOP")
@@ -279,7 +279,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # Layout setup
         # mainLayout = QVBoxLayout()
-        # mainLayout.addWidget(self.musicList)
+        self.MusicList.addWidget(self.musicList)
         # buttonLayout = QHBoxLayout()
         # buttonLayout.addWidget(self.playButton)
         # buttonLayout.addWidget(self.nextButton)
@@ -301,7 +301,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if file.lower().endswith(".mp3"):
                     fullPath = os.path.join(self.musicDir, file)
                     self.musicFiles.append(fullPath)
-                    self.MusicList.addItem(file)
+                    self.musicList.addItem(file)
         
         # Setup QMediaPlayer (without QMediaPlaylist)
         self.player = QMediaPlayer()
@@ -318,7 +318,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.PLAY.clicked.connect(self.play)
         self.STOP.clicked.connect(self.stop)
         self.NEXT.clicked.connect(self.next_track)
-        self.MusicList.itemClicked.connect(self.listItemClicked)
+        self.musicList.itemClicked.connect(self.listItemClicked)
         self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
 
         self.progressBar_2.setMinimum(0)
@@ -575,7 +575,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def listItemClicked(self, item):
         """When an item is clicked, update the current track and play it."""
-        row = self.MusicList.row(item)
+        row = self.musicList.row(item)
         self.set_current_track(row)
         self.updateLabels()
         self.player.play()
