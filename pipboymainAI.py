@@ -674,6 +674,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         This function calls read_gps_data() to obtain data from the GPS hat.
         If no valid data is received, it falls back to fixed demo coordinates.
         """
+        self.gpsdat = []
         self.gpsdat = GGA_Read()
         self.lat = self.gpsdat[0]
         self.lon = self.gpsdat[1]
