@@ -289,8 +289,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.freq_val = 750.00 #Comment out when no longer testing
         self.freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
         self.freq_plot.setMouseEnabled(x=False, y=True)
-        # freq_plot_curve = freq_plot.plot([])
-        self.curve = self.freq_plot.findChild(pg.PlotWidget).plot()
+        self.curve = pg.PlotCurveItem()
+        self.freq_plot.addItem(self.curve)
         self.freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
         self.freq_plot.setYRange(-30, 20)
         self.freq_layout.addWidget(self.freq_plot)
@@ -820,9 +820,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.curve.setData(spectrum)
         
 async def main():
+# async def main():
     app = QApplication(sys.argv)
     loop = QEventLoop(app)
     asyncio.set_event_loop(loop)
+
+    # Show splash screen first (if desired)
+    video_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoySplash.gif")
+    audio_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoyStartSound.mp3")
+    splash = SplashScreen(video_path, audio_path, duration=5400)
+    splash.show()
+
+    # After splash, create and show the main window
+    QTimer.singleShot(5400, lambda: splash.close())
+    await asyncio.sleep(5)  # Wait a bit more than splash duration
 
     window = MainWindow()
     window.show()
@@ -832,13 +843,6 @@ async def main():
     asyncio.create_task(worker.run(window.update_spectrum))
 
     await loop.run_forever()
-    app = QApplication(sys.argv)
-    #Build Absolute path to your MP4 File (in same folder as script)
-    video_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoySplash.gif")
-    audio_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoyStartSound.mp3")
-    #Create and show the splash screen
-    splash = SplashScreen(video_path, audio_path, duration=5400)
-    splash.show()
 
 if __name__ == '__main__':
     asyncio.run(main())
