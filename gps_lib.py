@@ -46,7 +46,7 @@ def RMC_Read():
             info = data
             received_data = (str)(ser.readline()) #read NMEA string received
             data_available = received_data.find(info)                 
-            if (data_available>0):
+            if (data_available>=0):
                 buffer = received_data.split(data,1)[1]  #store data coming 
                 buff = (buffer.split(','))
                 nmea_time = []
@@ -71,7 +71,7 @@ def GSV_Read():
             info = data
             received_data = (str)(ser.readline()) #read NMEA string received
             data_available = received_data.find(info)                  
-            if (data_available>0):
+            if (data_available>=0):
                 buffer = received_data.split(data,1)[1]  #store data coming 
                 buff = (buffer.split(','))
                 total_sat = []
