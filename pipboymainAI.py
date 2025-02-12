@@ -271,28 +271,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Media Player Code Below
         # UI Elements
         self.musicList = QListWidget()
-        # self.playButton = QPushButton("PLAY")
-        # self.nextButton = QPushButton("NEXT")
-        # self.stopButton = QPushButton("STOP")
-        # self.currentPlayLabel = QLabel("Current Play: None")
-        # self.nextUpLabel = QLabel("Next Up: None")
         
         # Layout setup
         self.mainLayout = QVBoxLayout()
         self.MusicList.setLayout(self.mainLayout)
         self.MusicList.setScaledContents(True)
         self.mainLayout.addWidget(self.musicList)
-        # buttonLayout = QHBoxLayout()
-        # buttonLayout.addWidget(self.playButton)
-        # buttonLayout.addWidget(self.nextButton)
-        # buttonLayout.addWidget(self.stopButton)
-        # mainLayout.addLayout(buttonLayout)
-        # mainLayout.addWidget(self.currentPlayLabel)
-        # mainLayout.addWidget(self.nextUpLabel)
-        
-        # centralWidget = QWidget()
-        # centralWidget.setLayout(mainLayout)
-        # self.setCentralWidget(centralWidget)
     
         # Playlist management: scan a local "music" directory for .mp3 files.
         self.musicDir = os.path.abspath("music")  # Create this folder if it doesn't exist.
@@ -309,7 +293,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.player = QMediaPlayer()
         self.audioOutput = QAudioOutput()
         self.player.setAudioOutput(self.audioOutput)
-        self.audioOutput.setVolume(0.75)
+        self.audioOutput.setVolume(1)
 
         # If there are files, set the initial source.
         if self.musicFiles:
@@ -562,7 +546,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if 0 <= index < len(self.musicFiles):
             self.currentIndex = index
             self.player.setSource(QUrl.fromLocalFile(self.musicFiles[self.currentIndex]))
-    
+            self.player.mediaStatusChanged.connect(lambda status: print("Media status:", status))
+            # self.player.play()
+            self.play()
+
     def updateLabels(self):
         """Update the 'Current Play' and 'Next Up' labels."""
         if self.musicFiles:
@@ -584,7 +571,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def play(self):
         self.player.play()
-    
+        self.player.errorOccurred.connect(lambda err: print("Media Player Error:", self.player.errorString()))
+
     def stop(self):
         self.player.stop()
     
