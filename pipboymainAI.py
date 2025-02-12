@@ -11,7 +11,7 @@ import gc
 from collections import deque
 
 # PySide6 imports
-from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton, QSizePolicy
+from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QListWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton, QSizePolicy
 from PySide6.QtCore import QTimer, QDate, QTime, QIODevice, QUrl, Signal, QSize, Qt, QThread, QObject, Slot
 from PySide6.QtGui import QPixmap, QMovie, QImage
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -266,27 +266,66 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Set up UI elements (ensure the .ui file has been updated for PySide6)
         self.setupUi(self)
 
+        SDRWorker(self)
 
+        #Media Player Code Below
+        # UI Elements
+        self.musicList = QListWidget()
+        self.playButton = QPushButton("PLAY")
+        self.nextButton = QPushButton("NEXT")
+        self.stopButton = QPushButton("STOP")
+        self.currentPlayLabel = QLabel("Current Play: None")
+        self.nextUpLabel = QLabel("Next Up: None")
+        
+        # Layout setup
+        mainLayout = QVBoxLayout()
+        mainLayout.addWidget(self.musicList)
+        buttonLayout = QHBoxLayout()
+        buttonLayout.addWidget(self.playButton)
+        buttonLayout.addWidget(self.nextButton)
+        buttonLayout.addWidget(self.stopButton)
+        mainLayout.addLayout(buttonLayout)
+        mainLayout.addWidget(self.currentPlayLabel)
+        mainLayout.addWidget(self.nextUpLabel)
+        
+        centralWidget = QWidget()
+        centralWidget.setLayout(mainLayout)
+        self.setCentralWidget(centralWidget)
+    
+        # Load music files from a local directory
+        self.musicDir = os.path.abspath("/home/marceversole/WorkingPipBoy/music")  # Ensure you create a folder named "music"
+        self.musicFiles = []
+        if os.path.isdir(self.musicDir):
+            for file in os.listdir(self.musicDir):
+                if file.lower().endswith(".mp3"):
+                    fullPath = os.path.join(self.musicDir, file)
+                    self.musicFiles.append(fullPath)
+                    self.playlist.addMedia(QUrl.fromLocalFile(fullPath))
+                    self.musicList.addItem(file)
+        
+        # Setup QMediaPlayer (without QMediaPlaylist)
+        self.player = QMediaPlayer()
+        self.audioOutput = QAudioOutput()
+        self.player.setAudioOutput(self.audioOutput)
+        self.audioOutput.setVolume(0.5)
+
+        if self.musicFiles:
+            self.playlist.setCurrentIndex(0)
+        self.updateLabels()
+
+        # Connect signals to slots.
+        self.playButton.clicked.connect(self.play)
+        self.stopButton.clicked.connect(self.stop)
+        self.nextButton.clicked.connect(self.next_track)
+        self.musicList.itemClicked.connect(self.listItemClicked)
+        self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
 
         self.progressBar_2.setMinimum(0)
         self.progressBar_2.setMaximum(100)
 
         # from PySide6.QtWidgets import QVBoxLayout, QWidget
         #Init SDR worker and thread
-        # self.sdr_thread = QThread()
-        # self.sdr_thread.setObjectName('SDR_Thread')
-        # worker = SDRWorker()
-        # worker.moveToThread(self.sdr_thread)
 
-        #Create lineEdit to type in frequency for testing until we can implement additional hardware
-        # self.freq_plot_butt.clicked.connect(self.display_freqplot)
-        # self.time_plot_butt.clicked.connect(self.display_timeplot)
-        # self.waterfall_butt.clicked.connect(self.display_colorbar)
-
-        #Handle return pressed for frequency select
-        # self.freqInput.returnPressed.connect(self.handle_freq_input)
-        # self.freqInput.
-        # self.freq_val = 750.00 #Comment out when no longer testing
         self.freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
         self.freq_plot.setMouseEnabled(x=False, y=True)
         self.curve = pg.PlotCurveItem()
@@ -294,12 +333,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
         self.freq_plot.setYRange(-30, 20)
         self.freq_layout.addWidget(self.freq_plot)
-
-
-        # Signals and slots connections:
-        # def time_plot_callback(samples):
-        #     time_plot_curve_i.setData(samples.real)
-        #     time_plot_curve_q.setData(samples.imag)
+        self.FREQ_GRAPH.setScaledContents(True)
 
         # def freq_plot_callback(PSD_avg):
         #     # TODO figure out if there's a way to just change the visual ticks instead of the actual x vals
@@ -314,15 +348,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #     self.spectrogram_min = mean - 2*sigma # save to window state
         #     self.spectrogram_max = mean + 2*sigma
 
-        # def end_of_run_callback():
-        #     QTimer.singleShot(0, worker.run) # Run worker again immediately
-
-        #Plots To Call #addWidget adds plot #removeWidget removes plot to keep memory well
-        #Add Layout to QLabel = FREQ_GRAPH
-        # freqlayout = QHBoxLayout(self.FREQ_GRAPH)
-        # self.FREQ_GRAPH.setLayout(freqlayout)
-        # self.FREQ_GRAPH.setScaledContents(True)
-
         # Time plot
         # time_plot = pg.PlotWidget(labels={'left': 'Amplitude', 'bottom': 'Time [microseconds]'})
         # time_plot.setMouseEnabled(x=False, y=True)
@@ -330,14 +355,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # time_plot_curve_i = time_plot.plot([])
         # time_plot_curve_q = time_plot.plot([])
         # self.time_layout.addWidget(time_plot)
-
-        # # Freq plot
-        # freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
-        # freq_plot.setMouseEnabled(x=False, y=True)
-        # freq_plot_curve = freq_plot.plot([])
-        # freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
-        # freq_plot.setYRange(-30, 20)
-        # self.freq_layout.addWidget(freq_plot)
 
         # # Waterfall plot
         # waterfall = pg.PlotWidget(labels={'left': 'Time [s]', 'bottom': 'Frequency [MHz]'})
@@ -352,14 +369,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # colorbar.item.gradient.loadPreset('viridis') # set the color map, also sets the imageitem
         # imageitem.setLevels((-30, 20)) # needs to come after colorbar is created for some reason
         # self.waterfall_layout.addWidget(colorbar)         
-
-        # worker.time_plot_update.connect(time_plot_callback) # connect the signal to the callback
-        # worker.freq_plot_update.connect(freq_plot_callback)
-        # worker.waterfall_plot_update.connect(waterfall_plot_callback)
-        # worker.end_of_run.connect(end_of_run_callback)
-
-        # self.sdr_thread.started.connect(worker.run) # kicks off the worker when the thread starts
-        # self.sdr_thread.start()
         
         # Initialize sensor data arrays (720 data points per sensor) about 12 minutes of data
         self.data_sens1 = np.zeros(720)  # Sensor 1 (e.g., MQ4)
@@ -509,7 +518,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Create a layout for the container and add the QWebEngineView to it.
         # layout = QVBoxLayout(self.MAP)
         self.mapView = QWebEngineView()
-        local_map_path = os.path.abspath("pipboy_map.html")
+        # local_map_path = os.path.abspath("pipboy_map.html")
         self.mapView.load(QUrl("http://localhost:8000/pipboy_map.html"))
         layout.addWidget(self.mapView)
         
@@ -540,10 +549,53 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.showFullScreen()
     
     # RTL SDR Setup
-        @asyncSlot(object)
-        async def update_spectrum(self, spectrum):
-            # Update the graph with new spectrum data.
-            self.curve.setData(spectrum)
+    @asyncSlot(object)
+    async def update_spectrum(self, spectrum):
+        # Update the graph with new spectrum data.
+        self.curve.setData(spectrum)
+
+    def set_current_track(self, index):
+        """Set the current track on the player."""
+        if 0 <= index < len(self.musicFiles):
+            self.currentIndex = index
+            self.player.setSource(QUrl.fromLocalFile(self.musicFiles[self.currentIndex]))
+    
+    def updateLabels(self):
+        """Update the 'Current Play' and 'Next Up' labels."""
+        if self.musicFiles:
+            current_song = os.path.basename(self.musicFiles[self.currentIndex])
+            self.currentPlayLabel.setText(f"Current Play: {current_song}")
+            next_index = (self.currentIndex + 1) % len(self.musicFiles)
+            next_song = os.path.basename(self.musicFiles[next_index])
+            self.nextUpLabel.setText(f"Next Up: {next_song}")
+        else:
+            self.currentPlayLabel.setText("Current Play: None")
+            self.nextUpLabel.setText("Next Up: None")
+    
+    def listItemClicked(self, item):
+        """When an item is clicked, update the current track and play it."""
+        row = self.musicList.row(item)
+        self.set_current_track(row)
+        self.updateLabels()
+        self.player.play()
+    
+    def play(self):
+        self.player.play()
+    
+    def stop(self):
+        self.player.stop()
+    
+    def next_track(self):
+        """Advance to the next track, update labels, and start playback."""
+        self.currentIndex = (self.currentIndex + 1) % len(self.musicFiles)
+        self.set_current_track(self.currentIndex)
+        self.updateLabels()
+        self.player.play()
+    
+    def handle_media_status_changed(self, status):
+        """If a track finishes, automatically play the next track."""
+        if status == QMediaPlayer.EndOfMedia:
+            self.next_track()    
 
     # def handle_freq_input(self):
     #         freq_text = self.freqInput.text()
@@ -594,24 +646,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.sel_4.setText(f"RAD: {values[3]} CPS")
                 # print(f'{values[0]},{values[1]},{values[2]},{values[3]}')
                 
-                # Update UI if sufficient values are provided, if the if statement doesnt read all 5 values or more, it will shutoff all serial data!!! ask me how i know
-                # if len(values) >= 3:
-                #     self.SENS1.setText(f"MQ4: {values[0]}")
-                #     self.SENS2.setText(f"MQ6: {values[1]}")
-                #     self.SENS3.setText(f"MQ135: {values[2]}")
-                #     self.sel_4.setText(f"RAD: {values[3]} CPS")
-                #     print(f'CPS = {values[3]}')
-                #     self.TEMP.setText(f'Temp: {values[4]} F')
-                #     # try:
-                #     #     self.menuScreen = int(values[4])
-                #     # except ValueError:
-                #     #     print("Invalid menuScreen value received:", values[4])
-                #     # self.update_tab()
-                # else:
-                #     print('No serial in data recieved')
-                #     print(f'{values[0],values[1],values[2],values[3]}')
-                
-                # Update the graph with the new data
                 self.update_graph()
                 self.update_rad_graph()
             except Exception as e:
@@ -723,11 +757,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         x = GGA_Read()
         if x is not None:
             self.gpsdat = list(x)
-            # self.gpsdat = GGA_Read()
-            # self.lat = self.gpsdat[0]
-            # self.lon = self.gpsdat[1]
-            # self.lon = -1*self.lon
-            # self.gpsqual = self.gpsdat[4]
             self.NODATA.setText('')
             self.lat = float(self.gpsdat[0])
             self.lon = self.gpsdat[1]
@@ -846,16 +875,3 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
-    # Use sys.argv for proper argument parsing in PySide6
-
-
-    # def start_main_app():
-    #     window = MainWindow()
-    #     # window.showFullScreen()
-    #     window.show()
-
-    # QTimer.singleShot(3400, start_main_app)
-    # sys.exit(app.exec())
-
-
-# if __name__ == "__main__":
