@@ -286,28 +286,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Handle return pressed for frequency select
         # self.freqInput.returnPressed.connect(self.handle_freq_input)
         # self.freqInput.
-        self.freq_val = 750.00 #Comment out when no longer testing
+        # self.freq_val = 750.00 #Comment out when no longer testing
 
         # Signals and slots connections:
-        def time_plot_callback(samples):
-            time_plot_curve_i.setData(samples.real)
-            time_plot_curve_q.setData(samples.imag)
+        # def time_plot_callback(samples):
+        #     time_plot_curve_i.setData(samples.real)
+        #     time_plot_curve_q.setData(samples.imag)
 
-        def freq_plot_callback(PSD_avg):
-            # TODO figure out if there's a way to just change the visual ticks instead of the actual x vals
-            f = np.linspace(self.freq_val*1e3 - worker.sample_rate/2.0, self.freq_val*1e3 + worker.sample_rate/2.0, fft_size) / 1e6
-            freq_plot_curve.setData(f, PSD_avg)
-            freq_plot.setXRange(self.freq_val*1e3/1e6 - worker.sample_rate/2e6, self.freq_val*1e3/1e6 + worker.sample_rate/2e6)
+        # def freq_plot_callback(PSD_avg):
+        #     # TODO figure out if there's a way to just change the visual ticks instead of the actual x vals
+        #     f = np.linspace(self.freq_val*1e3 - worker.sample_rate/2.0, self.freq_val*1e3 + worker.sample_rate/2.0, fft_size) / 1e6
+        #     freq_plot_curve.setData(f, PSD_avg)
+        #     freq_plot.setXRange(self.freq_val*1e3/1e6 - worker.sample_rate/2e6, self.freq_val*1e3/1e6 + worker.sample_rate/2e6)
 
-        def waterfall_plot_callback(spectrogram):
-            imageitem.setImage(spectrogram, autoLevels=False)
-            sigma = np.std(spectrogram)
-            mean = np.mean(spectrogram)
-            self.spectrogram_min = mean - 2*sigma # save to window state
-            self.spectrogram_max = mean + 2*sigma
+        # def waterfall_plot_callback(spectrogram):
+        #     imageitem.setImage(spectrogram, autoLevels=False)
+        #     sigma = np.std(spectrogram)
+        #     mean = np.mean(spectrogram)
+        #     self.spectrogram_min = mean - 2*sigma # save to window state
+        #     self.spectrogram_max = mean + 2*sigma
 
-        def end_of_run_callback():
-            QTimer.singleShot(0, worker.run) # Run worker again immediately
+        # def end_of_run_callback():
+        #     QTimer.singleShot(0, worker.run) # Run worker again immediately
 
         #Plots To Call #addWidget adds plot #removeWidget removes plot to keep memory well
         #Add Layout to QLabel = FREQ_GRAPH
@@ -316,42 +316,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.FREQ_GRAPH.setScaledContents(True)
 
         # Time plot
-        time_plot = pg.PlotWidget(labels={'left': 'Amplitude', 'bottom': 'Time [microseconds]'})
-        time_plot.setMouseEnabled(x=False, y=True)
-        time_plot.setYRange(-1.1, 1.1)
-        time_plot_curve_i = time_plot.plot([])
-        time_plot_curve_q = time_plot.plot([])
-        self.time_layout.addWidget(time_plot)
+        # time_plot = pg.PlotWidget(labels={'left': 'Amplitude', 'bottom': 'Time [microseconds]'})
+        # time_plot.setMouseEnabled(x=False, y=True)
+        # time_plot.setYRange(-1.1, 1.1)
+        # time_plot_curve_i = time_plot.plot([])
+        # time_plot_curve_q = time_plot.plot([])
+        # self.time_layout.addWidget(time_plot)
 
-        # Freq plot
-        freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
-        freq_plot.setMouseEnabled(x=False, y=True)
-        freq_plot_curve = freq_plot.plot([])
-        freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
-        freq_plot.setYRange(-30, 20)
-        self.freq_layout.addWidget(freq_plot)
+        # # Freq plot
+        # freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
+        # freq_plot.setMouseEnabled(x=False, y=True)
+        # freq_plot_curve = freq_plot.plot([])
+        # freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
+        # freq_plot.setYRange(-30, 20)
+        # self.freq_layout.addWidget(freq_plot)
 
-        # Waterfall plot
-        waterfall = pg.PlotWidget(labels={'left': 'Time [s]', 'bottom': 'Frequency [MHz]'})
-        imageitem = pg.ImageItem(axisOrder='col-major') # this arg is purely for performance
-        waterfall.addItem(imageitem)
-        waterfall.setMouseEnabled(x=False, y=False)
-        self.waterfall_layout.addWidget(waterfall)
+        # # Waterfall plot
+        # waterfall = pg.PlotWidget(labels={'left': 'Time [s]', 'bottom': 'Frequency [MHz]'})
+        # imageitem = pg.ImageItem(axisOrder='col-major') # this arg is purely for performance
+        # waterfall.addItem(imageitem)
+        # waterfall.setMouseEnabled(x=False, y=False)
+        # self.waterfall_layout.addWidget(waterfall)
 
-        # Colorbar for waterfall
-        colorbar = pg.HistogramLUTWidget()
-        colorbar.setImageItem(imageitem) # connects the bar to the waterfall imageitem
-        colorbar.item.gradient.loadPreset('viridis') # set the color map, also sets the imageitem
-        imageitem.setLevels((-30, 20)) # needs to come after colorbar is created for some reason
-        self.waterfall_layout.addWidget(colorbar)         
+        # # Colorbar for waterfall
+        # colorbar = pg.HistogramLUTWidget()
+        # colorbar.setImageItem(imageitem) # connects the bar to the waterfall imageitem
+        # colorbar.item.gradient.loadPreset('viridis') # set the color map, also sets the imageitem
+        # imageitem.setLevels((-30, 20)) # needs to come after colorbar is created for some reason
+        # self.waterfall_layout.addWidget(colorbar)         
 
-        worker.time_plot_update.connect(time_plot_callback) # connect the signal to the callback
-        worker.freq_plot_update.connect(freq_plot_callback)
-        worker.waterfall_plot_update.connect(waterfall_plot_callback)
-        worker.end_of_run.connect(end_of_run_callback)
+        # worker.time_plot_update.connect(time_plot_callback) # connect the signal to the callback
+        # worker.freq_plot_update.connect(freq_plot_callback)
+        # worker.waterfall_plot_update.connect(waterfall_plot_callback)
+        # worker.end_of_run.connect(end_of_run_callback)
 
-        self.sdr_thread.started.connect(worker.run) # kicks off the worker when the thread starts
-        self.sdr_thread.start()
+        # self.sdr_thread.started.connect(worker.run) # kicks off the worker when the thread starts
+        # self.sdr_thread.start()
         
         # Initialize sensor data arrays (720 data points per sensor) about 12 minutes of data
         self.data_sens1 = np.zeros(720)  # Sensor 1 (e.g., MQ4)
