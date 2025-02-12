@@ -13,7 +13,7 @@ def convert_to_degrees(raw_value):
     mm_mmmm = (decimal_value - int(decimal_value))/0.6
     position = degrees + mm_mmmm
     # If in upper hemisphere ONLY otherwise it will give wrong coordinates
-    position = -position
+    # position = -position
     position = "%.4f" %(position)
     return position
 
@@ -38,7 +38,8 @@ def GGA_Read():
                 lat = (float)(nmea_latitude)
                 lat = convert_to_degrees(lat)
                 longi = (float)(nmea_longitude)
-                longi = convert_to_degrees(longi)                
+                # Turn off the -float if you are in the eastern hemisphere
+                longi = -float(convert_to_degrees(longi))                
                 return lat,longi,nmea_time,Sat_pos,GPS_quality_indicator
 
 
