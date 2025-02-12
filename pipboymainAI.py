@@ -308,7 +308,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.STOP.clicked.connect(self.stop)
         self.NEXT.clicked.connect(self.next_track)
         self.musicList.itemClicked.connect(self.listItemClicked)
-        self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
+        # self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
 
         self.progressBar_2.setMinimum(0)
         self.progressBar_2.setMaximum(100)
