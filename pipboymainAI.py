@@ -134,7 +134,7 @@ stream = p.open(format=pyaudio.paFloat32,
 #         for _ in range(10):
 #             streamer.recv(recv_buffer, metadata)
 
-class SDRWorker:
+class SDRWorker():
     async def run(self, update_callback):
         sdr = RtlSdr()
         sdr.sample_rate = 2.4e6
@@ -266,7 +266,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Set up UI elements (ensure the .ui file has been updated for PySide6)
         self.setupUi(self)
 
-        SDRWorker(self)
+        SDRWorker()
 
         #Media Player Code Below
         # UI Elements
