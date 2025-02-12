@@ -39,7 +39,7 @@ def GGA_Read():
                 lat = convert_to_degrees(lat)
                 longi = (float)(nmea_longitude)
                 # Turn off the -float if you are in the eastern hemisphere
-                longi = -float(convert_to_degrees(longi))                
+                longi = -1*(convert_to_degrees(longi))                
                 return lat,longi,nmea_time,Sat_pos,GPS_quality_indicator
 
 
