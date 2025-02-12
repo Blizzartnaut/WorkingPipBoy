@@ -491,7 +491,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pipboygif.addWidget(self.vaultlabel)
         self.vaultlabel.setScaledContents(True)
 
-        QTimer.singleShot(3000, self.start_fullscreen)
+        QTimer.singleShot(50, self.start_fullscreen)
 
     def start_fullscreen(self):
         self.showFullScreen()
@@ -685,8 +685,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # self.lon = -1*self.lon
             # self.gpsqual = self.gpsdat[4]
             self.NODATA.setText('')
-            self.lat = self.gpsdat[0]
+            self.lat = float(self.gpsdat[0])
             self.lon = self.gpsdat[1]
+            self.lon = float(self.lon) * -1
             self.UTCTime = self.gpsdat[2]
             self.gpsqual = self.gpsdat[4]
             print("GPS: Lat=", self.lat, " Lon=", self.lon, " Qual=", self.gpsqual, " UTC=", self.UTCTime)
