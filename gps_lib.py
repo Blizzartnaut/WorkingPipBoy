@@ -12,6 +12,8 @@ def convert_to_degrees(raw_value):
     degrees = int(decimal_value)
     mm_mmmm = (decimal_value - int(decimal_value))/0.6
     position = degrees + mm_mmmm
+    # If in upper hemisphere ONLY otherwise it will give wrong coordinates
+    position = -position
     position = "%.4f" %(position)
     return position
 
