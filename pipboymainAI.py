@@ -491,6 +491,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pipboygif.addWidget(self.vaultlabel)
         self.vaultlabel.setScaledContents(True)
 
+        QTimer.singleShot(3000, self.start_fullscreen)
+
     def start_fullscreen(self):
         self.showFullScreen()
     
@@ -681,39 +683,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gpsqual = self.gpsdat[4]
 
         print(f"GPS: Lat={self.lat}, Lon={self.lon}, Qual={self.gpsqual}")
-        # coords = self.read_gps_data()
-        # if coords != (None, None):
-        #     return coords
-        # else:
-        #     # Fallback fixed coordinates (for testing or if GPS data is unavailable)
-        #     # print('GPS data not found')
-        #     return 41.0120, -76.8477
-    # ---------------------------------------------------------------------
-    
-    # def read_gps_data(self):
-    #     """
-    #     Attempt to read one line from the GPS serial port and parse it.
-    #     Returns a tuple (latitude, longitude) if a valid GPGGA sentence is found.
-    #     If no valid data is available, returns (None, None).
-    #     """
-    #     if hasattr(self, 'serial_portGPS'):
-    #         try:
-    #             # Check if data is available to prevent blocking (loop over data)
-    #             while self.serial_portGPS.in_waiting > 0:
-    #                 line = self.serial_portGPS.readline().decode('ascii', errors='replace').strip()
-    #                 if line.startswith('$GPGGA'):
-    #                     try:
-    #                         msg = pynmea2.parse(line)
-    #                         print(msg.latitude, msg.longitude)
-    #                         return (msg.latitude, msg.longitude)
-    #                     except Exception as parse_err:
-    #                         print("Parse Error:", parse_err)
-    #         except Exception as e:
-    #             print("Error reading GPS data:", e)
-    #         return (None, None)
-    #     else:
-    #         # print("GPS serial port not initialized.")
-    #         return (None, None)
         
     def update_memory_usage(self):
         # """
@@ -786,11 +755,12 @@ if __name__ == "__main__":
     #Create and show the splash screen
     splash = SplashScreen(video_path, audio_path, duration=3400)
     splash.show()
+
     
     def start_main_app():
         window = MainWindow()
-        window.showFullScreen()
+        # window.showFullScreen()
         window.show()
     
-    QTimer.singleShot(3400, start_main_app)
+    QTimer.singleShot(200, start_main_app)
     sys.exit(app.exec())
