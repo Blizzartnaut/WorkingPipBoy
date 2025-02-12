@@ -273,10 +273,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # from PySide6.QtWidgets import QVBoxLayout, QWidget
         #Init SDR worker and thread
-        self.sdr_thread = QThread()
-        self.sdr_thread.setObjectName('SDR_Thread')
-        worker = SDRWorker()
-        worker.moveToThread(self.sdr_thread)
+        # self.sdr_thread = QThread()
+        # self.sdr_thread.setObjectName('SDR_Thread')
+        # worker = SDRWorker()
+        # worker.moveToThread(self.sdr_thread)
 
         #Create lineEdit to type in frequency for testing until we can implement additional hardware
         # self.freq_plot_butt.clicked.connect(self.display_freqplot)
