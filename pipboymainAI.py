@@ -52,6 +52,9 @@ import pyaudio
 import asyncio
 from qasync import QEventLoop, asyncSlot
 
+#for music
+import vlc
+
 #for testing
 radioval = 0
 
@@ -542,46 +545,43 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.curve.setData(spectrum)
 
     def set_current_track(self, index):
-        """Set the current track on the player."""
+        """Set the current track for the VLC player."""
         if 0 <= index < len(self.musicFiles):
             self.currentIndex = index
-            self.player.setSource(QUrl.fromLocalFile(self.musicFiles[self.currentIndex]))
-            self.player.mediaStatusChanged.connect(lambda status: print("Media status:", status))
-            # self.player.play()
-            self.play()
+            if self.player:
+                self.player.stop()
+            self.player = vlc.MediaPlayer(self.musicFiles[self.currentIndex])
 
     def updateLabels(self):
-        """Update the 'Current Play' and 'Next Up' labels."""
         if self.musicFiles:
             current_song = os.path.basename(self.musicFiles[self.currentIndex])
-            self.CurrentPlay.setText(f"Current Play: {current_song}")
+            self.currentPlayLabel.setText(f"Current Play: {current_song}")
             next_index = (self.currentIndex + 1) % len(self.musicFiles)
             next_song = os.path.basename(self.musicFiles[next_index])
-            self.NextUp.setText(f"Next Up: {next_song}")
+            self.nextUpLabel.setText(f"Next Up: {next_song}")
         else:
-            self.CurrentPlay.setText("Current Play: None")
-            self.NextUp.setText("Next Up: None")
+            self.currentPlayLabel.setText("Current Play: None")
+            self.nextUpLabel.setText("Next Up: None")
     
     def listItemClicked(self, item):
-        """When an item is clicked, update the current track and play it."""
         row = self.musicList.row(item)
         self.set_current_track(row)
         self.updateLabels()
-        self.player.play()
+        self.play()
     
     def play(self):
-        self.player.play()
-        self.player.errorOccurred.connect(lambda err: print("Media Player Error:", self.player.errorString()))
+        if self.player:
+            self.player.play()
 
     def stop(self):
-        self.player.stop()
+        if self.player:
+            self.player.stop()
     
     def next_track(self):
-        """Advance to the next track, update labels, and start playback."""
         self.currentIndex = (self.currentIndex + 1) % len(self.musicFiles)
         self.set_current_track(self.currentIndex)
         self.updateLabels()
-        self.player.play()
+        self.play()
     
     def handle_media_status_changed(self, status):
         """If a track finishes, automatically play the next track."""
