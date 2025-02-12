@@ -287,13 +287,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.freqInput.returnPressed.connect(self.handle_freq_input)
         # self.freqInput.
         # self.freq_val = 750.00 #Comment out when no longer testing
-        freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
-        freq_plot.setMouseEnabled(x=False, y=True)
+        self.freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
+        self.freq_plot.setMouseEnabled(x=False, y=True)
         # freq_plot_curve = freq_plot.plot([])
-        self.curve = self.freq_layout.findChild(pg.PlotWidget).plot()
-        freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
-        freq_plot.setYRange(-30, 20)
-        self.freq_layout.addWidget(freq_plot)
+        self.curve = self.freq_plot.findChild(pg.PlotWidget).plot()
+        self.freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
+        self.freq_plot.setYRange(-30, 20)
+        self.freq_layout.addWidget(self.freq_plot)
 
 
         # Signals and slots connections:
