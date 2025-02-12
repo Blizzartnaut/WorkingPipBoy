@@ -16,15 +16,16 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QLineEdit, QMainWindow, QMenuBar, QProgressBar,
-    QPushButton, QRadioButton, QSizePolicy, QSlider,
-    QStatusBar, QTabWidget, QVBoxLayout, QWidget)
+    QLineEdit, QListView, QMainWindow, QMenuBar,
+    QProgressBar, QPushButton, QRadioButton, QSizePolicy,
+    QSlider, QStatusBar, QTabWidget, QVBoxLayout,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(803, 520)
+        MainWindow.resize(799, 511)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.tabWidget = QTabWidget(self.centralwidget)
@@ -272,7 +273,7 @@ class Ui_MainWindow(object):
         self.freqInput.setEchoMode(QLineEdit.Normal)
         self.FREQ_2 = QLabel(self.RADIO)
         self.FREQ_2.setObjectName(u"FREQ_2")
-        self.FREQ_2.setGeometry(QRect(210, 10, 41, 31))
+        self.FREQ_2.setGeometry(QRect(210, 10, 51, 31))
         self.time_plot_butt = QPushButton(self.RADIO)
         self.time_plot_butt.setObjectName(u"time_plot_butt")
         self.time_plot_butt.setGeometry(QRect(300, 10, 93, 28))
@@ -305,10 +306,28 @@ class Ui_MainWindow(object):
         self.SOURCE_FIND.setObjectName(u"SOURCE_FIND")
         self.MENU2.addTab(self.SOURCE_FIND, "")
         self.tabWidget.addTab(self.radio, "")
+        self.music = QWidget()
+        self.music.setObjectName(u"music")
+        self.MusicList = QListView(self.music)
+        self.MusicList.setObjectName(u"MusicList")
+        self.MusicList.setGeometry(QRect(10, 20, 411, 401))
+        self.CurrentPlay = QLabel(self.music)
+        self.CurrentPlay.setObjectName(u"CurrentPlay")
+        self.CurrentPlay.setGeometry(QRect(430, 20, 351, 31))
+        self.NextUp = QLabel(self.music)
+        self.NextUp.setObjectName(u"NextUp")
+        self.NextUp.setGeometry(QRect(426, 70, 351, 31))
+        self.PLAY = QPushButton(self.music)
+        self.PLAY.setObjectName(u"PLAY")
+        self.PLAY.setGeometry(QRect(430, 120, 111, 41))
+        self.NEXT = QPushButton(self.music)
+        self.NEXT.setObjectName(u"NEXT")
+        self.NEXT.setGeometry(QRect(600, 120, 121, 41))
+        self.tabWidget.addTab(self.music, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 803, 26))
+        self.menubar.setGeometry(QRect(0, 0, 799, 26))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -316,8 +335,8 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(3)
-        self.MENU2.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(5)
+        self.MENU2.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -336,19 +355,19 @@ class Ui_MainWindow(object):
         self.SENS1.setText(QCoreApplication.translate("MainWindow", u"SENSOR 1", None))
         self.SENS2.setText(QCoreApplication.translate("MainWindow", u"SENSOR 2", None))
         self.SENS3.setText(QCoreApplication.translate("MainWindow", u"SENSOR 3", None))
-        self.SENS4.setText(QCoreApplication.translate("MainWindow", u"SENSOR 4", None))
-        self.SENS5.setText(QCoreApplication.translate("MainWindow", u"SENSOR 5", None))
-        self.SENS6.setText(QCoreApplication.translate("MainWindow", u"SENSOR 6", None))
-        self.SENS7.setText(QCoreApplication.translate("MainWindow", u"SENSOR 7", None))
+        self.SENS4.setText("")
+        self.SENS5.setText("")
+        self.SENS6.setText("")
+        self.SENS7.setText("")
         self.TEMP.setText(QCoreApplication.translate("MainWindow", u"TEMPERATURE: fff deg", None))
-        self.SENSGRAPH.setText(QCoreApplication.translate("MainWindow", u"GRAPH", None))
+        self.SENSGRAPH.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.air), QCoreApplication.translate("MainWindow", u"AIR", None))
         self.sec4.setText(QCoreApplication.translate("MainWindow", u"4 SEC AVG", None))
         self.min.setText(QCoreApplication.translate("MainWindow", u"1 MIN AVG", None))
         self.hour.setText(QCoreApplication.translate("MainWindow", u"1 HOUR AVG", None))
         self.hour24.setText(QCoreApplication.translate("MainWindow", u"24 HOUR AVG", None))
         self.lifetime.setText(QCoreApplication.translate("MainWindow", u"LIFETIME S", None))
-        self.SELGRAPHRAD.setText(QCoreApplication.translate("MainWindow", u"GRAPH", None))
+        self.SELGRAPHRAD.setText("")
         self.sel_4.setText(QCoreApplication.translate("MainWindow", u"4 SEC AVG", None))
         self.sel_1min.setText(QCoreApplication.translate("MainWindow", u"1 MIN AVG", None))
         self.sel_1hour.setText(QCoreApplication.translate("MainWindow", u"1 HOUR AVG", None))
@@ -358,7 +377,7 @@ class Ui_MainWindow(object):
         self.OSM.setText(QCoreApplication.translate("MainWindow", u"OSM", None))
         self.TERRAIN.setText(QCoreApplication.translate("MainWindow", u"TERRAIN", None))
         self.HILL.setText(QCoreApplication.translate("MainWindow", u"HILL MAP", None))
-        self.MAP.setText(QCoreApplication.translate("MainWindow", u"MAP PLACEHOLDER", None))
+        self.MAP.setText("")
         self.LAT.setText("")
         self.LON.setText("")
         self.UTC.setText("")
@@ -376,5 +395,10 @@ class Ui_MainWindow(object):
         self.MENU2.setTabText(self.MENU2.indexOf(self.RADIO), QCoreApplication.translate("MainWindow", u"RADIO", None))
         self.MENU2.setTabText(self.MENU2.indexOf(self.SOURCE_FIND), QCoreApplication.translate("MainWindow", u"SOURCE FINDER", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.radio), QCoreApplication.translate("MainWindow", u"RADIO", None))
+        self.CurrentPlay.setText(QCoreApplication.translate("MainWindow", u"Current:", None))
+        self.NextUp.setText(QCoreApplication.translate("MainWindow", u"Next Up:", None))
+        self.PLAY.setText(QCoreApplication.translate("MainWindow", u"Play", None))
+        self.NEXT.setText(QCoreApplication.translate("MainWindow", u"Next", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.music), QCoreApplication.translate("MainWindow", u"MUSIC", None))
     # retranslateUi
 

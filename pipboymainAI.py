@@ -45,6 +45,13 @@ import time
 #Import GPS Mapping Functions
 from gps_lib import GGA_Read, RMC_Read, GSV_Read
 
+#For RTL-SDR
+from rtlsdr import *
+from pylab import *
+import pyaudio
+import asyncio
+from qasync import QEventLoop, asyncSlot
+
 #for testing
 radioval = 0
 
@@ -80,117 +87,143 @@ time_plot_samples = 500    # Number of samples to show in the time-domain plot
 gain = 50                  # Default gain (in dB)
 sdr_type = "sim"           # The type of SDR to use ("sim" means simulated data; could also be "usrp" or "pluto")
 
+# --- SDR Configuration ---
+# sdr = RtlSdr()
+# sdr.sample_rate = 2.4e6     # Sample rate in Hz
+# sdr.center_freq = 105.7e6     # Example: tune to 100 MHz (FM band)
+# sdr.gain = 'auto'
+
+# --- PyAudio Setup ---
+p = pyaudio.PyAudio()
+stream = p.open(format=pyaudio.paFloat32,
+                channels=1,
+                rate=48000,       # Target audio sample rate
+                output=True)
+
 # Init SDR
-if sdr_type == "pluto":
-    import adi
-    sdr = adi.Pluto("ip:192.168.1.10")
-    sdr.rx_lo = int(center_freq)
-    sdr.sample_rate = int(sample_rate)
-    sdr.rx_rf_bandwidth = int(sample_rate*0.8) # antialiasing filter bandwidth
-    sdr.rx_buffer_size = int(fft_size)
-    sdr.gain_control_mode_chan0 = 'manual'
-    sdr.rx_hardwaregain_chan0 = gain # dB
-elif sdr_type == "usrp":
-    import uhd
-    #usrp = uhd.usrp.MultiUSRP(args="addr=192.168.1.10")
-    usrp = uhd.usrp.MultiUSRP(args="addr=192.168.1.201")
-    usrp.set_rx_rate(sample_rate, 0)
-    usrp.set_rx_freq(uhd.libpyuhd.types.tune_request(center_freq), 0)
-    usrp.set_rx_gain(gain, 0)
+# if sdr_type == "pluto":
+#     import adi
+#     sdr = adi.Pluto("ip:192.168.1.10")
+#     sdr.rx_lo = int(center_freq)
+#     sdr.sample_rate = int(sample_rate)
+#     sdr.rx_rf_bandwidth = int(sample_rate*0.8) # antialiasing filter bandwidth
+#     sdr.rx_buffer_size = int(fft_size)
+#     sdr.gain_control_mode_chan0 = 'manual'
+#     sdr.rx_hardwaregain_chan0 = gain # dB
+# elif sdr_type == "usrp":
+#     import uhd
+#     #usrp = uhd.usrp.MultiUSRP(args="addr=192.168.1.10")
+#     usrp = uhd.usrp.MultiUSRP(args="addr=192.168.1.201")
+#     usrp.set_rx_rate(sample_rate, 0)
+#     usrp.set_rx_freq(uhd.libpyuhd.types.tune_request(center_freq), 0)
+#     usrp.set_rx_gain(gain, 0)
 
-    # Set up the stream and receive buffer
-    st_args = uhd.usrp.StreamArgs("fc32", "sc16")
-    st_args.channels = [0]
-    metadata = uhd.types.RXMetadata()
-    streamer = usrp.get_rx_stream(st_args)
-    recv_buffer = np.zeros((1, fft_size), dtype=np.complex64)
+#     # Set up the stream and receive buffer
+#     st_args = uhd.usrp.StreamArgs("fc32", "sc16")
+#     st_args.channels = [0]
+#     metadata = uhd.types.RXMetadata()
+#     streamer = usrp.get_rx_stream(st_args)
+#     recv_buffer = np.zeros((1, fft_size), dtype=np.complex64)
 
-    # Start Stream
-    stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.start_cont)
-    stream_cmd.stream_now = True
-    streamer.issue_stream_cmd(stream_cmd)
+#     # Start Stream
+#     stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.start_cont)
+#     stream_cmd.stream_now = True
+#     streamer.issue_stream_cmd(stream_cmd)
 
-    def flush_buffer():
-        for _ in range(10):
-            streamer.recv(recv_buffer, metadata)
+#     def flush_buffer():
+#         for _ in range(10):
+#             streamer.recv(recv_buffer, metadata)
 
+class SDRWorker:
+    async def run(self, update_callback):
+        sdr = RtlSdr()
+        sdr.sample_rate = 2.4e6
+        sdr.center_freq = 100e6
+        sdr.gain = 'auto'
+        # Stream samples asynchronously
+        async for samples in sdr.stream():
+            # Compute a spectrum (FFT) of the samples
+            spectrum = np.abs(np.fft.fftshift(np.fft.fft(samples)))
+            update_callback(spectrum)
+            await asyncio.sleep(0)  # yield control to the event loop
 
-class SDRWorker(QObject):
-    def __init__(self):
-        super().__init__()
-        self.gain = gain
-        self.sample_rate = sample_rate
-        self.freq = 0  # Frequency in kHz (to accommodate QSlider limits)
-        self.spectrogram = -50 * np.ones((fft_size, num_rows))  # Initialize waterfall (spectrogram) matrix
-        self.PSD_avg = -50 * np.ones(fft_size)  # Initialize an averaged power spectral density array
+#SDR Worker from online resource, may not work with RTL-SDR Writing more code to help with it
+# class SDRWorker(QObject):
+#     def __init__(self):
+#         super().__init__()
+#         self.gain = gain
+#         self.sample_rate = sample_rate
+#         self.freq = 0  # Frequency in kHz (to accommodate QSlider limits)
+#         self.spectrogram = -50 * np.ones((fft_size, num_rows))  # Initialize waterfall (spectrogram) matrix
+#         self.PSD_avg = -50 * np.ones(fft_size)  # Initialize an averaged power spectral density array
 
-    # PyQt Signals – these are custom signals that will be emitted when new data is ready.
-    time_plot_update = Signal(np.ndarray)
-    freq_plot_update = Signal(np.ndarray)
-    waterfall_plot_update = Signal(np.ndarray)
-    end_of_run = Signal()  # Emitted each loop to signal that the worker is ready to run again
+#     # PyQt Signals – these are custom signals that will be emitted when new data is ready.
+#     time_plot_update = Signal(np.ndarray)
+#     freq_plot_update = Signal(np.ndarray)
+#     waterfall_plot_update = Signal(np.ndarray)
+#     end_of_run = Signal()  # Emitted each loop to signal that the worker is ready to run again
 
-    # Slot functions to update frequency, gain, and sample rate
-    def update_freq(self, val):
-        print("Updated freq to:", val, 'kHz')
-        if sdr_type == "pluto":
-            sdr.rx_lo = int(val * 1e3)
-        elif sdr_type == "usrp":
-            usrp.set_rx_freq(uhd.libpyuhd.types.tune_request(val * 1e3), 0)
-            flush_buffer()
+#     # Slot functions to update frequency, gain, and sample rate
+#     def update_freq(self, val):
+#         print("Updated freq to:", val, 'kHz')
+#         if sdr_type == "pluto":
+#             sdr.rx_lo = int(val * 1e3)
+#         elif sdr_type == "usrp":
+#             usrp.set_rx_freq(uhd.libpyuhd.types.tune_request(val * 1e3), 0)
+#             flush_buffer()
 
-    def update_gain(self, val):
-        print("Updated gain to:", val, 'dB')
-        self.gain = val
-        if sdr_type == "pluto":
-            sdr.rx_hardwaregain_chan0 = val
-        elif sdr_type == "usrp":
-            usrp.set_rx_gain(val, 0)
-            flush_buffer()
+#     def update_gain(self, val):
+#         print("Updated gain to:", val, 'dB')
+#         self.gain = val
+#         if sdr_type == "pluto":
+#             sdr.rx_hardwaregain_chan0 = val
+#         elif sdr_type == "usrp":
+#             usrp.set_rx_gain(val, 0)
+#             flush_buffer()
 
-    def update_sample_rate(self, val):
-        print("Updated sample rate to:", sample_rates[val], 'MHz')
-        if sdr_type == "pluto":
-            sdr.sample_rate = int(sample_rates[val] * 1e6)
-            sdr.rx_rf_bandwidth = int(sample_rates[val] * 1e6 * 0.8)
-        elif sdr_type == "usrp":
-            usrp.set_rx_rate(sample_rates[val] * 1e6, 0)
-            flush_buffer()
+#     def update_sample_rate(self, val):
+#         print("Updated sample rate to:", sample_rates[val], 'MHz')
+#         if sdr_type == "pluto":
+#             sdr.sample_rate = int(sample_rates[val] * 1e6)
+#             sdr.rx_rf_bandwidth = int(sample_rates[val] * 1e6 * 0.8)
+#         elif sdr_type == "usrp":
+#             usrp.set_rx_rate(sample_rates[val] * 1e6, 0)
+#             flush_buffer()
 
-    # Main processing loop – this function is called repeatedly on a separate thread.
-    def run(self):
-        start_t = time.time()
+#     # Main processing loop – this function is called repeatedly on a separate thread.
+#     def run(self):
+#         start_t = time.time()
 
-        # Get samples from the chosen SDR source:
-        if sdr_type == "pluto":
-            samples = sdr.rx() / 2**11  # Scale received samples
-        elif sdr_type == "usrp":
-            streamer.recv(recv_buffer, metadata)
-            samples = recv_buffer[0]
-        elif sdr_type == "sim":
-            # Generate simulated data (tone + noise)
-            tone = np.exp(2j * np.pi * self.sample_rate * 0.1 * np.arange(fft_size) / self.sample_rate)
-            noise = np.random.randn(fft_size) + 1j * np.random.randn(fft_size)
-            samples = self.gain * tone * 0.02 + 0.1 * noise
-            np.clip(samples.real, -1, 1, out=samples.real)
-            np.clip(samples.imag, -1, 1, out=samples.imag)
+#         # Get samples from the chosen SDR source:
+#         if sdr_type == "pluto":
+#             samples = sdr.rx() / 2**11  # Scale received samples
+#         elif sdr_type == "usrp":
+#             streamer.recv(recv_buffer, metadata)
+#             samples = recv_buffer[0]
+#         elif sdr_type == "sim":
+#             # Generate simulated data (tone + noise)
+#             tone = np.exp(2j * np.pi * self.sample_rate * 0.1 * np.arange(fft_size) / self.sample_rate)
+#             noise = np.random.randn(fft_size) + 1j * np.random.randn(fft_size)
+#             samples = self.gain * tone * 0.02 + 0.1 * noise
+#             np.clip(samples.real, -1, 1, out=samples.real)
+#             np.clip(samples.imag, -1, 1, out=samples.imag)
 
-        # Emit a signal for the time-domain plot (first time_plot_samples of the data)
-        self.time_plot_update.emit(samples[0:time_plot_samples])
+#         # Emit a signal for the time-domain plot (first time_plot_samples of the data)
+#         self.time_plot_update.emit(samples[0:time_plot_samples])
 
-        # Compute the FFT to get the power spectral density (PSD)
-        PSD = 10.0 * np.log10(np.abs(np.fft.fftshift(np.fft.fft(samples)))**2 / fft_size)
-        # Smooth (average) the PSD over time
-        self.PSD_avg = self.PSD_avg * 0.99 + PSD * 0.01
-        self.freq_plot_update.emit(self.PSD_avg)
+#         # Compute the FFT to get the power spectral density (PSD)
+#         PSD = 10.0 * np.log10(np.abs(np.fft.fftshift(np.fft.fft(samples)))**2 / fft_size)
+#         # Smooth (average) the PSD over time
+#         self.PSD_avg = self.PSD_avg * 0.99 + PSD * 0.01
+#         self.freq_plot_update.emit(self.PSD_avg)
 
-        # Update the waterfall (spectrogram): roll the spectrogram matrix and add new FFT results
-        self.spectrogram[:] = np.roll(self.spectrogram, 1, axis=1)
-        self.spectrogram[:, 0] = PSD
-        self.waterfall_plot_update.emit(self.spectrogram)
+#         # Update the waterfall (spectrogram): roll the spectrogram matrix and add new FFT results
+#         self.spectrogram[:] = np.roll(self.spectrogram, 1, axis=1)
+#         self.spectrogram[:, 0] = PSD
+#         self.waterfall_plot_update.emit(self.spectrogram)
 
-        #print("Frames per second:", 1 / (time.time() - start_t))
-        self.end_of_run.emit()  # Signal that one processing loop is done
+#         #print("Frames per second:", 1 / (time.time() - start_t))
+#         self.end_of_run.emit()  # Signal that one processing loop is done
 
 class SplashScreen(QMainWindow):
     def __init__(self, gif_path, audio_path, duration=3400):
@@ -232,6 +265,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super().__init__()
         # Set up UI elements (ensure the .ui file has been updated for PySide6)
         self.setupUi(self)
+
+
 
         self.progressBar_2.setMinimum(0)
         self.progressBar_2.setMaximum(100)
@@ -496,6 +531,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def start_fullscreen(self):
         self.showFullScreen()
     
+    # RTL SDR Setup
+        @asyncSlot(object)
+        async def update_spectrum(self, spectrum):
+            # Update the graph with new spectrum data.
+            self.curve.setData(spectrum)
+
     # def handle_freq_input(self):
     #         freq_text = self.freqInput.text()
     #         try:
@@ -764,8 +805,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # or restore a predefined style if you have one).
         self.progressBar.setStyleSheet("")
         
-if __name__ == "__main__":
-    # Use sys.argv for proper argument parsing in PySide6
+async def main():
+    app = QApplication(sys.argv)
+    loop = QEventLoop(app)
+    asyncio.set_event_loop(loop)
+
+    window = MainWindow()
+    window.show()
+
+    worker = SDRWorker()
+    # Launch SDR streaming in the background; it calls update_spectrum as data arrives.
+    asyncio.create_task(worker.run(window.update_spectrum))
+
+    await loop.run_forever()
     app = QApplication(sys.argv)
     #Build Absolute path to your MP4 File (in same folder as script)
     video_path = os.path.abspath("/home/marceversole/WorkingPipBoy/PipBoySplash.gif")
@@ -774,11 +826,18 @@ if __name__ == "__main__":
     splash = SplashScreen(video_path, audio_path, duration=5400)
     splash.show()
 
-    
-    def start_main_app():
-        window = MainWindow()
-        # window.showFullScreen()
-        window.show()
-    
-    QTimer.singleShot(3400, start_main_app)
-    sys.exit(app.exec())
+if __name__ == '__main__':
+    asyncio.run(main())
+    # Use sys.argv for proper argument parsing in PySide6
+
+
+    # def start_main_app():
+    #     window = MainWindow()
+    #     # window.showFullScreen()
+    #     window.show()
+
+    # QTimer.singleShot(3400, start_main_app)
+    # sys.exit(app.exec())
+
+
+# if __name__ == "__main__":
