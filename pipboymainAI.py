@@ -12,7 +12,7 @@ from collections import deque
 
 # PySide6 imports
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton, QSizePolicy
-from PySide6.QtCore import QTimer, QDate, QTime, QIODevice, QUrl, Signal, QSize, Qt, QThread, QObject
+from PySide6.QtCore import QTimer, QDate, QTime, QIODevice, QUrl, Signal, QSize, Qt, QThread, QObject, Slot
 from PySide6.QtGui import QPixmap, QMovie, QImage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
@@ -287,6 +287,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.freqInput.returnPressed.connect(self.handle_freq_input)
         # self.freqInput.
         # self.freq_val = 750.00 #Comment out when no longer testing
+        self.curve = self.freq_layout.findChild(pg.PlotWidget).plot()
+
 
         # Signals and slots connections:
         # def time_plot_callback(samples):
@@ -804,6 +806,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Revert to the original style (you can either set an empty style sheet
         # or restore a predefined style if you have one).
         self.progressBar.setStyleSheet("")
+
+    @Slot(object)
+    def update_spectrum(self, spectrum):
+        # This method is called by SDRWorker with the computed spectrum.
+        # Update your curve with the new data.
+        self.curve.setData(spectrum)
         
 async def main():
     app = QApplication(sys.argv)
