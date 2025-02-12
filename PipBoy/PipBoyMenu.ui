@@ -745,16 +745,6 @@
      <attribute name="title">
       <string>MUSIC</string>
      </attribute>
-     <widget class="QListView" name="MusicList">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>20</y>
-        <width>411</width>
-        <height>401</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QLabel" name="CurrentPlay">
       <property name="geometry">
        <rect>
@@ -818,6 +808,19 @@
       </property>
       <property name="text">
        <string>STOP</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="MusicList">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>401</width>
+        <height>391</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
     </widget>

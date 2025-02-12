@@ -16,10 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QLineEdit, QListView, QMainWindow, QMenuBar,
-    QProgressBar, QPushButton, QRadioButton, QSizePolicy,
-    QSlider, QStatusBar, QTabWidget, QVBoxLayout,
-    QWidget)
+    QLineEdit, QMainWindow, QMenuBar, QProgressBar,
+    QPushButton, QRadioButton, QSizePolicy, QSlider,
+    QStatusBar, QTabWidget, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -308,9 +307,6 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.radio, "")
         self.music = QWidget()
         self.music.setObjectName(u"music")
-        self.MusicList = QListView(self.music)
-        self.MusicList.setObjectName(u"MusicList")
-        self.MusicList.setGeometry(QRect(10, 20, 411, 401))
         self.CurrentPlay = QLabel(self.music)
         self.CurrentPlay.setObjectName(u"CurrentPlay")
         self.CurrentPlay.setGeometry(QRect(430, 20, 351, 31))
@@ -326,6 +322,9 @@ class Ui_MainWindow(object):
         self.STOP = QPushButton(self.music)
         self.STOP.setObjectName(u"STOP")
         self.STOP.setGeometry(QRect(432, 200, 291, 41))
+        self.MusicList = QLabel(self.music)
+        self.MusicList.setObjectName(u"MusicList")
+        self.MusicList.setGeometry(QRect(10, 10, 401, 391))
         self.tabWidget.addTab(self.music, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -403,6 +402,7 @@ class Ui_MainWindow(object):
         self.PLAY.setText(QCoreApplication.translate("MainWindow", u"Play", None))
         self.NEXT.setText(QCoreApplication.translate("MainWindow", u"Next", None))
         self.STOP.setText(QCoreApplication.translate("MainWindow", u"STOP", None))
+        self.MusicList.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.music), QCoreApplication.translate("MainWindow", u"MUSIC", None))
     # retranslateUi
 

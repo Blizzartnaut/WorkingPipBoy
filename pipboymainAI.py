@@ -278,8 +278,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.nextUpLabel = QLabel("Next Up: None")
         
         # Layout setup
-        # mainLayout = QVBoxLayout()
-        self.MusicList.addWidget(self.musicList)
+        self.mainLayout = QVBoxLayout()
+        self.MusicList.setLayout(self.mainLayout)
+        self.MusicList.setScaledContents(True)
+        self.mainLayout.addWidget(self.musicList)
         # buttonLayout = QHBoxLayout()
         # buttonLayout.addWidget(self.playButton)
         # buttonLayout.addWidget(self.nextButton)
