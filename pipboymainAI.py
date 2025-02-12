@@ -555,13 +555,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def updateLabels(self):
         if self.musicFiles:
             current_song = os.path.basename(self.musicFiles[self.currentIndex])
-            self.currentPlayLabel.setText(f"Current Play: {current_song}")
+            self.CurrentPlay.setText(f"Current Play: {current_song}")
             next_index = (self.currentIndex + 1) % len(self.musicFiles)
             next_song = os.path.basename(self.musicFiles[next_index])
-            self.nextUpLabel.setText(f"Next Up: {next_song}")
+            self.NextUp.setText(f"Next Up: {next_song}")
         else:
-            self.currentPlayLabel.setText("Current Play: None")
-            self.nextUpLabel.setText("Next Up: None")
+            self.CurrentPlay.setText("Current Play: None")
+            self.NextUp.setText("Next Up: None")
     
     def listItemClicked(self, item):
         row = self.musicList.row(item)
@@ -583,10 +583,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.updateLabels()
         self.play()
     
-    def handle_media_status_changed(self, status):
-        """If a track finishes, automatically play the next track."""
-        if status == QMediaPlayer.EndOfMedia:
-            self.next_track()    
+    # def handle_media_status_changed(self, status):
+    #     """If a track finishes, automatically play the next track."""
+    #     if status == vlc.EndOfMedia:
+    #         self.next_track()    
 
     # def handle_freq_input(self):
     #         freq_text = self.freqInput.text()
