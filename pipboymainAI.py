@@ -698,6 +698,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         else:
             self.NODATA.setText('NO SAT DATA')
+            print(str(x))
 
 
         
