@@ -270,27 +270,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #Media Player Code Below
         # UI Elements
-        self.musicList = QListWidget()
-        self.playButton = QPushButton("PLAY")
-        self.nextButton = QPushButton("NEXT")
-        self.stopButton = QPushButton("STOP")
-        self.currentPlayLabel = QLabel("Current Play: None")
-        self.nextUpLabel = QLabel("Next Up: None")
+        # self.musicList = QListWidget()
+        # self.playButton = QPushButton("PLAY")
+        # self.nextButton = QPushButton("NEXT")
+        # self.stopButton = QPushButton("STOP")
+        # self.currentPlayLabel = QLabel("Current Play: None")
+        # self.nextUpLabel = QLabel("Next Up: None")
         
         # Layout setup
-        mainLayout = QVBoxLayout()
-        mainLayout.addWidget(self.musicList)
-        buttonLayout = QHBoxLayout()
-        buttonLayout.addWidget(self.playButton)
-        buttonLayout.addWidget(self.nextButton)
-        buttonLayout.addWidget(self.stopButton)
-        mainLayout.addLayout(buttonLayout)
-        mainLayout.addWidget(self.currentPlayLabel)
-        mainLayout.addWidget(self.nextUpLabel)
+        # mainLayout = QVBoxLayout()
+        # mainLayout.addWidget(self.musicList)
+        # buttonLayout = QHBoxLayout()
+        # buttonLayout.addWidget(self.playButton)
+        # buttonLayout.addWidget(self.nextButton)
+        # buttonLayout.addWidget(self.stopButton)
+        # mainLayout.addLayout(buttonLayout)
+        # mainLayout.addWidget(self.currentPlayLabel)
+        # mainLayout.addWidget(self.nextUpLabel)
         
-        centralWidget = QWidget()
-        centralWidget.setLayout(mainLayout)
-        self.setCentralWidget(centralWidget)
+        # centralWidget = QWidget()
+        # centralWidget.setLayout(mainLayout)
+        # self.setCentralWidget(centralWidget)
     
         # Load music files from a local directory
         self.musicDir = os.path.abspath("/home/marceversole/WorkingPipBoy/music")  # Ensure you create a folder named "music"
@@ -314,10 +314,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.updateLabels()
 
         # Connect signals to slots.
-        self.playButton.clicked.connect(self.play)
-        self.stopButton.clicked.connect(self.stop)
-        self.nextButton.clicked.connect(self.next_track)
-        self.musicList.itemClicked.connect(self.listItemClicked)
+        self.PLAY.clicked.connect(self.play)
+        self.STOP.clicked.connect(self.stop)
+        self.NEXT.clicked.connect(self.next_track)
+        self.MusicList.itemClicked.connect(self.listItemClicked)
         self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
 
         self.progressBar_2.setMinimum(0)

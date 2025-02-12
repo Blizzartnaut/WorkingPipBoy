@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>799</width>
-    <height>511</height>
+    <width>803</width>
+    <height>520</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -591,7 +591,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="RADIO">
        <attribute name="title">
@@ -807,6 +807,19 @@
        <string>Next</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="STOP">
+      <property name="geometry">
+       <rect>
+        <x>432</x>
+        <y>200</y>
+        <width>291</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>STOP</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
@@ -815,8 +828,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>799</width>
-     <height>26</height>
+     <width>803</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

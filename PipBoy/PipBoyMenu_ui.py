@@ -25,7 +25,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(799, 511)
+        MainWindow.resize(803, 520)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.tabWidget = QTabWidget(self.centralwidget)
@@ -323,11 +323,14 @@ class Ui_MainWindow(object):
         self.NEXT = QPushButton(self.music)
         self.NEXT.setObjectName(u"NEXT")
         self.NEXT.setGeometry(QRect(600, 120, 121, 41))
+        self.STOP = QPushButton(self.music)
+        self.STOP.setObjectName(u"STOP")
+        self.STOP.setGeometry(QRect(432, 200, 291, 41))
         self.tabWidget.addTab(self.music, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 799, 26))
+        self.menubar.setGeometry(QRect(0, 0, 803, 21))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -336,7 +339,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tabWidget.setCurrentIndex(5)
-        self.MENU2.setCurrentIndex(1)
+        self.MENU2.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -399,6 +402,7 @@ class Ui_MainWindow(object):
         self.NextUp.setText(QCoreApplication.translate("MainWindow", u"Next Up:", None))
         self.PLAY.setText(QCoreApplication.translate("MainWindow", u"Play", None))
         self.NEXT.setText(QCoreApplication.translate("MainWindow", u"Next", None))
+        self.STOP.setText(QCoreApplication.translate("MainWindow", u"STOP", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.music), QCoreApplication.translate("MainWindow", u"MUSIC", None))
     # retranslateUi
 
