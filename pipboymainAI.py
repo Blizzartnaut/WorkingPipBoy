@@ -609,11 +609,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # lat, lon = self.get_current_gps_coordinates()  # Replace with real GPS data when available
         self.get_current_gps_coordinates()
-        # Build the JavaScript call to update the marker on the map.
-        js_code = f"updateMarker({self.lat}, {self.lon});"
-        # Run the JavaScript in the QWebEngineView.
-        self.mapView.page().runJavaScript(js_code)
-        # print(f"Updated GPS marker to lat: {lat}, lon: {lon}")
 
     def update_cpm(self):
         # Append the current CPS value to the rolling deque.
@@ -694,6 +689,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.LAT.setText(f'LAT: {self.lat}')
             self.LON.setText(f'LON: {self.lon}')
             self.UTC.setText(f'UTC: {self.UTCTime}')
+
+            # Build the JavaScript call to update the marker on the map.
+            js_code = f"updateMarker({self.lat}, {self.lon});"
+            # Run the JavaScript in the QWebEngineView.
+            self.mapView.page().runJavaScript(js_code)
+            # print(f"Updated GPS marker to lat: {lat}, lon: {lon}")
         
         else:
             self.NODATA.setText('NO SAT DATA')
