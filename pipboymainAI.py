@@ -623,7 +623,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Compute CPM as the sum of the last 60 CPS values.
         cpm = sum(self.last_60_cps)
         # For example, update a UI element or print the CPM.
-        print("CPM:", cpm)
+        # print("CPM:", cpm)
         # Optionally, store the value in a variable for other processing:
         self.cpm = cpm
         self.sel_1min.setText(f'CPM: {str(self.cpm)}')
@@ -638,7 +638,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Compute CPM as the sum of the last 60 CPS values.
         cph = sum(self.last_60_cpm)
         # For example, update a UI element or print the CPM.
-        print("CPH:", cph)
+        # print("CPH:", cph)
         # Optionally, store the value in a variable for other processing:
         self.cph = cph
         self.hour.setText(str(self.cph))
@@ -650,7 +650,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Compute CPM as the sum of the last 60 CPS values.
         cpd = sum(self.last_24_cph)
         # For example, update a UI element or print the CPM.
-        print("CPD:", cpd)
+        # print("CPD:", cpd)
         # Optionally, store the value in a variable for other processing:
         self.cpd = cpd
         self.hour24.setText(str(self.cpd))
@@ -680,6 +680,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gpsdat = GGA_Read()
         self.lat = self.gpsdat[0]
         self.lon = self.gpsdat[1]
+        self.lon = -1*self.lon
         self.gpsqual = self.gpsdat[4]
 
         print(f"GPS: Lat={self.lat}, Lon={self.lon}, Qual={self.gpsqual}")
@@ -696,7 +697,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         percent_usage = (used_mb / 1840) * 100
 
         # Print memory usage for debugging (optional)
-        print(f"Memory Usage: {percent_usage:.1f}% ({used_mb:.1f} MB used out of 1840 MB)")
+        # print(f"Memory Usage: {percent_usage:.1f}% ({used_mb:.1f} MB used out of 1840 MB)")
 
         if percent_usage >= 90:
             quit()
