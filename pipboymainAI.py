@@ -104,7 +104,6 @@ stream = p.open(format=pyaudio.paFloat32,
                 rate=48000,       # Target audio sample rate
                 output=True)
 
-mixer = alsaaudio.Mixer()
 
 # Init SDR
 # if sdr_type == "pluto":
@@ -284,6 +283,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.MusicList.setScaledContents(True)
         self.mainLayout.addWidget(self.musicList)
         self.VolSlider.valueChanged.connect(self.set_volume_control)
+        self.mixer = alsaaudio.Mixer()
     
         # Playlist management: scan a local "music" directory for .mp3 files.
         self.musicDir = os.path.abspath("music")  # Create this folder if it doesn't exist.
