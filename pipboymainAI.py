@@ -54,6 +54,7 @@ from qasync import QEventLoop, asyncSlot
 
 #for music
 import vlc
+import alsaaudio
 
 #for testing
 radioval = 0
@@ -102,6 +103,8 @@ stream = p.open(format=pyaudio.paFloat32,
                 channels=1,
                 rate=48000,       # Target audio sample rate
                 output=True)
+
+mixer = alsaaudio.Mixer()
 
 # Init SDR
 # if sdr_type == "pluto":
@@ -280,6 +283,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.MusicList.setLayout(self.mainLayout)
         self.MusicList.setScaledContents(True)
         self.mainLayout.addWidget(self.musicList)
+        self.VolSlider.valueChanged.connect(self.set_volume_control)
     
         # Playlist management: scan a local "music" directory for .mp3 files.
         self.musicDir = os.path.abspath("music")  # Create this folder if it doesn't exist.
@@ -551,6 +555,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self.player:
                 self.player.stop()
             self.player = vlc.MediaPlayer(self.musicFiles[self.currentIndex])
+
+    def set_volume_control(self, value):
+        self.mixer.setvolume(value)
 
     def updateLabels(self):
         if self.musicFiles:
