@@ -403,10 +403,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.showFullScreen()
     
     # RTL SDR Setup
-    @asyncSlot(object)
-    async def update_spectrum(self, spectrum):
-        # Update the graph with new spectrum data.
-        self.curve.setData(spectrum)
+    # @asyncSlot(object)
+    # async def update_spectrum(self, spectrum):
+    #     # Update the graph with new spectrum data.
+    #     self.curve.setData(spectrum)
 
     def set_current_track(self, index):
         """Set the current track for the VLC player."""
@@ -466,7 +466,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # -r: resampling rate for audio out
         # -g: optional parameter to hard set gain parameter (0 or dont include for auto gain)
         cmd = (
-            f"rtl_fm -f {self.frequency} -M wbfm -s 2048e3 -r 48e3 | aplay -r 48e3 -f S16_LE"
+            f"rtl_fm -f {self.frequency} -M wbfm -s 2048000 -r 48000 | aplay -r 48k -f S16_LE"
         )
         # Launch command as subprocess
         self.process = subprocess.Popen(cmd, shell=True)
