@@ -10,6 +10,7 @@ from io import BytesIO
 import gc
 from collections import deque
 import subprocess
+import signal
 
 # PySide6 imports
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QListWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton, QSizePolicy
@@ -82,15 +83,15 @@ def start_local_server(port=8000, directory="."):
     print(f"Local HTTP server started on port {port}, serving directory: {directory}")
     return httpd
 
-# Defaults
-fft_size = 4096            # Size of the FFT to compute the spectrum (buffer size)
-num_rows = 200             # Number of rows for the waterfall plot (each row represents one FFT result)
-center_freq = 750e6        # Default center frequency (750 MHz)
-sample_rates = [56, 40, 20, 10, 5, 2, 1, 0.5]  # Available sample rates in MHz
-sample_rate = sample_rates[0] * 1e6  # Default sample rate in Hz (56 MHz)
-time_plot_samples = 500    # Number of samples to show in the time-domain plot
-gain = 50                  # Default gain (in dB)
-sdr_type = "sim"           # The type of SDR to use ("sim" means simulated data; could also be "usrp" or "pluto")
+# # Defaults
+# fft_size = 4096            # Size of the FFT to compute the spectrum (buffer size)
+# num_rows = 200             # Number of rows for the waterfall plot (each row represents one FFT result)
+# center_freq = 750e6        # Default center frequency (750 MHz)
+# sample_rates = [56, 40, 20, 10, 5, 2, 1, 0.5]  # Available sample rates in MHz
+# sample_rate = sample_rates[0] * 1e6  # Default sample rate in Hz (56 MHz)
+# time_plot_samples = 500    # Number of samples to show in the time-domain plot
+# gain = 50                  # Default gain (in dB)
+# sdr_type = "sim"           # The type of SDR to use ("sim" means simulated data; could also be "usrp" or "pluto")
 
 # --- SDR Configuration ---
 # sdr = RtlSdr()
@@ -438,6 +439,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def play(self):
         if self.player:
+            self.stop_stream()
             self.player.play()
 
     def stop(self):
@@ -469,13 +471,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             f"rtl_fm -f {self.frequency} -M wbfm -s 2048000 -r 48000 | aplay -r 48000 -f S16_LE"
         )
         # Launch command as subprocess
-        self.process = subprocess.Popen(cmd, shell=True)
+        self.process = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid) #keeps track of the process for later
         print(f'{cmd}')
 
     def stop_stream(self):
         #Terminate rtl_fm subprocess (if you want quiet, or use media player)
         if self.process:
-            self.process.terminate()
+            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM) #should kill the entire process, freeing up the shell for usage later
             self.process.wait()
             self.process = None
 
