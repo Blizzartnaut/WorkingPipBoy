@@ -197,8 +197,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.dur_timer.start(500)
 
         # Set up VLC event manager to listen for end-of-media events
-        events = self.player.event_manager()
-        events.event_attach(vlc.EventType.MediaPlayerEndReached, self.on_end_reached)
+        # events = self.player.event_manager()
+        # events.event_attach(vlc.EventType.MediaPlayerEndReached, self.on_end_reached)
 
         # if self.player.mediaStatusChanged:
         #     self.next_track()
