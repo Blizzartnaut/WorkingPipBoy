@@ -193,6 +193,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.NEXT.clicked.connect(self.next_track)
         self.musicList.itemClicked.connect(self.listItemClicked)
         self.PAUSE.clicked.connect(self.pause_resume)
+        self.player.positionChanged.connect(self.updateProgress)
+        self.player.durationChanged.connect(self.setDuration)
+        self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
+        self.SongTime.setText(self.totalDur)
+
+        # if self.player.mediaStatusChanged:
+        #     self.next_track()
 
         self.progressBar_2.setMinimum(0)
         self.progressBar_2.setMaximum(100)
@@ -402,13 +409,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.player = vlc.MediaPlayer(self.musicFiles[self.currentIndex])
             
             # Attach event to auto-play the next track when current one ends
-            event_manager = self.player.event_manager()
-            event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self._end_callback)
+            # event_manager = self.player.event_manager()
+            # event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self._end_callback)
 
-    def _end_callback(self, event):
-        # This callback is invoked when the track finishes playing.
-        # Make sure you call it in a thread-safe way if you're updating the UI.
-        self.next_track()
+    # def _end_callback(self, event):
+    #     # This callback is invoked when the track finishes playing.
+    #     # Make sure you call it in a thread-safe way if you're updating the UI.
+    #     self.next_track()
 
     def pause_resume(self):
         if self.player:
@@ -451,10 +458,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.updateLabels()
         self.play()
     
-    # def handle_media_status_changed(self, status):
-    #     """If a track finishes, automatically play the next track."""
-    #     if status == vlc.EndOfMedia:
-    #         self.next_track()    
+    def handle_media_status_changed(self, status):
+        """If a track finishes, automatically play the next track."""
+        if status == self.player.EndOfMedia:
+            self.next_track()    
+
+    def setDuration(self, duration):
+        """Set the total duration when the media is loaded."""
+        self.total_duration = duration
+        self.totalDur = self.total_duration
+
+    def updateProgress(self, position):
+        """Update the progress bar based on current position."""
+        if self.total_duration > 0:
+            percent = int((position / self.total_duration) * 100)
+            self.SongProgress.setValue(percent)
 
     def start_stream(self):
         #Start rtl_fm wit current frequency using wideband fm mode (-M wbfm)

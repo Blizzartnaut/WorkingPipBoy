@@ -745,7 +745,7 @@
         <x>430</x>
         <y>110</y>
         <width>111</width>
-        <height>71</height>
+        <height>61</height>
        </rect>
       </property>
       <property name="text">
@@ -758,7 +758,7 @@
         <x>580</x>
         <y>110</y>
         <width>121</width>
-        <height>71</height>
+        <height>61</height>
        </rect>
       </property>
       <property name="text">
@@ -769,7 +769,7 @@
       <property name="geometry">
        <rect>
         <x>430</x>
-        <y>290</y>
+        <y>250</y>
         <width>271</width>
         <height>61</height>
        </rect>
@@ -839,13 +839,39 @@
       <property name="geometry">
        <rect>
         <x>430</x>
-        <y>200</y>
+        <y>180</y>
         <width>271</width>
         <height>61</height>
        </rect>
       </property>
       <property name="text">
        <string>PAUSE</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="SongTime">
+      <property name="geometry">
+       <rect>
+        <x>704</x>
+        <y>330</y>
+        <width>71</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>00:00</string>
+      </property>
+     </widget>
+     <widget class="QProgressBar" name="SongProgress">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>330</y>
+        <width>271</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="value">
+       <number>0</number>
       </property>
      </widget>
     </widget>
