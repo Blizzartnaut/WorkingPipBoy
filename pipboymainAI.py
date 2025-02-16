@@ -160,8 +160,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Initial Freq should be in hz, #e6 means MHz (specifically means a Mega or a million)
-        self.frequency = 99.3e6
+        self.frequency = 102.7e6
         self.process = None
+        self.freqInput.setText(self.frequency)
+        self.time_plot_butt.setText("PLAY")
+        self.freq_plot_butt.setText("STOP")
+        self.time_plot_butt.clicked.connect(self.start_stream)
+        self.freq_plot_butt.clicked.connect(self.stop_stream)
 
         #Media Player Code Below
         # UI Elements
