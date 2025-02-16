@@ -466,7 +466,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # -r: resampling rate for audio out
         # -g: optional parameter to hard set gain parameter (0 or dont include for auto gain)
         cmd = (
-            f"rtl_fm -f {self.frequency} -M wbfm -s 2048000 -r 48000 | aplay -r 48k -f S16_LE"
+            f"rtl_fm -f {self.frequency} -M wbfm -s 2048000 -r 48000 | aplay -r 48000 -f S16_LE"
         )
         # Launch command as subprocess
         self.process = subprocess.Popen(cmd, shell=True)
