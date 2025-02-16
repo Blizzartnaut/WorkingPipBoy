@@ -162,7 +162,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Initial Freq should be in hz, #e6 means MHz (specifically means a Mega or a million)
         self.frequency = 102.7e6
         self.process = None
-        self.freqInput.setText(self.frequency)
+        self.freqInput.setText(str(self.frequency))
         self.time_plot_butt.setText("PLAY")
         self.freq_plot_butt.setText("STOP")
         self.time_plot_butt.clicked.connect(self.start_stream)
