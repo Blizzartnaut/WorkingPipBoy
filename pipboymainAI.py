@@ -203,13 +203,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.player = self.instance.media_player_new()
         self.set_media(self.media_files[self.current_index])
 
-        self.timer = QtCore.QTimer(self)
-        self.timer.timeout.connect(self.update_progress)
-        self.timer.start(500)
+        self.dur_timer = QTimer(self)
+        self.dur_timer.timeout.connect(self.update_progress)
+        self.dur_timer.start(500)
 
         # Set up VLC event manager to listen for end-of-media events
         events = self.player.event_manager()
-        events.event_attach(vlc.EventType.MediaPlayerEndReached, self.on_end_reached)`
+        events.event_attach(vlc.EventType.MediaPlayerEndReached, self.on_end_reached)
 
         # if self.player.mediaStatusChanged:
         #     self.next_track()
