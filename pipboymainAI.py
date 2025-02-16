@@ -470,6 +470,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         # Launch command as subprocess
         self.process = subprocess.Popen(cmd, shell=True)
+        print(f'{cmd}')
 
     def stop_stream(self):
         #Terminate rtl_fm subprocess (if you want quiet, or use media player)
