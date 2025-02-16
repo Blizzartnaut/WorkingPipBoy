@@ -738,11 +738,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # or restore a predefined style if you have one).
         self.progressBar.setStyleSheet("")
 
-    @Slot(object)
-    def update_spectrum(self, spectrum):
-        # This method is called by SDRWorker with the computed spectrum.
-        # Update your curve with the new data.
-        self.curve.setData(spectrum)
+    # @Slot(object)
+    # def update_spectrum(self, spectrum):
+    #     # This method is called by SDRWorker with the computed spectrum.
+    #     # Update your curve with the new data.
+    #     self.curve.setData(spectrum)
         
 async def main():
     # async def main():
@@ -763,9 +763,9 @@ async def main():
     window = MainWindow()
     window.show()
 
-    worker = SDRWorker()
+    # worker = SDRWorker()
     # Launch SDR streaming in the background; it calls update_spectrum as data arrives.
-    asyncio.create_task(worker.run(window.update_spectrum))
+    # asyncio.create_task(worker.run(window.update_spectrum))
 
     await loop.run_forever()
 
