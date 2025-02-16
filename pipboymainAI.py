@@ -177,15 +177,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.musicList.addItem(file)
         
         # Setup QMediaPlayer (without QMediaPlaylist)
-        self.player = QMediaPlayer()
-        self.audioOutput = QAudioOutput()
-        self.player.setAudioOutput(self.audioOutput)
-        self.audioOutput.setVolume(1)
+        # self.player = QMediaPlayer()
+        # self.audioOutput = QAudioOutput()
+        # self.player.setAudioOutput(self.audioOutput)
+        # self.audioOutput.setVolume(1)
 
         # If there are files, set the initial source.
         if self.musicFiles:
             self.set_current_track(self.currentIndex)
         self.updateLabels()
+        
 
         # Connect signals to slots.
         self.PLAY.clicked.connect(self.play)
@@ -197,6 +198,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.player.durationChanged.connect(self.setDuration)
         # self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
         # self.SongTime.setText(self.totalDur)
+
+        self.instance = vlc.Instance()
+        self.player = self.instance.media_player_new()
+        self.set_media(self.media_files[self.current_index])
+
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self.update_progress)
+        self.timer.start(500)
+
+        # Set up VLC event manager to listen for end-of-media events
+        events = self.player.event_manager()
+        events.event_attach(vlc.EventType.MediaPlayerEndReached, self.on_end_reached)`
 
         # if self.player.mediaStatusChanged:
         #     self.next_track()
@@ -397,8 +410,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.player = vlc.MediaPlayer(self.musicFiles[self.currentIndex])
             
             # Attach event to auto-play the next track when current one ends
-            # event_manager = self.player.event_manager()
-            # event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self._end_callback)
+            event_manager = self.player.event_manager()
+            event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self._end_callback)
 
     # def _end_callback(self, event):
     #     # This callback is invoked when the track finishes playing.
@@ -458,8 +471,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def updateProgress(self, position):
         """Update the progress bar based on current position."""
-        if self.total_duration > 0:
-            percent = int((position / self.total_duration) * 100)
+        length = self.player.get_length()  # total duration in ms
+        if length > 0:
+            current_time = self.player.get_time()  # current time in ms
+            percent = int((current_time / length) * 100)
             self.SongProgress.setValue(percent)
 
     def start_stream(self):
