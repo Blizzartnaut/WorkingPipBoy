@@ -403,11 +403,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def start_fullscreen(self):
         self.showFullScreen()
     
-<<<<<<< HEAD
     # # RTL SDR Setup
-=======
-    #     # RTL SDR Setup
-    # >>>>>>> 2d9ec770696f7dfc01da420989c3503b780660e4
     #     @asyncSlot(object)
     #     async def update_spectrum(self, spectrum):
     #         # Update the graph with new spectrum data.
