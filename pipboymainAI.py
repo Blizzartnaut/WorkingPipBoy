@@ -90,18 +90,18 @@ stream = p.open(format=pyaudio.paFloat32,
                 rate=48000,       # Target audio sample rate
                 output=True)
 
-class SDRWorker():
-    async def run(self, update_callback):
-        sdr = RtlSdr()
-        sdr.sample_rate = 2.4e6
-        sdr.center_freq = 100e6
-        sdr.gain = 'auto'
-        # Stream samples asynchronously
-        async for samples in sdr.stream():
-            # Compute a spectrum (FFT) of the samples
-            spectrum = np.abs(np.fft.fftshift(np.fft.fft(samples)))
-            update_callback(spectrum)
-            await asyncio.sleep(0)  # yield control to the event loop
+# class SDRWorker():
+#     async def run(self, update_callback):
+#         sdr = RtlSdr()
+#         sdr.sample_rate = 2.4e6
+#         sdr.center_freq = 100e6
+#         sdr.gain = 'auto'
+#         # Stream samples asynchronously
+#         async for samples in sdr.stream():
+#             # Compute a spectrum (FFT) of the samples
+#             spectrum = np.abs(np.fft.fftshift(np.fft.fft(samples)))
+#             update_callback(spectrum)
+#             await asyncio.sleep(0)  # yield control to the event loop
 
 class SplashScreen(QMainWindow):
     def __init__(self, gif_path, audio_path, duration=3400):
@@ -160,7 +160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.MusicList.setLayout(self.mainLayout)
         self.MusicList.setScaledContents(True)
         self.mainLayout.addWidget(self.musicList)
-        self.VolSlider.valueChanged.connect(self.set_volume_control)
+        self.VolSlider.valueChanged.connect(self.update_volume)
         self.mixer = alsaaudio.Mixer()
         
         # Playlist management
@@ -405,6 +405,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #     # This callback is invoked when the track finishes playing.
     #     # Make sure you call it in a thread-safe way if you're updating the UI.
     #     self.next_track()
+    def update_volume(self, value):
+        #Value should be between 0 and 100, as set in ui
+        self.mixer.setvolume(value)
 
     def set_media(self, file_path):
         if os.path.exists(file_path):
