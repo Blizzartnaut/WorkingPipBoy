@@ -154,21 +154,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.freq_plot_butt.clicked.connect(self.stop_stream)
 
         #Media Player Code Below
-        # UI Elements
+        # Setup music list UI elements
         self.musicList = QListWidget()
-        
-        # Layout setup
         self.mainLayout = QVBoxLayout()
         self.MusicList.setLayout(self.mainLayout)
         self.MusicList.setScaledContents(True)
         self.mainLayout.addWidget(self.musicList)
         self.VolSlider.valueChanged.connect(self.set_volume_control)
         self.mixer = alsaaudio.Mixer()
-    
-        # Playlist management: scan a local "music" directory for .mp3 files.
-        self.musicDir = os.path.abspath("music")  # Create this folder if it doesn't exist.
+        
+        # Playlist management
+        self.musicDir = os.path.abspath("music")  # Ensure this folder exists.
         self.musicFiles = []
-        self.currentIndex = 0  # The currently selected track index.
+        self.currentIndex = 0
         if os.path.isdir(self.musicDir):
             for file in os.listdir(self.musicDir):
                 if file.lower().endswith(".mp3"):
@@ -176,33 +174,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.musicFiles.append(fullPath)
                     self.musicList.addItem(file)
         
-        # Setup QMediaPlayer (without QMediaPlaylist)
-        self.player = QMediaPlayer()
-        self.audioOutput = QAudioOutput()
-        self.player.setAudioOutput(self.audioOutput)
-        self.audioOutput.setVolume(0.75)
-
-        # If there are files, set the initial source.
-        if self.musicFiles:
-            self.set_current_track(self.currentIndex)
-        self.updateLabels()
+        # Remove QMediaPlayer setup since we are using VLC exclusively.
+        # self.player = QMediaPlayer() ... etc.
         
-
-        # Connect signals to slots.
+        # Set up VLC player exclusively:
+        self.instance = vlc.Instance()
+        self.player = self.instance.media_player_new()
+        # Use self.musicFiles (not self.media_files) and self.currentIndex consistently.
+        if self.musicFiles:
+            self.set_media(self.musicFiles[self.currentIndex])
+        
+        # Connect VLC player control buttons
         self.PLAY.clicked.connect(self.play)
         self.STOP.clicked.connect(self.stop)
         self.NEXT.clicked.connect(self.next_track)
-        self.musicList.itemClicked.connect(self.listItemClicked)
         self.PAUSE.clicked.connect(self.pause_resume)
-        # self.player.positionChanged.connect(self.updateProgress)
-        # self.player.durationChanged.connect(self.setDuration)
-        # self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
-        # self.SongTime.setText(self.totalDur)
+        self.musicList.itemClicked.connect(self.listItemClicked)
 
-        self.instance = vlc.Instance()
-        self.player = self.instance.media_player_new()
-        self.set_media(self.media_files[self.current_index])
-
+        # Timer to update progress (if desired)
         self.dur_timer = QTimer(self)
         self.dur_timer.timeout.connect(self.update_progress)
         self.dur_timer.start(500)
@@ -417,13 +406,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #     # Make sure you call it in a thread-safe way if you're updating the UI.
     #     self.next_track()
 
+    def set_media(self, file_path):
+        if os.path.exists(file_path):
+            media = self.instance.media_new(file_path)
+            self.player.set_media(media)
+        else:
+            print(f"Media file not found: {file_path}")
+    
+    def play(self):
+        if self.player:
+            self.player.play()
+    
+    def stop(self):
+        if self.player:
+            self.player.stop()
+    
     def pause_resume(self):
         if self.player:
             self.player.pause()
-
-    def set_volume_control(self, value):
-        self.mixer.setvolume(value)
-
+    
+    def next_track(self):
+        self.currentIndex = (self.currentIndex + 1) % len(self.musicFiles)
+        self.set_media(self.musicFiles[self.currentIndex])
+        self.updateLabels()
+        self.play()
+    
+    def listItemClicked(self, item):
+        row = self.musicList.row(item)
+        self.currentIndex = row
+        self.set_media(self.musicFiles[self.currentIndex])
+        self.updateLabels()
+        self.play()
+    
     def updateLabels(self):
         if self.musicFiles:
             current_song = os.path.basename(self.musicFiles[self.currentIndex])
@@ -435,46 +449,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.CurrentPlay.setText("Current Play: None")
             self.NextUp.setText("Next Up: None")
     
-    def listItemClicked(self, item):
-        row = self.musicList.row(item)
-        self.set_current_track(row)
-        self.updateLabels()
-        self.play()
-    
-    def play(self):
-        if self.player:
-            self.stop_stream()
-            self.player.play()
-
-    def stop(self):
-        if self.player:
-            self.player.stop()
-        elif self.process:
-            self.stop_stream()
-    
-    def next_track(self):
-        self.currentIndex = (self.currentIndex + 1) % len(self.musicFiles)
-        self.set_current_track(self.currentIndex)
-        self.updateLabels()
-        self.play()
-    
-    def handle_media_status_changed(self, status):
-        """If a track finishes, automatically play the next track."""
-        if status == self.player.EndOfMedia:
-            self.next_track()    
-
-    def setDuration(self, duration):
-        """Set the total duration when the media is loaded."""
-        self.total_duration = duration
-        self.totalDur = self.total_duration
-
-    def updateProgress(self, position):
-        """Update the progress bar based on current position."""
-        length = self.player.get_length()  # total duration in ms
+    def update_progress(self):
+        # Example: Update a progress bar based on VLC's playback time.
+        length = self.player.get_length()  # in ms
         if length > 0:
-            current_time = self.player.get_time()  # current time in ms
-            percent = int((current_time / length) * 100)
-            self.SongProgress.setValue(percent)
+            current = self.player.get_time()  # in ms
+            percent = int((current / length) * 100)
+            self.ProgressBar.setValue(percent)
+    
+    def on_end_reached(self, event):
+        self.next_track()
 
     def start_stream(self):
         #Start rtl_fm wit current frequency using wideband fm mode (-M wbfm)
