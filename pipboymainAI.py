@@ -407,11 +407,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.currentIndex = index
             if self.player:
                 self.player.stop()
-            self.player = vlc.MediaPlayer(self.musicFiles[self.currentIndex])
             
             # Attach event to auto-play the next track when current one ends
-            event_manager = self.player.event_manager()
-            event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self._end_callback)
+            # event_manager = self.player.event_manager()
+            # event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self._end_callback)
 
     # def _end_callback(self, event):
     #     # This callback is invoked when the track finishes playing.
