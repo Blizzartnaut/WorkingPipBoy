@@ -193,7 +193,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.NEXT.clicked.connect(self.next_track)
         self.musicList.itemClicked.connect(self.listItemClicked)
         self.PAUSE.clicked.connect(self.pause_resume)
-        self.player.positionChanged.connect(self.updateProgress)
+        # self.player.positionChanged.connect(self.updateProgress)
         self.player.durationChanged.connect(self.setDuration)
         self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
         self.SongTime.setText(self.totalDur)
@@ -202,19 +202,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #     self.next_track()
 
         self.progressBar_2.setMinimum(0)
-        self.progressBar_2.setMaximum(100)
-
-        # from PySide6.QtWidgets import QVBoxLayout, QWidget
-        #Init SDR worker and thread
-
-        # self.freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
-        # self.freq_plot.setMouseEnabled(x=False, y=True)
-        # self.curve = pg.PlotCurveItem()
-        # self.freq_plot.addItem(self.curve)
-        # self.freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
-        # self.freq_plot.setYRange(-30, 20)
-        # self.freq_layout.addWidget(self.freq_plot)
-        # self.FREQ_GRAPH.setScaledContents(True)       
+        self.progressBar_2.setMaximum(100)     
         
         # Initialize sensor data arrays (720 data points per sensor) about 12 minutes of data
         self.data_sens1 = np.zeros(720)  # Sensor 1 (e.g., MQ4)
