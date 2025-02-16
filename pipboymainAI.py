@@ -9,6 +9,8 @@ import math
 from io import BytesIO
 import gc
 from collections import deque
+import subprocess
+import signal
 
 # PySide6 imports
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QListWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton, QSizePolicy
@@ -81,15 +83,15 @@ def start_local_server(port=8000, directory="."):
     print(f"Local HTTP server started on port {port}, serving directory: {directory}")
     return httpd
 
-# Defaults
-fft_size = 4096            # Size of the FFT to compute the spectrum (buffer size)
-num_rows = 200             # Number of rows for the waterfall plot (each row represents one FFT result)
-center_freq = 750e6        # Default center frequency (750 MHz)
-sample_rates = [56, 40, 20, 10, 5, 2, 1, 0.5]  # Available sample rates in MHz
-sample_rate = sample_rates[0] * 1e6  # Default sample rate in Hz (56 MHz)
-time_plot_samples = 500    # Number of samples to show in the time-domain plot
-gain = 50                  # Default gain (in dB)
-sdr_type = "sim"           # The type of SDR to use ("sim" means simulated data; could also be "usrp" or "pluto")
+# # Defaults
+# fft_size = 4096            # Size of the FFT to compute the spectrum (buffer size)
+# num_rows = 200             # Number of rows for the waterfall plot (each row represents one FFT result)
+# center_freq = 750e6        # Default center frequency (750 MHz)
+# sample_rates = [56, 40, 20, 10, 5, 2, 1, 0.5]  # Available sample rates in MHz
+# sample_rate = sample_rates[0] * 1e6  # Default sample rate in Hz (56 MHz)
+# time_plot_samples = 500    # Number of samples to show in the time-domain plot
+# gain = 50                  # Default gain (in dB)
+# sdr_type = "sim"           # The type of SDR to use ("sim" means simulated data; could also be "usrp" or "pluto")
 
 # --- SDR Configuration ---
 # sdr = RtlSdr()
@@ -104,41 +106,6 @@ stream = p.open(format=pyaudio.paFloat32,
                 rate=48000,       # Target audio sample rate
                 output=True)
 
-
-# Init SDR
-# if sdr_type == "pluto":
-#     import adi
-#     sdr = adi.Pluto("ip:192.168.1.10")
-#     sdr.rx_lo = int(center_freq)
-#     sdr.sample_rate = int(sample_rate)
-#     sdr.rx_rf_bandwidth = int(sample_rate*0.8) # antialiasing filter bandwidth
-#     sdr.rx_buffer_size = int(fft_size)
-#     sdr.gain_control_mode_chan0 = 'manual'
-#     sdr.rx_hardwaregain_chan0 = gain # dB
-# elif sdr_type == "usrp":
-#     import uhd
-#     #usrp = uhd.usrp.MultiUSRP(args="addr=192.168.1.10")
-#     usrp = uhd.usrp.MultiUSRP(args="addr=192.168.1.201")
-#     usrp.set_rx_rate(sample_rate, 0)
-#     usrp.set_rx_freq(uhd.libpyuhd.types.tune_request(center_freq), 0)
-#     usrp.set_rx_gain(gain, 0)
-
-#     # Set up the stream and receive buffer
-#     st_args = uhd.usrp.StreamArgs("fc32", "sc16")
-#     st_args.channels = [0]
-#     metadata = uhd.types.RXMetadata()
-#     streamer = usrp.get_rx_stream(st_args)
-#     recv_buffer = np.zeros((1, fft_size), dtype=np.complex64)
-
-#     # Start Stream
-#     stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.start_cont)
-#     stream_cmd.stream_now = True
-#     streamer.issue_stream_cmd(stream_cmd)
-
-#     def flush_buffer():
-#         for _ in range(10):
-#             streamer.recv(recv_buffer, metadata)
-
 class SDRWorker():
     async def run(self, update_callback):
         sdr = RtlSdr()
@@ -151,84 +118,6 @@ class SDRWorker():
             spectrum = np.abs(np.fft.fftshift(np.fft.fft(samples)))
             update_callback(spectrum)
             await asyncio.sleep(0)  # yield control to the event loop
-
-#SDR Worker from online resource, may not work with RTL-SDR Writing more code to help with it
-# class SDRWorker(QObject):
-#     def __init__(self):
-#         super().__init__()
-#         self.gain = gain
-#         self.sample_rate = sample_rate
-#         self.freq = 0  # Frequency in kHz (to accommodate QSlider limits)
-#         self.spectrogram = -50 * np.ones((fft_size, num_rows))  # Initialize waterfall (spectrogram) matrix
-#         self.PSD_avg = -50 * np.ones(fft_size)  # Initialize an averaged power spectral density array
-
-#     # PyQt Signals – these are custom signals that will be emitted when new data is ready.
-#     time_plot_update = Signal(np.ndarray)
-#     freq_plot_update = Signal(np.ndarray)
-#     waterfall_plot_update = Signal(np.ndarray)
-#     end_of_run = Signal()  # Emitted each loop to signal that the worker is ready to run again
-
-#     # Slot functions to update frequency, gain, and sample rate
-#     def update_freq(self, val):
-#         print("Updated freq to:", val, 'kHz')
-#         if sdr_type == "pluto":
-#             sdr.rx_lo = int(val * 1e3)
-#         elif sdr_type == "usrp":
-#             usrp.set_rx_freq(uhd.libpyuhd.types.tune_request(val * 1e3), 0)
-#             flush_buffer()
-
-#     def update_gain(self, val):
-#         print("Updated gain to:", val, 'dB')
-#         self.gain = val
-#         if sdr_type == "pluto":
-#             sdr.rx_hardwaregain_chan0 = val
-#         elif sdr_type == "usrp":
-#             usrp.set_rx_gain(val, 0)
-#             flush_buffer()
-
-#     def update_sample_rate(self, val):
-#         print("Updated sample rate to:", sample_rates[val], 'MHz')
-#         if sdr_type == "pluto":
-#             sdr.sample_rate = int(sample_rates[val] * 1e6)
-#             sdr.rx_rf_bandwidth = int(sample_rates[val] * 1e6 * 0.8)
-#         elif sdr_type == "usrp":
-#             usrp.set_rx_rate(sample_rates[val] * 1e6, 0)
-#             flush_buffer()
-
-#     # Main processing loop – this function is called repeatedly on a separate thread.
-#     def run(self):
-#         start_t = time.time()
-
-#         # Get samples from the chosen SDR source:
-#         if sdr_type == "pluto":
-#             samples = sdr.rx() / 2**11  # Scale received samples
-#         elif sdr_type == "usrp":
-#             streamer.recv(recv_buffer, metadata)
-#             samples = recv_buffer[0]
-#         elif sdr_type == "sim":
-#             # Generate simulated data (tone + noise)
-#             tone = np.exp(2j * np.pi * self.sample_rate * 0.1 * np.arange(fft_size) / self.sample_rate)
-#             noise = np.random.randn(fft_size) + 1j * np.random.randn(fft_size)
-#             samples = self.gain * tone * 0.02 + 0.1 * noise
-#             np.clip(samples.real, -1, 1, out=samples.real)
-#             np.clip(samples.imag, -1, 1, out=samples.imag)
-
-#         # Emit a signal for the time-domain plot (first time_plot_samples of the data)
-#         self.time_plot_update.emit(samples[0:time_plot_samples])
-
-#         # Compute the FFT to get the power spectral density (PSD)
-#         PSD = 10.0 * np.log10(np.abs(np.fft.fftshift(np.fft.fft(samples)))**2 / fft_size)
-#         # Smooth (average) the PSD over time
-#         self.PSD_avg = self.PSD_avg * 0.99 + PSD * 0.01
-#         self.freq_plot_update.emit(self.PSD_avg)
-
-#         # Update the waterfall (spectrogram): roll the spectrogram matrix and add new FFT results
-#         self.spectrogram[:] = np.roll(self.spectrogram, 1, axis=1)
-#         self.spectrogram[:, 0] = PSD
-#         self.waterfall_plot_update.emit(self.spectrogram)
-
-#         #print("Frames per second:", 1 / (time.time() - start_t))
-#         self.end_of_run.emit()  # Signal that one processing loop is done
 
 class SplashScreen(QMainWindow):
     def __init__(self, gif_path, audio_path, duration=3400):
@@ -271,7 +160,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Set up UI elements (ensure the .ui file has been updated for PySide6)
         self.setupUi(self)
 
-        SDRWorker()
+        # Initial Freq should be in hz, #e6 means MHz (specifically means a Mega or a million)
+        self.frequency = 102.7e6
+        self.process = None
+        self.freqInput.setText(str(self.frequency))
+        self.time_plot_butt.setText("PLAY")
+        self.freq_plot_butt.setText("STOP")
+        self.time_plot_butt.clicked.connect(self.start_stream)
+        self.freq_plot_butt.clicked.connect(self.stop_stream)
 
         #Media Player Code Below
         # UI Elements
@@ -320,49 +216,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # from PySide6.QtWidgets import QVBoxLayout, QWidget
         #Init SDR worker and thread
 
-        self.freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
-        self.freq_plot.setMouseEnabled(x=False, y=True)
-        self.curve = pg.PlotCurveItem()
-        self.freq_plot.addItem(self.curve)
-        self.freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
-        self.freq_plot.setYRange(-30, 20)
-        self.freq_layout.addWidget(self.freq_plot)
-        self.FREQ_GRAPH.setScaledContents(True)
-
-        # def freq_plot_callback(PSD_avg):
-        #     # TODO figure out if there's a way to just change the visual ticks instead of the actual x vals
-        #     f = np.linspace(self.freq_val*1e3 - worker.sample_rate/2.0, self.freq_val*1e3 + worker.sample_rate/2.0, fft_size) / 1e6
-        #     freq_plot_curve.setData(f, PSD_avg)
-        #     freq_plot.setXRange(self.freq_val*1e3/1e6 - worker.sample_rate/2e6, self.freq_val*1e3/1e6 + worker.sample_rate/2e6)
-
-        # def waterfall_plot_callback(spectrogram):
-        #     imageitem.setImage(spectrogram, autoLevels=False)
-        #     sigma = np.std(spectrogram)
-        #     mean = np.mean(spectrogram)
-        #     self.spectrogram_min = mean - 2*sigma # save to window state
-        #     self.spectrogram_max = mean + 2*sigma
-
-        # Time plot
-        # time_plot = pg.PlotWidget(labels={'left': 'Amplitude', 'bottom': 'Time [microseconds]'})
-        # time_plot.setMouseEnabled(x=False, y=True)
-        # time_plot.setYRange(-1.1, 1.1)
-        # time_plot_curve_i = time_plot.plot([])
-        # time_plot_curve_q = time_plot.plot([])
-        # self.time_layout.addWidget(time_plot)
-
-        # # Waterfall plot
-        # waterfall = pg.PlotWidget(labels={'left': 'Time [s]', 'bottom': 'Frequency [MHz]'})
-        # imageitem = pg.ImageItem(axisOrder='col-major') # this arg is purely for performance
-        # waterfall.addItem(imageitem)
-        # waterfall.setMouseEnabled(x=False, y=False)
-        # self.waterfall_layout.addWidget(waterfall)
-
-        # # Colorbar for waterfall
-        # colorbar = pg.HistogramLUTWidget()
-        # colorbar.setImageItem(imageitem) # connects the bar to the waterfall imageitem
-        # colorbar.item.gradient.loadPreset('viridis') # set the color map, also sets the imageitem
-        # imageitem.setLevels((-30, 20)) # needs to come after colorbar is created for some reason
-        # self.waterfall_layout.addWidget(colorbar)         
+        # self.freq_plot = pg.PlotWidget(labels={'left': 'PSD', 'bottom': 'Frequency [MHz]'})
+        # self.freq_plot.setMouseEnabled(x=False, y=True)
+        # self.curve = pg.PlotCurveItem()
+        # self.freq_plot.addItem(self.curve)
+        # self.freq_plot.setXRange(center_freq/1e6 - sample_rate/2e6, center_freq/1e6 + sample_rate/2e6)
+        # self.freq_plot.setYRange(-30, 20)
+        # self.freq_layout.addWidget(self.freq_plot)
+        # self.FREQ_GRAPH.setScaledContents(True)       
         
         # Initialize sensor data arrays (720 data points per sensor) about 12 minutes of data
         self.data_sens1 = np.zeros(720)  # Sensor 1 (e.g., MQ4)
@@ -542,11 +403,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def start_fullscreen(self):
         self.showFullScreen()
     
+<<<<<<< HEAD
     # # RTL SDR Setup
-    # @asyncSlot(object)
-    # async def update_spectrum(self, spectrum):
-    #     # Update the graph with new spectrum data.
-    #     self.curve.setData(spectrum)
+=======
+    #     # RTL SDR Setup
+    # >>>>>>> 2d9ec770696f7dfc01da420989c3503b780660e4
+    #     @asyncSlot(object)
+    #     async def update_spectrum(self, spectrum):
+    #         # Update the graph with new spectrum data.
+    #         self.curve.setData(spectrum)
 
     def set_current_track(self, index):
         """Set the current track for the VLC player."""
@@ -591,11 +456,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def play(self):
         if self.player:
+            self.stop_stream()
             self.player.play()
 
     def stop(self):
         if self.player:
             self.player.stop()
+        elif self.process:
+            self.stop_stream()
     
     def next_track(self):
         self.currentIndex = (self.currentIndex + 1) % len(self.musicFiles)
@@ -607,6 +475,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #     """If a track finishes, automatically play the next track."""
     #     if status == vlc.EndOfMedia:
     #         self.next_track()    
+
+    def start_stream(self):
+        #Start rtl_fm wit current frequency using wideband fm mode (-M wbfm)
+        # Build command string. With parameters:
+        # -f: Frequency in Hz
+        # -M wbfm: Wideband FM Demodulation (other modes exist as well read docs)
+        # -s: sample rate (default is 2048e3, 2.048MS/s)
+        # -r: resampling rate for audio out
+        # -g: optional parameter to hard set gain parameter (0 or dont include for auto gain)
+        cmd = (
+            f"rtl_fm -f {self.frequency} -M wbfm -s 2048000 -r 48000 | aplay -r 48000 -f S16_LE"
+        )
+        # Launch command as subprocess
+        self.process = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid) #keeps track of the process for later
+        print(f'{cmd}')
+
+    def stop_stream(self):
+        #Terminate rtl_fm subprocess (if you want quiet, or use media player)
+        if self.process:
+            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM) #should kill the entire process, freeing up the shell for usage later
+            self.process.wait()
+            self.process = None
+
+    def change_frequency(self):
+        self.stop_stream()
+        self.frequency = self.newFreq
+        #small delay to allow time for commands to terminate
+        time.sleep(0.5)
+        self.start_stream()
+
 
     # def handle_freq_input(self):
     #         freq_text = self.freqInput.text()
@@ -787,7 +685,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         else:
             self.NODATA.setText('NO SAT DATA')
-            print(str(x))
+            # print(str(x))
 
 
         
@@ -860,7 +758,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.curve.setData(spectrum)
         
 async def main():
-# async def main():
+    # async def main():
     app = QApplication(sys.argv)
     loop = QEventLoop(app)
     asyncio.set_event_loop(loop)

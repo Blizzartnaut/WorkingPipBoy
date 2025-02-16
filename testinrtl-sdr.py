@@ -8,7 +8,7 @@ import signal # lets control-C actually close the app
 # Defaults
 fft_size = 4096 # determines buffer size
 num_rows = 200
-center_freq = 750e6
+center_freq = 102.7e6
 sample_rates = [56, 40, 20, 10, 5, 2, 1, 0.5] # MHz
 sample_rate = sample_rates[0] * 1e6
 time_plot_samples = 500
