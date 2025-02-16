@@ -177,10 +177,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.musicList.addItem(file)
         
         # Setup QMediaPlayer (without QMediaPlaylist)
-        # self.player = QMediaPlayer()
-        # self.audioOutput = QAudioOutput()
-        # self.player.setAudioOutput(self.audioOutput)
-        # self.audioOutput.setVolume(1)
+        self.player = QMediaPlayer()
+        self.audioOutput = QAudioOutput()
+        self.player.setAudioOutput(self.audioOutput)
+        self.audioOutput.setVolume(0.75)
 
         # If there are files, set the initial source.
         if self.musicFiles:
