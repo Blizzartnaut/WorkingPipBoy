@@ -448,6 +448,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             next_index = (self.currentIndex + 1) % len(self.musicFiles)
             next_song = os.path.basename(self.musicFiles[next_index])
             self.NextUp.setText(f"Next Up: {next_song}")
+            # self.SongTime.setText(f'{self.player.get_length()/1000}') Need to convert using time to MM:SS
         else:
             self.CurrentPlay.setText("Current Play: None")
             self.NextUp.setText("Next Up: None")
