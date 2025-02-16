@@ -194,7 +194,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.musicList.itemClicked.connect(self.listItemClicked)
         self.PAUSE.clicked.connect(self.pause_resume)
         # self.player.positionChanged.connect(self.updateProgress)
-        self.player.durationChanged.connect(self.setDuration)
+        # self.player.durationChanged.connect(self.setDuration)
         self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
         self.SongTime.setText(self.totalDur)
 
