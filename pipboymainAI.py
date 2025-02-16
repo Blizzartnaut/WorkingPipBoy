@@ -458,7 +458,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if length > 0:
             current = self.player.get_time()  # in ms
             percent = int((current / length) * 100)
-            self.ProgressBar.setValue(percent)
+            self.SongProgress.setValue(percent)
     
     def on_end_reached(self, event):
         self.next_track()
