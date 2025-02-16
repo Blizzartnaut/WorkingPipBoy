@@ -83,22 +83,6 @@ def start_local_server(port=8000, directory="."):
     print(f"Local HTTP server started on port {port}, serving directory: {directory}")
     return httpd
 
-# # Defaults
-# fft_size = 4096            # Size of the FFT to compute the spectrum (buffer size)
-# num_rows = 200             # Number of rows for the waterfall plot (each row represents one FFT result)
-# center_freq = 750e6        # Default center frequency (750 MHz)
-# sample_rates = [56, 40, 20, 10, 5, 2, 1, 0.5]  # Available sample rates in MHz
-# sample_rate = sample_rates[0] * 1e6  # Default sample rate in Hz (56 MHz)
-# time_plot_samples = 500    # Number of samples to show in the time-domain plot
-# gain = 50                  # Default gain (in dB)
-# sdr_type = "sim"           # The type of SDR to use ("sim" means simulated data; could also be "usrp" or "pluto")
-
-# --- SDR Configuration ---
-# sdr = RtlSdr()
-# sdr.sample_rate = 2.4e6     # Sample rate in Hz
-# sdr.center_freq = 105.7e6     # Example: tune to 100 MHz (FM band)
-# sdr.gain = 'auto'
-
 # --- PyAudio Setup ---
 p = pyaudio.PyAudio()
 stream = p.open(format=pyaudio.paFloat32,
@@ -208,7 +192,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.STOP.clicked.connect(self.stop)
         self.NEXT.clicked.connect(self.next_track)
         self.musicList.itemClicked.connect(self.listItemClicked)
-        # self.player.mediaStatusChanged.connect(self.handle_media_status_changed)
+        self.PAUSE.clicked.connect(self.pause_resume)
 
         self.progressBar_2.setMinimum(0)
         self.progressBar_2.setMaximum(100)

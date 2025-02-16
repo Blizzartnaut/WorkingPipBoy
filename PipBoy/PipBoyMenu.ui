@@ -32,7 +32,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="main">
      <attribute name="title">
@@ -768,8 +768,8 @@
      <widget class="QPushButton" name="STOP">
       <property name="geometry">
        <rect>
-        <x>432</x>
-        <y>200</y>
+        <x>430</x>
+        <y>290</y>
         <width>271</width>
         <height>61</height>
        </rect>
@@ -833,6 +833,19 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="PAUSE">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>200</y>
+        <width>271</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PAUSE</string>
       </property>
      </widget>
     </widget>
