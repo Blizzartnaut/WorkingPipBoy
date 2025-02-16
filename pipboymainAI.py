@@ -537,16 +537,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pipboygif.addWidget(self.vaultlabel)
         self.vaultlabel.setScaledContents(True)
 
-        QTimer.singleShot(50, self.start_fullscreen)
+        QTimer.singleShot(20, self.start_fullscreen)
 
     def start_fullscreen(self):
         self.showFullScreen()
     
-    # RTL SDR Setup
-    @asyncSlot(object)
-    async def update_spectrum(self, spectrum):
-        # Update the graph with new spectrum data.
-        self.curve.setData(spectrum)
+    # # RTL SDR Setup
+    # @asyncSlot(object)
+    # async def update_spectrum(self, spectrum):
+    #     # Update the graph with new spectrum data.
+    #     self.curve.setData(spectrum)
 
     def set_current_track(self, index):
         """Set the current track for the VLC player."""
@@ -555,6 +555,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self.player:
                 self.player.stop()
             self.player = vlc.MediaPlayer(self.musicFiles[self.currentIndex])
+            
+            # Attach event to auto-play the next track when current one ends
+            event_manager = self.player.event_manager()
+            event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self._end_callback)
+
+    def _end_callback(self, event):
+        # This callback is invoked when the track finishes playing.
+        # Make sure you call it in a thread-safe way if you're updating the UI.
+        self.next_track()
+
+    def pause_resume(self):
+        if self.player:
+            self.player.pause()
 
     def set_volume_control(self, value):
         self.mixer.setvolume(value)
