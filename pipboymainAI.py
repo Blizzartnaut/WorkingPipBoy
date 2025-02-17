@@ -419,6 +419,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def play(self):
         if self.player:
             self.player.play()
+        if self.process:
+            self.stop_stream()
     
     def stop(self):
         if self.player:
@@ -455,11 +457,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def update_progress(self):
         # Example: Update a progress bar based on VLC's playback time.
-        length = self.player.get_length()  # in ms
-        if length > 0:
-            current = self.player.get_time()  # in ms
-            percent = int((current / length) * 100)
-            self.SongProgress.setValue(percent)
+        self.length = self.player.get_length()  # in ms
+        if self.length > 0:
+            self.current = self.player.get_time()  # in ms
+            self.percent = int((self.current / self.length) * 100)
+            self.SongProgress.setValue(self.percent)
+
+        if self.percent >= 99:
+            QTimer.singleShot((self.length/0.01), self.next_track)
     
     def on_end_reached(self, event):
         self.next_track()
@@ -477,7 +482,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         # Launch command as subprocess
         self.process = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid) #keeps track of the process for later
-        print(f'{cmd}')
+        # print(f'{cmd}')
+        self.stop()
 
     def stop_stream(self):
         #Terminate rtl_fm subprocess (if you want quiet, or use media player)
