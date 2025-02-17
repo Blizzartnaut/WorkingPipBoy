@@ -419,6 +419,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def play(self):
         if self.player:
             self.player.play()
+            self.mediaTime = self.player.get_length() #Gets length of currently playing media
+            print(f'{self.mediaTime}') #Debug
+            self.mediaTime += 400 #To add some time after a song to give a nice rest period before next song
+            print(f'{self.mediaTime}') #debug
+            QTimer.singleShot((self.mediaTime), self.next_track) #Must be used in play() or else it will never trigger, autoplay feature
+            # self.convert_time(self.mediaTime)
+            self.durat = self.convert_time(self.mediaTime) #Meant to display a nice format to show how long a media piece is
+            self.SongTime.setText(f'{self.durat}') #updates ui
+
         if self.process:
             self.stop_stream()
     
@@ -435,14 +444,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.set_media(self.musicFiles[self.currentIndex])
         self.updateLabels()
         self.play()
-        self.mediaTime = self.player.get_length()
-        print(f'{self.mediaTime}')
-        self.mediaTime += 400
-        print(f'{self.mediaTime}')
-        QTimer.singleShot((self.mediaTime), self.next_track)
-        # self.convert_time(self.mediaTime)
-        self.durat = self.convert_time(self.mediaTime)
-        self.SongTime.setText(f'{self.durat}')
     
     def listItemClicked(self, item):
         row = self.musicList.row(item)
