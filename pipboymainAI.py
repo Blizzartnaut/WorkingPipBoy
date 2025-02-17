@@ -436,8 +436,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.updateLabels()
         self.play()
         self.mediaTime = self.player.get_length()
-        QTimer.singleShot((self.mediaTime+500), self.next_track)
-        self.convert_time(self.mediaTime)
+        print(f'{self.mediaTime}')
+        self.mediaTime += 400
+        print(f'{self.mediaTime}')
+        QTimer.singleShot((self.mediaTime), self.next_track)
+        # self.convert_time(self.mediaTime)
+        self.durat = self.convert_time(self.mediaTime)
         self.SongTime.setText(f'{self.durat}')
     
     def listItemClicked(self, item):
@@ -467,9 +471,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.percent = int((self.current / self.length) * 100)
             self.SongProgress.setValue(self.percent)
 
-        # if self.percent >= 98:
+        # if self.percent >= 98: #percent hasnt been declared yet, outside of the if statement its in.
             # QTimer.singleShot((self.length/0.01), self.next_track)
-            print(f'{self.length}, {self.length/0.01}')
+            # print(f'{self.length}, {self.length/0.01}') #Why Would i do this, to increase the track time? Might have worked if i divided by whole numbers.
     
     def on_end_reached(self, event):
         self.next_track()
@@ -477,7 +481,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def convert_time(self, milli):
         sec = (milli // 1000) % 60
         min = (milli // (1000*60)) % 60
-        self.durat = str(f"{min}:{sec}")
+        return f"{min}:{sec}"
 
     def start_stream(self):
         #Start rtl_fm wit current frequency using wideband fm mode (-M wbfm)
