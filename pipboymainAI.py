@@ -421,7 +421,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.player.play()
             self.mediaTime = self.player.get_length() #Gets length of currently playing media
             print(f'{self.mediaTime}') #Debug
-            QTimer.singleShot(800, self.auto_play)
+            # QTimer.singleShot(800, self.auto_play)
             # self.mediaTime += 400 #To add some time after a song to give a nice rest period before next song
             # self.convert_time(self.mediaTime)
 
@@ -434,7 +434,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def auto_play(self):
         if self.mediaTime >0:
-            QTimer.singleShot((self.mediaTime + 800), self.next_track) #Must be used in play() or else it will never trigger, autoplay feature
+            # QTimer.singleShot((self.mediaTime + 800), self.next_track) #Must be used in play() or else it will never trigger, autoplay feature
             self.durat = self.convert_time(self.mediaTime) #Meant to display a nice format to show how long a media piece is
             self.SongTime.setText(f'{self.durat}') #updates ui
             print(f'{self.mediaTime}') #debug
@@ -475,6 +475,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.current = self.player.get_time()  # in ms
             self.percent = int((self.current / self.length) * 100)
             self.SongProgress.setValue(self.percent)
+            self.SongTime.setText(self.convert_time(self.length))
+            if self.percent >= 98:
+                QTimer.singleShot((self.length/98), self.next_track)
+
 
         # if self.percent >= 98: #percent hasnt been declared yet, outside of the if statement its in.
             # QTimer.singleShot((self.length/0.01), self.next_track)
