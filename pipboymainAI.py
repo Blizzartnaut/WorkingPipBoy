@@ -419,26 +419,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def play(self):
         if self.player:
             self.player.play()
-            self.mediaTime = self.player.get_length() #Gets length of currently playing media
-            print(f'{self.mediaTime}') #Debug
-            # QTimer.singleShot(800, self.auto_play)
-            # self.mediaTime += 400 #To add some time after a song to give a nice rest period before next song
-            # self.convert_time(self.mediaTime)
-
+            self.hold = True
         if self.process:
             self.stop_stream()
     
     def stop(self):
         if self.player:
             self.player.stop()
-
-    def auto_play(self):
-        if self.mediaTime >0:
-            # QTimer.singleShot((self.mediaTime + 800), self.next_track) #Must be used in play() or else it will never trigger, autoplay feature
-            self.durat = self.convert_time(self.mediaTime) #Meant to display a nice format to show how long a media piece is
-            self.SongTime.setText(f'{self.durat}') #updates ui
-            print(f'{self.mediaTime}') #debug
     
+    def auto_play(self):
+        self.songNextTimer = QTimer()
+        self.songNextTimer.timeout.connect(self.next_track)
+        self.songNextTimer.setSingleShot(True) #allows this timer function to be called only once per function call, timers normally repeat
+        self.songNextTimer.start(1400)
+
     def pause_resume(self):
         if self.player:
             self.player.pause()
@@ -476,8 +470,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.percent = int((self.current / self.length) * 100)
             self.SongProgress.setValue(self.percent)
             self.SongTime.setText(self.convert_time(self.length))
-            if self.percent >= 98:
-                QTimer.singleShot((self.length/98), self.next_track)
+            if self.percent >= 98: #allows us to catch the last bit of the song, calls everytime update_progress is
+                # timer
+                # QTimer.singleShot((self.length/98), self.next_track)
+                while self.hold == True: #True is set whenever self.play() is called, but then is set to false as soon as this is called, allowing it to run only once per song
+                    self.hold = False #so it doesnt trigger multiple times per song
+                    QTimer.singleShot((self.length/98), self.auto_play) #sets a single shot timer to a time relative to the length of the song, in an attempt to give just enough of a break between songs
 
 
         # if self.percent >= 98: #percent hasnt been declared yet, outside of the if statement its in.
