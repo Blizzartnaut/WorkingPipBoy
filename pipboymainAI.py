@@ -435,6 +435,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.set_media(self.musicFiles[self.currentIndex])
         self.updateLabels()
         self.play()
+        self.mediaTime = self.player.get_length()
+        QTimer.singleShot((self.mediaTime+500), self.next_track)
+        self.convert_time(self.mediaTime)
+        self.SongTime.setText(f'{self.durat}')
     
     def listItemClicked(self, item):
         row = self.musicList.row(item)
@@ -463,12 +467,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.percent = int((self.current / self.length) * 100)
             self.SongProgress.setValue(self.percent)
 
-        if self.percent >= 99:
-            QTimer.singleShot((self.length/0.01), self.next_track)
+        # if self.percent >= 98:
+            # QTimer.singleShot((self.length/0.01), self.next_track)
             print(f'{self.length}, {self.length/0.01}')
     
     def on_end_reached(self, event):
         self.next_track()
+
+    def convert_time(self, milli):
+        sec = (milli // 1000) % 60
+        min = (milli // (1000*60)) % 60
+        self.durat = str(f"{min}:{sec}")
 
     def start_stream(self):
         #Start rtl_fm wit current frequency using wideband fm mode (-M wbfm)
