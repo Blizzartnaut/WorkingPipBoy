@@ -421,9 +421,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.player.play()
             self.mediaTime = self.player.get_length() #Gets length of currently playing media
             print(f'{self.mediaTime}') #Debug
-            self.mediaTime += 400 #To add some time after a song to give a nice rest period before next song
-            print(f'{self.mediaTime}') #debug
-            QTimer.singleShot((self.mediaTime), self.next_track) #Must be used in play() or else it will never trigger, autoplay feature
+            # self.mediaTime += 400 #To add some time after a song to give a nice rest period before next song
+            # print(f'{self.mediaTime}') #debug
+            QTimer.singleShot((self.mediaTime + 1000), self.next_track) #Must be used in play() or else it will never trigger, autoplay feature
             # self.convert_time(self.mediaTime)
             self.durat = self.convert_time(self.mediaTime) #Meant to display a nice format to show how long a media piece is
             self.SongTime.setText(f'{self.durat}') #updates ui
