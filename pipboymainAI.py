@@ -465,6 +465,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.percent >= 99:
             QTimer.singleShot((self.length/0.01), self.next_track)
+            print(f'{self.length}, {self.length/0.01}')
     
     def on_end_reached(self, event):
         self.next_track()
