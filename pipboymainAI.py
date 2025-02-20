@@ -493,7 +493,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def pot_vol_update(self):
         print(f'Vol: {self.volumeD}')
         if self.volumeD != None:
-            self.mixer.setvolume(self.volumeD)
+            self.mixer.setvolume(int(self.volumeD))
 
     def convert_time(self, milli):
         sec = (milli // 1000) % 60
