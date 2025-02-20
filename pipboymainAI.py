@@ -152,6 +152,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.freq_plot_butt.setText("STOP")
         self.time_plot_butt.clicked.connect(self.start_stream)
         self.freq_plot_butt.clicked.connect(self.stop_stream)
+        self.freqInput.returnPressed.connect(self.handle_freq_input)
 
         #Media Player Code Below
         # Setup music list UI elements
@@ -530,15 +531,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         time.sleep(0.5)
         self.start_stream()
 
+    def handle_freq_input(self):
+        freq_text = self.freqInput.text().strip()
+        try:
+            # Convert the input to a float. Assume input is in MHz.
+            new_freq_mhz = float(freq_text)
+            new_freq_hz = new_freq_mhz * 1e6  # convert MHz to Hz
+            self.newFreq = new_freq_hz
+            
+            # If the radio is already running, change frequency immediately.
+            if self.process:
+                self.change_frequency()
+            else:
+                # If the radio isn't playing, just update the stored frequency.
+                self.frequency = self.newFreq
+            # Optionally, clear the text input.
+            self.freqInput.clear()
+        except ValueError:
+            # If the conversion fails, display an error message.
+            self.freqInput.setText("Invalid frequency")
 
-    # def handle_freq_input(self):
-    #         freq_text = self.freqInput.text()
-    #         try:
-    #             #convert to float
-    #             self.freq_val = float(self.freqInput.text())
-                
-    #         except ValueError:
-    #             self.freqInput.setText("750.00")
     
     def update(self):
         """
