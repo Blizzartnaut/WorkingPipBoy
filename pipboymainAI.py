@@ -491,6 +491,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.next_track()
 
     def pot_vol_update(self):
+        print(f'Vol: {self.volumeD}')
         if self.volumeD != None:
             self.mixer.setvolume(self.volumeD)
 
