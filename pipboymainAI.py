@@ -495,6 +495,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print(f'Vol: {self.volumeD}')
         if self.volumeD != None:
             self.mixer.setvolume(int(self.volumeD))
+            self.VolSlider.setSliderPosition(self.volumeD)
 
     def convert_time(self, milli):
         sec = (milli // 1000) % 60
@@ -538,6 +539,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             new_freq_mhz = float(freq_text)
             new_freq_hz = new_freq_mhz * 1e6  # convert MHz to Hz
             self.newFreq = new_freq_hz
+            self.freqInput.setText(f"{self.frequency/1e6:.2f} MHz")
             
             # If the radio is already running, change frequency immediately.
             if self.process:
