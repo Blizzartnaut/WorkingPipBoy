@@ -196,6 +196,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.dur_timer.timeout.connect(self.update_progress)
         self.dur_timer.start(500)
 
+        # Timer to check on volume potentiometer
+        self.vol_timer = QTimer(self)
+        self.vol_timer.timeout.connect(self.pot_vol_update)
+        self.vol_timer.start(500)
+
         # Set up VLC event manager to listen for end-of-media events
         # events = self.player.event_manager()
         # events.event_attach(vlc.EventType.MediaPlayerEndReached, self.on_end_reached)
@@ -485,6 +490,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_end_reached(self, event):
         self.next_track()
 
+    def pot_vol_update(self):
+        if self.volumeD != None:
+            self.mixer.setvolume(self.volumeD)
+
     def convert_time(self, milli):
         sec = (milli // 1000) % 60
         min = (milli // (1000*60)) % 60
@@ -562,6 +571,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.data_sens3[-1] = float(values[2])
                 self.data_sensrad[-1] = float(values[3])
                 self.count = values[3]
+                self.volumeD = values[7]
                 # self.sec4.setText(self.cps)
 
                 self.SENS1.setText(f"MQ4: {values[0]}")

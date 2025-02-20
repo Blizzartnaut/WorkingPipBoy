@@ -4,9 +4,7 @@
 const int MQ4 = 10;   //Pin for Sensor Package
 const int MQ6 = 11; //These are ADC
 const int MQ135 = 9;  //Pins for analog signals
-//const int RAD = 4;  //Digital Pin for counting rads
-//const int Humid = 7;
-//const int Temp = 6;
+const int potPin = A1; // Analog pin connected to the potentiometer wiper
 
 //Geiger counter pin and setup
 volatile unsigned long pulseCount = 0; // counts pulses in the current interval
@@ -27,10 +25,10 @@ const int s4 = 50;
 const int s5 = 52;
 int screen = 1;
 
-#include <dht_nonblocking.h>
+//#include <dht_nonblocking.h>
 
 /* Uncomment according to your sensortype. */
-#define DHT_SENSOR_TYPE DHT_TYPE_11
+//#define DHT_SENSOR_TYPE DHT_TYPE_11
 //#define DHT_SENSOR_TYPE DHT_TYPE_21
 //#define DHT_SENSOR_TYPE DHT_TYPE_22
 
@@ -76,14 +74,17 @@ void loop() {
   int sens4 = analogRead(MQ4);  //Reads ADC Pin
   int sens6 = analogRead(MQ6);   //^
   int sens135 = analogRead(MQ135);  //^
-  //int rad = digitalRead(interruptPin); //Reads Digital Pin (1 or 0) count or no count, higher baud rate?
-  //int Humid = 
+  // Read analog value (0-1023)
+  int analogValue = analogRead(potPin);
 
   int val1 = digitalRead(s1); //to store values for screen select
   int val2 = digitalRead(s2);
   int val3 = digitalRead(s3);
   int val4 = digitalRead(s4);
   int val5 = digitalRead(s5);
+
+  // Map the analog value to a range of 0-99
+  int volume = map(analogValue, 0, 1023, 0, 99);
 
   unsigned long currentMillis = millis();  // Get the current time in milliseconds
 
@@ -108,8 +109,8 @@ void loop() {
   else if(val5 == 1){
     screen = 5;}
 
-  float temp;
-  float humidity;
+  // float temp;
+  // float humidity;
 
   /* Measure temperature and humidity.  If the functions returns
      true, then a measurement is available. */
@@ -144,7 +145,10 @@ void loop() {
   
   //Serial.print("Screen,"); //Sets up reciever to parse message correctly using white space for seperate values
   Serial.print(screen);
-  Serial.print("\n");
+  Serial.print(",");
+
+  Serial.print(volume);
+  Serial.print('\n');
 
   previousMillis = currentMillis; // Update previousMillis to the current time for the next 1-second interval
 
