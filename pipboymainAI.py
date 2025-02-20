@@ -495,7 +495,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print(f'Vol: {self.volumeD}')
         if self.volumeD != None:
             self.mixer.setvolume(int(self.volumeD))
-            self.VolSlider.setSliderPosition(self.volumeD)
+            self.VolSlider.setSliderPosition(int(self.volumeD))
 
     def convert_time(self, milli):
         sec = (milli // 1000) % 60
