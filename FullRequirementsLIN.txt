@@ -1,2 +1,3 @@
 libwebp-dev
-libwebp.so.6
+rtl-sdr
+portaudio19-dev

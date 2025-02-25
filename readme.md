@@ -41,6 +41,9 @@ https://grabcad.com/library/pip-boy-3000-mark-4-1
 For correctly installing libwebp.so.6 follow the following
 https://stackoverflow.com/questions/54833807/libwebp-so-6-import-error-in-raspberry-pi-3b
 
+For audio
+https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config to get the audio to work via usb
+
 
 How To Install System:
 
@@ -53,3 +56,7 @@ How To Install System:
 6: sudo updatedb
 7: sudo ln -s /usr/lib/aarch64-linux-gnu/libwebp.so.7 /usr/lib/aarch64-linux-gnu/libwebp.so.6 (This only works on bookworm version of raspberry pi 4b as of 02/24/2025, otherwise you will need to find them and symlink them yourself)
 8: sudo ln -s /usr/lib/aarch64-linux-gnu/libtiff.so.6 /usr/lib/aarch64-linux-gnu/libtiff.so.5
+9: sudo apt-get install librtlsdr-dev
+10: make sure to install all components in FullRequirementsLIN.txt and in FullRequirementsPIP.txt, Lin first, then pip.
+11: install all music to the music folder for your playlist
+12: install all mapping tiles for the mapping folder, a detailed instruction for this may be available at a later date

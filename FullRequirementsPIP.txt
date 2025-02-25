@@ -6,3 +6,9 @@ pyside6
 pynmea2
 psutil
 smbus
+rtl-sdr
+python-vlc
+pyrtlsdr
+pyaudio
+qasync
+pyalsaaudio
