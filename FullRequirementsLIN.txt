@@ -1,0 +1,2 @@
+libwebp-dev
+libwebp.so.6

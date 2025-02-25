@@ -37,3 +37,19 @@ https://sketchfab.com/3d-models/pip-boy-3000-mark-iv-ed25237501a84af8b65198cc9c3
 https://www.therpf.com/forums/threads/functional-pip-boy-3000-mk-iv-from-fallout-4.245034/
 
 https://grabcad.com/library/pip-boy-3000-mark-4-1
+
+For correctly installing libwebp.so.6 follow the following
+https://stackoverflow.com/questions/54833807/libwebp-so-6-import-error-in-raspberry-pi-3b
+
+
+How To Install System:
+
+1: on your device open a terminal, 'git clone https://github.com/Blizzartnaut/WorkingPipBoy.git'
+(All following commands will be assumed to be in the terminal until otherwise mentioned)
+2: python -m venv PipBoyVenv
+3: . PipBoyVenv/bin/activate (yes include the period at the beginning of the entry)
+4: sudo apt update
+5: sudo apt install mlocate
+6: sudo updatedb
+7: sudo ln -s /usr/lib/aarch64-linux-gnu/libwebp.so.7 /usr/lib/aarch64-linux-gnu/libwebp.so.6 (This only works on bookworm version of raspberry pi 4b as of 02/24/2025, otherwise you will need to find them and symlink them yourself)
+8: sudo ln -s /usr/lib/aarch64-linux-gnu/libtiff.so.6 /usr/lib/aarch64-linux-gnu/libtiff.so.5

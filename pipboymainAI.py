@@ -45,7 +45,7 @@ import smbus
 import time
 
 #Import GPS Mapping Functions
-from gps_lib import GGA_Read, RMC_Read, GSV_Read
+# from gps_lib import GGA_Read, RMC_Read, GSV_Read
 
 #For RTL-SDR
 from rtlsdr import *

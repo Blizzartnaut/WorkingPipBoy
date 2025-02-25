@@ -1,0 +1,8 @@
+serial
+numpy
+matplotlib
+pyqtgraph
+pyside6
+pynmea2
+psutil
+smbus
