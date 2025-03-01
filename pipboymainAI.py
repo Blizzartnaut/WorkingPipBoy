@@ -166,6 +166,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mainLayout.addWidget(self.musicList)
         self.VolSlider.valueChanged.connect(self.update_volume)
         self.mixer = alsaaudio.Mixer()
+
+        #VolSlider style sheet
+        self.VolSlider.setStyleSheet(f"""
+                QSlider::handle:vertical {{
+                    width: 18px:
+                }}
+            """)
+
         
         # Playlist management
         self.musicDir = os.path.abspath("music")  # Ensure this folder exists.
@@ -806,12 +814,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if info.get('charging_state', "N/A") == 'Fast Charging' or info.get('charging_state', "N/A") == 'Charging':
             self.progressBar.setStyleSheet(f"""
                 QProgressBar::chunk {{
+                    font: bold 15px:
+                    qproperty-alignment: 'AlignVCenter | AlignLeft':
                     background-color: {"green"};
                 }}
             """)
         elif info.get('charging_state', "N/A") == 'Dischaging':
             self.progressBar.setStyleSheet(f"""
                 QProgressBar::chunk {{
+                    font: bold 15px:
+                    qproperty-alignment: 'AlignVCenter | AlignLeft':
                     background-color: {"red"};
                 }}
             """)
