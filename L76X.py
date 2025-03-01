@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 # import RPi.GPIO as GPIO
-import config
+# import config
 import math
 import time
 
