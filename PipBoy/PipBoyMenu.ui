@@ -232,6 +232,19 @@
        <string>Memory Usage</string>
       </property>
      </widget>
+     <widget class="QLabel" name="Warn1">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>10</y>
+        <width>171</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="air">
      <attribute name="title">
@@ -331,6 +344,19 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="Warn2">
+      <property name="geometry">
+       <rect>
+        <x>620</x>
+        <y>380</y>
+        <width>171</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
     </widget>
@@ -447,6 +473,19 @@
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QLabel" name="Warn3">
+      <property name="geometry">
+       <rect>
+        <x>620</x>
+        <y>380</y>
+        <width>171</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="map">
@@ -582,6 +621,19 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
+     <widget class="QLabel" name="Warn4">
+      <property name="geometry">
+       <rect>
+        <x>620</x>
+        <y>380</y>
+        <width>171</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="radio">
      <attribute name="title">
@@ -699,6 +751,19 @@
         </property>
         <property name="text">
          <string>Freq Plot</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="Warn5">
+        <property name="geometry">
+         <rect>
+          <x>610</x>
+          <y>340</y>
+          <width>171</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </widget>
@@ -872,6 +937,19 @@
       </property>
       <property name="value">
        <number>0</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="Warn6">
+      <property name="geometry">
+       <rect>
+        <x>620</x>
+        <y>380</y>
+        <width>171</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
     </widget>

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=battery
+Comment=My battery
+Exec=/home/pi/UPS_HAT_E/battery.sh
+Icon=/home/pi/UPS_HAT_E/images/battery.1.png
+Terminal=false
+MultipleArgs=false
+Type=Application
+Categories=Application;Development;
+StartupNotify=true

@@ -19,3 +19,7 @@ pipboymain.py
 #testinrtl-sdr.py
 c_cpp_properties.json
 #testing-rtlsdrpy.py
+/images/
+README.rst
+battery.sh
+main.sh

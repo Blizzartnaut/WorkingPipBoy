@@ -44,6 +44,9 @@ import struct
 import smbus
 import time
 
+#Battery Monitoring
+from battery import get_battery_info
+
 #Import GPS Mapping Functions
 # from gps_lib import GGA_Read, RMC_Read, GSV_Read
 
@@ -761,19 +764,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return capacity
     
     def update_battery_status(self):
-        capacity = self.read_capacity()
-        #realcap = capacity * 2
-        # Check if a previous capacity exists and compare.
-        if hasattr(self, 'previous_capacity'):
-            if capacity > self.previous_capacity:
-                self.flashProgressBar("green")
-            elif capacity < self.previous_capacity:
-                self.flashProgressBar("red")
-            # If equal, you might choose not to change the color.
+        # capacity = self.read_capacity()
+        # #realcap = capacity * 2
+        # # Check if a previous capacity exists and compare.
+        # if hasattr(self, 'previous_capacity'):
+        #     if capacity > self.previous_capacity:
+        #         self.flashProgressBar("green")
+        #     elif capacity < self.previous_capacity:
+        #         self.flashProgressBar("red") #Original Battery
+
+        info = get_battery_info()
+
+        capacity = info.get('battery_percent', 0)
+
+        # If equal, you might choose not to change the color.
         # Store the new capacity for the next comparison.
         self.previous_capacity = capacity
         # print(f'Current Capacity = {capacity}')
         self.progressBar.setValue(int(capacity))
+        
+        if info.get('low_warning', False):
+            self.Warn1.setText('Low Voltage!')
+            self.Warn2.setText('Low Voltage!')
+            self.Warn3.setText('Low Voltage!')
+            self.Warn4.setText('Low Voltage!')
+            self.Warn5.setText('Low Voltage!')
+            self.Warn6.setText('Low Voltage!')
+        else:
+            self.Warn1.setText('')
+            self.Warn2.setText('')
+            self.Warn3.setText('')
+            self.Warn4.setText('')
+            self.Warn5.setText('')
+            self.Warn6.setText('')
 
     def flashProgressBar(self, color):
         # Change the color of the progress bar's "chunk" (the filled portion).
