@@ -381,10 +381,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mapView.load(QUrl("http://localhost:8000/pipboy_map.html"))
         layout.addWidget(self.mapView)
         
-        # # NEW: Timer to update GPS marker (calls update_gps_marker method) #Do not reenable until new gps is installed and understood how it works
-        # self.gps_timer = QTimer(self)
-        # self.gps_timer.timeout.connect(self.update_gps_marker)
-        # self.gps_timer.start(2000)  # Update every 2 seconds (adjust as needed)
+        # NEW: Timer to update GPS marker (calls update_gps_marker method) #Do not reenable until new gps is installed and understood how it works
+        self.gps_timer = QTimer(self)
+        self.gps_timer.timeout.connect(self.update_gps_marker)
+        self.gps_timer.start(2000)  # Update every 2 seconds (adjust as needed)
 
         # Battery Capacity Update
         self.battery_timer = QTimer(self)

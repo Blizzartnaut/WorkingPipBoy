@@ -352,6 +352,12 @@ class Ui_MainWindow(object):
         self.Warn6.setObjectName(u"Warn6")
         self.Warn6.setGeometry(QRect(620, 380, 171, 30))
         self.tabWidget.addTab(self.music, "")
+        self.tab = QWidget()
+        self.tab.setObjectName(u"tab")
+        self.ShutDown = QPushButton(self.tab)
+        self.ShutDown.setObjectName(u"ShutDown")
+        self.ShutDown.setGeometry(QRect(610, 10, 171, 51))
+        self.tabWidget.addTab(self.tab, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -363,7 +369,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(5)
+        self.tabWidget.setCurrentIndex(6)
         self.MENU2.setCurrentIndex(0)
 
 
@@ -438,5 +444,7 @@ class Ui_MainWindow(object):
         self.SongTime.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
         self.Warn6.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.music), QCoreApplication.translate("MainWindow", u"MUSIC", None))
+        self.ShutDown.setText(QCoreApplication.translate("MainWindow", u"Shutdown", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"CONFIG", None))
     # retranslateUi
 
