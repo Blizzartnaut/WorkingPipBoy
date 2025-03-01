@@ -49,6 +49,7 @@ from battery import get_battery_info
 
 #Import GPS Mapping Functions
 # from gps_lib import GGA_Read, RMC_Read, GSV_Read
+from L76X import L76X
 
 #For RTL-SDR
 from rtlsdr import *
@@ -714,35 +715,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("Error Updating Graph", e)
     
     def get_current_gps_coordinates(self):
-        """
-        Return the current GPS coordinates as (latitude, longitude).
-        This function calls read_gps_data() to obtain data from the GPS hat.
-        If no valid data is received, it falls back to fixed demo coordinates.
-        """
-        x = GGA_Read()
-        if x is not None:
-            self.gpsdat = list(x)
-            self.NODATA.setText('')
-            self.lat = float(self.gpsdat[0])
-            self.lon = self.gpsdat[1]
-            self.lon = float(self.lon) * -1
-            self.UTCTime = self.gpsdat[2]
-            self.gpsqual = self.gpsdat[4]
-            print("GPS: Lat=", self.lat, " Lon=", self.lon, " Qual=", self.gpsqual, " UTC=", self.UTCTime)
-            self.LAT.setText(f'LAT: {self.lat}')
-            self.LON.setText(f'LON: {self.lon}')
-            self.UTC.setText(f'UTC: {self.UTCTime}')
+        # """
+        # Return the current GPS coordinates as (latitude, longitude).
+        # This function calls read_gps_data() to obtain data from the GPS hat.
+        # If no valid data is received, it falls back to fixed demo coordinates.
+        # """
+        # x = GGA_Read()
+        # if x is not None:
+        #     self.gpsdat = list(x)
+        #     self.NODATA.setText('')
+        #     self.lat = float(self.gpsdat[0])
+        #     self.lon = self.gpsdat[1]
+        #     self.lon = float(self.lon) * -1
+        #     self.UTCTime = self.gpsdat[2]
+        #     self.gpsqual = self.gpsdat[4]
+        #     print("GPS: Lat=", self.lat, " Lon=", self.lon, " Qual=", self.gpsqual, " UTC=", self.UTCTime)
+        #     self.LAT.setText(f'LAT: {self.lat}')
+        #     self.LON.setText(f'LON: {self.lon}')
+        #     self.UTC.setText(f'UTC: {self.UTCTime}')
 
-            # Build the JavaScript call to update the marker on the map.
-            js_code = f"updateMarker({self.lat}, {self.lon});"
-            # Run the JavaScript in the QWebEngineView.
-            self.mapView.page().runJavaScript(js_code)
-            # print(f"Updated GPS marker to lat: {lat}, lon: {lon}")
         
-        else:
-            self.NODATA.setText('NO SAT DATA')
-            # print(str(x))
+        # else:
+        #     self.NODATA.setText('NO SAT DATA')
+        #     # print(str(x))
+        gps = L76X()
+        # ... after calling your method that reads a sentence, e.g. L76X_Gat_GNRMC()
+        self.lat, self.lon = gps.get_coordinates()
+        # Now you can update your map marker with current_lat and current_lon.
 
+        # Build the JavaScript call to update the marker on the map.
+        js_code = f"updateMarker({self.lat}, {self.lon});"
+        # Run the JavaScript in the QWebEngineView.
+        self.mapView.page().runJavaScript(js_code)
+        # print(f"Updated GPS marker to lat: {lat}, lon: {lon}")
 
         
     def update_memory_usage(self):
