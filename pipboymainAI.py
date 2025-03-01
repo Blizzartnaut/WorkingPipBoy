@@ -803,13 +803,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.Warn5.setText('')
             self.Warn6.setText('')
 
-        if info.get('charging_state', "N/A") == 'Fast Charing' or info.get('charging_state', "N/A") == 'Charging':
+        if info.get('charging_state', "N/A") == 'Fast Charging' or info.get('charging_state', "N/A") == 'Charging':
             self.progressBar.setStyleSheet(f"""
                 QProgressBar::chunk {{
                     background-color: {"green"};
                 }}
             """)
-        else:
+        elif info.get('charging_state', "N/A") == 'Dischaging':
             self.progressBar.setStyleSheet(f"""
                 QProgressBar::chunk {{
                     background-color: {"red"};
