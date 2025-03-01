@@ -49,7 +49,8 @@ from battery import get_battery_info
 
 #Import GPS Mapping Functions
 # from gps_lib import GGA_Read, RMC_Read, GSV_Read
-from L76X import L76X
+# from L76X import L76X
+from newGPS import get_coordinates_from_serial
 
 #For RTL-SDR
 from rtlsdr import *
@@ -738,16 +739,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # else:
         #     self.NODATA.setText('NO SAT DATA')
         #     # print(str(x))
-        gps = L76X()
+        
+        self.lat, self.lon = get_coordinates_from_serial()
+        if self.lat is not None and self.lon is not None:
+            # Build the JavaScript call to update the marker on the map.
+            js_code = f"updateMarker({self.lat}, {self.lon});"
+            # Run the JavaScript in the QWebEngineView.
+            self.mapView.page().runJavaScript(js_code)
+            # print(f"Updated GPS marker to lat: {lat}, lon: {lon}")
+
         # ... after calling your method that reads a sentence, e.g. L76X_Gat_GNRMC()
-        self.lat, self.lon = gps.get_coordinates()
+        # self.lat, self.lon = gps.get_coordinates()
         # Now you can update your map marker with current_lat and current_lon.
 
-        # Build the JavaScript call to update the marker on the map.
-        js_code = f"updateMarker({self.lat}, {self.lon});"
-        # Run the JavaScript in the QWebEngineView.
-        self.mapView.page().runJavaScript(js_code)
-        # print(f"Updated GPS marker to lat: {lat}, lon: {lon}")
 
         
     def update_memory_usage(self):
