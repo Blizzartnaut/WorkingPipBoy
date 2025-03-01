@@ -803,21 +803,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.Warn5.setText('')
             self.Warn6.setText('')
 
-    def flashProgressBar(self, color):
-        # Change the color of the progress bar's "chunk" (the filled portion).
-        # You can customize the duration (here 500ms) as needed.
-        self.progressBar.setStyleSheet(f"""
-            QProgressBar::chunk {{
-                background-color: {color};
-            }}
-        """)
-        # After 500ms, reset the style sheet back to its default.
-        QTimer.singleShot(500, self.resetProgressBarColor)
+        if info.get('charging_state', "N/A") == 'Fast Charing' or info.get('charging_state', "N/A") == 'Charging':
+            self.progressBar.setStyleSheet(f"""
+                QProgressBar::chunk {{
+                    background-color: {"green"};
+                }}
+            """)
+        else:
+            self.progressBar.setStyleSheet(f"""
+                QProgressBar::chunk {{
+                    background-color: {"red"};
+                }}
+            """)
 
-    def resetProgressBarColor(self):
-        # Revert to the original style (you can either set an empty style sheet
-        # or restore a predefined style if you have one).
-        self.progressBar.setStyleSheet("")
+
+    # def flashProgressBar(self, color):
+    #     # Change the color of the progress bar's "chunk" (the filled portion).
+    #     # You can customize the duration (here 500ms) as needed.
+    #     self.progressBar.setStyleSheet(f"""
+    #         QProgressBar::chunk {{
+    #             background-color: {color};
+    #         }}
+    #     """)
+    #     # After 500ms, reset the style sheet back to its default.
+    #     QTimer.singleShot(500, self.resetProgressBarColor)
+
+    # def resetProgressBarColor(self):
+    #     # Revert to the original style (you can either set an empty style sheet
+    #     # or restore a predefined style if you have one).
+    #     self.progressBar.setStyleSheet("")
 
     # @Slot(object)
     # def update_spectrum(self, spectrum):
