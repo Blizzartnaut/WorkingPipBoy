@@ -814,17 +814,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if info.get('charging_state', "N/A") == 'Fast Charging' or info.get('charging_state', "N/A") == 'Charging':
             self.progressBar.setStyleSheet(f"""
                 QProgressBar::chunk {{
+                    background-color: {"green"};
                     font: bold 15px:
                     qproperty-alignment: 'AlignVCenter | AlignLeft':
-                    background-color: {"green"};
                 }}
             """)
         elif info.get('charging_state', "N/A") == 'Dischaging':
             self.progressBar.setStyleSheet(f"""
                 QProgressBar::chunk {{
+                    background-color: {"red"};
                     font: bold 15px:
                     qproperty-alignment: 'AlignVCenter | AlignLeft':
-                    background-color: {"red"};
                 }}
             """)
 
