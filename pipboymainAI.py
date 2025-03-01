@@ -269,6 +269,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.memory_timer.timeout.connect(self.update_memory_usage)
         self.memory_timer.start(5000)
 
+        #Timer for battery status
+        self.battery_timer = QTimer(self)
+        self.battery_timer.timeout.connect(self.update_battery_status)
+        self.battery_timer.start(2000)
+
         #Manual Triggering of Garbage Collection #did something weird, disabled for further investigation, suspect
         self.gacl = QTimer(self)
         self.gacl.timeout.connect(self.run_gc)
@@ -782,7 +787,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.previous_capacity = capacity
         # print(f'Current Capacity = {capacity}')
         self.progressBar.setValue(int(capacity))
-        
+
         if info.get('low_warning', False):
             self.Warn1.setText('Low Voltage!')
             self.Warn2.setText('Low Voltage!')
