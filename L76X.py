@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import config
 import math
 import time
@@ -272,14 +272,14 @@ class L76X(object):
     def L76X_Set_Baudrate(self, Baudrate):
         self.config.Uart_Set_Baudrate(Baudrate)
 
-    def L76X_Exit_BackupMode(self):
-        GPIO.setup(self.config.FORCE, GPIO.OUT)
-        time.sleep(1)
-        GPIO.output(self.config.FORCE, GPIO.HIGH)
-        time.sleep(1)
-        GPIO.output(self.config.FORCE, GPIO.LOW)
-        time.sleep(1)
-        GPIO.setup(self.config.FORCE, GPIO.IN)
+    # def L76X_Exit_BackupMode(self):
+    #     GPIO.setup(self.config.FORCE, GPIO.OUT)
+    #     time.sleep(1)
+    #     GPIO.output(self.config.FORCE, GPIO.HIGH)
+    #     time.sleep(1)
+    #     GPIO.output(self.config.FORCE, GPIO.LOW)
+    #     time.sleep(1)
+    #     GPIO.setup(self.config.FORCE, GPIO.IN)
 
     def get_coordinates(self):
         # Convert hemisphere info if necessary (e.g., if Lat_area is 'S', make the value negative)
