@@ -865,7 +865,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             end_freq=108e6,
             step=200000,         # 200 kHz
             integration_time=0.5,
-            threshold=-80,       # Adjust threshold as needed
+            threshold=-90,       # Adjust threshold as needed
             output_csv="fm_scan.csv"
         )
         # Store the candidate list in your class.
