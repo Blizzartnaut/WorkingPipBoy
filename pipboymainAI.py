@@ -66,6 +66,9 @@ import alsaaudio
 #for testing
 radioval = 0
 
+#for radio
+from radioControls import scan_band, seek_next, seek_previous
+
 def start_local_server(port=8000, directory="."):
     """
     Start an HTTP server serving files from the specified directory.
@@ -214,6 +217,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.vol_timer = QTimer(self)
         self.vol_timer.timeout.connect(self.pot_vol_update)
         self.vol_timer.start(500)
+
+        #Button for functions
+        self.ReBoot.clicked.connect(self.reboot)
+        self.ShutDown.clicked.connect(self.shutdown)
+        self.FMSe.clicked.connect(self.scan_fm_band)
+        self.SeekR.clicked.connect(self.seek_next_button_pressed)
+        self.SeekL.clicked.connect(self.seek_previous_button_pressed)
 
         # Set up VLC event manager to listen for end-of-media events
         # events = self.player.event_manager()
@@ -716,30 +726,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("Error Updating Graph", e)
     
     def get_current_gps_coordinates(self):
-        # """
-        # Return the current GPS coordinates as (latitude, longitude).
-        # This function calls read_gps_data() to obtain data from the GPS hat.
-        # If no valid data is received, it falls back to fixed demo coordinates.
-        # """
-        # x = GGA_Read()
-        # if x is not None:
-        #     self.gpsdat = list(x)
-        #     self.NODATA.setText('')
-        #     self.lat = float(self.gpsdat[0])
-        #     self.lon = self.gpsdat[1]
-        #     self.lon = float(self.lon) * -1
-        #     self.UTCTime = self.gpsdat[2]
-        #     self.gpsqual = self.gpsdat[4]
-        #     print("GPS: Lat=", self.lat, " Lon=", self.lon, " Qual=", self.gpsqual, " UTC=", self.UTCTime)
-        #     self.LAT.setText(f'LAT: {self.lat}')
-        #     self.LON.setText(f'LON: {self.lon}')
-        #     self.UTC.setText(f'UTC: {self.UTCTime}')
-
-        
-        # else:
-        #     self.NODATA.setText('NO SAT DATA')
-        #     # print(str(x))
-        
+                
         self.lat, self.lon = get_coordinates_from_serial()
         if self.lat is not None and self.lon is not None:
             # Build the JavaScript call to update the marker on the map.
@@ -747,12 +734,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Run the JavaScript in the QWebEngineView.
             self.mapView.page().runJavaScript(js_code)
             # print(f"Updated GPS marker to lat: {lat}, lon: {lon}")
-
-        # ... after calling your method that reads a sentence, e.g. L76X_Gat_GNRMC()
-        # self.lat, self.lon = gps.get_coordinates()
-        # Now you can update your map marker with current_lat and current_lon.
-
-
         
     def update_memory_usage(self):
         # """
@@ -798,6 +779,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         info = get_battery_info()
 
         capacity = info.get('battery_percent', 0)
+        self.TimeREM.setText(str(info.get("runtime_empty", "N/A")))
 
         # If equal, you might choose not to change the color.
         # Store the new capacity for the next comparison.
@@ -859,6 +841,49 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #     # This method is called by SDRWorker with the computed spectrum.
     #     # Update your curve with the new data.
     #     self.curve.setData(spectrum)
+
+    def reboot(self):
+        cmd = (
+            f"sudo reboot"
+        )
+        # Launch command as subprocess
+        self.process = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid) #keeps track of the process for later
+
+    def shutdown(self):
+        cmd = (
+            f"sudo shutdown -h now"
+        )
+        # Launch command as subprocess
+        self.process = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid) #keeps track of the process for later
+
+    def scan_fm_band(self):
+        # For FM, use a range of 88 MHz to 108 MHz, step size 200 kHz,
+        # integration time of 0.5 seconds, and a threshold (e.g., -80 dB).
+        fm_candidates = scan_band(
+            band_name="FM",
+            start_freq=88e6,
+            end_freq=108e6,
+            step=200000,         # 200 kHz
+            integration_time=0.5,
+            threshold=-80,       # Adjust threshold as needed
+            output_csv="fm_scan.csv"
+        )
+        # Store the candidate list in your class.
+        self.candidate_list = fm_candidates
+        # Find the index in candidate_list that is closest to the current frequency:
+        self.current_candidate = min(fm_candidates, key=lambda x: abs(x - self.frequency))
+
+    def seek_next_button_pressed(self):
+        if self.candidate_list:
+            new_freq = seek_next(self.frequency, self.candidate_list)
+            self.set_frequency(new_freq)
+
+    def seek_previous_button_pressed(self):
+        if self.candidate_list:
+            new_freq = seek_previous(self.frequency, self.candidate_list)
+            self.set_frequency(new_freq)
+
+
         
 async def main():
     # async def main():
