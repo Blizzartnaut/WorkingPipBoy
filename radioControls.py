@@ -113,7 +113,7 @@ def parse_rtl_power_csv(filename, threshold=10):
 
 # Example usage:
 def stong_freq():
-    filename = "/home/marceversole/fm_scan.csv"
+    filename = "/home/marceversole/WorkingPipBoy/fm_scan.csv"
     threshold = 10  # Adjust threshold as needed
     strong_freqs = parse_rtl_power_csv(filename, threshold=threshold)
     print(f"Found {len(strong_freqs)} strong frequencies above {threshold} dB:")
