@@ -63,17 +63,17 @@ def parse_gnrmc(sentence):
         
         # Create a datetime object in UTC
         utc_dt = datetime.datetime(year, month, day, hour, minute, second)
-        print("UTC time from GPS:", utc_dt)
+        # print("UTC time from GPS:", utc_dt)
         
         # Convert to Eastern Standard Time (UTC-5)
         est_dt = utc_dt - datetime.timedelta(hours=5)
-        print("Converted to EST:", est_dt)
+        # print("Converted to EST:", est_dt)
         
         # Format the new time as required by the date command (e.g., "YYYY-MM-DD HH:MM:SS")
         new_time_str = est_dt.strftime('%Y-%m-%d %H:%M:%S')
         
         # Set system time (requires sudo privileges)
-        print("Setting system time to:", new_time_str)
+        # print("Setting system time to:", new_time_str)
         subprocess.run(['sudo', 'date', '-s', new_time_str])
         subprocess.run('sudo fake-hwclock save')
     except Exception as e:
@@ -89,11 +89,11 @@ def get_coordinates_from_serial():
     """
     sentence = read_gnrmc()
     lat, lon = parse_gnrmc(sentence)
-    print(f"Read coordinates: Latitude = {lat}, Longitude = {lon}")
+    # print(f"Read coordinates: Latitude = {lat}, Longitude = {lon}")
     
     return lat, lon
 
 # For testing:
 if __name__ == "__main__":
     lat, lon = get_coordinates_from_serial()
-    print("Latitude:", lat, "Longitude:", lon)
+    # print("Latitude:", lat, "Longitude:", lon)
