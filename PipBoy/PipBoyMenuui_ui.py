@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QLabel, QLineEdit,
-    QMainWindow, QMenuBar, QProgressBar, QPushButton,
-    QRadioButton, QSizePolicy, QSlider, QStatusBar,
-    QTabWidget, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QLabel, QMainWindow,
+    QMenuBar, QProgressBar, QPushButton, QRadioButton,
+    QSizePolicy, QSlider, QStatusBar, QTabWidget,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -283,11 +283,6 @@ class Ui_MainWindow(object):
         self.FREQ_GRAPH = QLabel(self.RADIO)
         self.FREQ_GRAPH.setObjectName(u"FREQ_GRAPH")
         self.FREQ_GRAPH.setGeometry(QRect(14, 55, 761, 301))
-        self.freqInput = QLineEdit(self.RADIO)
-        self.freqInput.setObjectName(u"freqInput")
-        self.freqInput.setGeometry(QRect(120, 10, 91, 31))
-        self.freqInput.setMaxLength(7)
-        self.freqInput.setEchoMode(QLineEdit.Normal)
         self.FREQ_2 = QLabel(self.RADIO)
         self.FREQ_2.setObjectName(u"FREQ_2")
         self.FREQ_2.setGeometry(QRect(210, 10, 51, 31))
@@ -321,6 +316,12 @@ class Ui_MainWindow(object):
         self.candidatesLabel = QLabel(self.RADIO)
         self.candidatesLabel.setObjectName(u"candidatesLabel")
         self.candidatesLabel.setGeometry(QRect(414, 290, 291, 31))
+        self.freqInput = QLabel(self.RADIO)
+        self.freqInput.setObjectName(u"freqInput")
+        self.freqInput.setGeometry(QRect(124, 10, 81, 31))
+        font5 = QFont()
+        font5.setPointSize(13)
+        self.freqInput.setFont(font5)
         self.MENU2.addTab(self.RADIO, "")
         self.SOURCE_FIND = QWidget()
         self.SOURCE_FIND.setObjectName(u"SOURCE_FIND")
@@ -453,9 +454,6 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.map), QCoreApplication.translate("MainWindow", u"MAP", None))
         self.FREQ.setText(QCoreApplication.translate("MainWindow", u"FREQUENCY:", None))
         self.FREQ_GRAPH.setText("")
-        self.freqInput.setInputMask(QCoreApplication.translate("MainWindow", u"0000.00", None))
-        self.freqInput.setText(QCoreApplication.translate("MainWindow", u"750.00", None))
-        self.freqInput.setPlaceholderText(QCoreApplication.translate("MainWindow", u"750.00", None))
         self.FREQ_2.setText(QCoreApplication.translate("MainWindow", u"MHz", None))
         self.time_plot_butt.setText(QCoreApplication.translate("MainWindow", u"Time Plot", None))
         self.freq_plot_butt.setText(QCoreApplication.translate("MainWindow", u"Freq Plot", None))
@@ -467,6 +465,7 @@ class Ui_MainWindow(object):
         self.SeekL.setText(QCoreApplication.translate("MainWindow", u"Seek <<", None))
         self.SeekR.setText(QCoreApplication.translate("MainWindow", u"Seek >>", None))
         self.candidatesLabel.setText("")
+        self.freqInput.setText(QCoreApplication.translate("MainWindow", u"0000.00", None))
         self.MENU2.setTabText(self.MENU2.indexOf(self.RADIO), QCoreApplication.translate("MainWindow", u"RADIO", None))
         self.MENU2.setTabText(self.MENU2.indexOf(self.SOURCE_FIND), QCoreApplication.translate("MainWindow", u"SOURCE FINDER", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.radio), QCoreApplication.translate("MainWindow", u"RADIO", None))

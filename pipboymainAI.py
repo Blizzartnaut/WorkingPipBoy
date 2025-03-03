@@ -304,6 +304,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fmScan.timeout.connect(self.scanner)
         self.fmScan.start(600000)
         self.fmScan.singleShot(2000, self.scanner)
+        self.freq_text = 102.7
         
         #Gas Sensor Graph
         #Matplotlib persistant canvas
@@ -565,12 +566,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #small delay to allow time for commands to terminate
         time.sleep(0.5)
         self.start_stream()
+        self.freqInput.setText(f"{self.frequency/1e6:.2f}")
 
     def handle_freq_input(self):
-        freq_text = self.freqInput.text().strip()
+        # freq_text = self.freqInput.text().strip()
+        
         try:
             # Convert the input to a float. Assume input is in MHz.
-            new_freq_mhz = float(freq_text)
+            new_freq_mhz = float(self.freq_text)
             new_freq_hz = new_freq_mhz * 1e6  # convert MHz to Hz
             self.new_freq = new_freq_hz
             self.freqInput.setText(f"{self.frequency/1e6:.2f} MHz")

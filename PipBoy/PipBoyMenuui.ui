@@ -689,31 +689,6 @@
          <string/>
         </property>
        </widget>
-       <widget class="QLineEdit" name="freqInput">
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>10</y>
-          <width>91</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="inputMask">
-         <string>0000.00</string>
-        </property>
-        <property name="text">
-         <string>750.00</string>
-        </property>
-        <property name="maxLength">
-         <number>7</number>
-        </property>
-        <property name="echoMode">
-         <enum>QLineEdit::Normal</enum>
-        </property>
-        <property name="placeholderText">
-         <string>750.00</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="FREQ_2">
         <property name="geometry">
          <rect>
@@ -855,6 +830,24 @@
         </property>
         <property name="text">
          <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="freqInput">
+        <property name="geometry">
+         <rect>
+          <x>124</x>
+          <y>10</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>0000.00</string>
         </property>
        </widget>
       </widget>
