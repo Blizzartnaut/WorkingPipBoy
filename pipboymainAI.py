@@ -160,7 +160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.freq_plot_butt.setText("STOP")
         self.time_plot_butt.clicked.connect(self.start_stream)
         self.freq_plot_butt.clicked.connect(self.stop_stream)
-        self.freqInput.returnPressed.connect(self.handle_freq_input)
+        # self.freqInput.returnPressed.connect(self.handle_freq_input)
 
         #Media Player Code Below
         # Setup music list UI elements
@@ -304,7 +304,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fmScan.timeout.connect(self.scanner)
         self.fmScan.start(600000)
         self.fmScan.singleShot(2000, self.scanner)
-        self.freq_text = 102.7
+        # self.freq_text = 102.7
         
         #Gas Sensor Graph
         #Matplotlib persistant canvas
