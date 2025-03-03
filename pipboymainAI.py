@@ -67,7 +67,7 @@ import alsaaudio
 radioval = 0
 
 #for radio
-from radioControls import scan_band, seek_next, seek_previous
+from radioControls import scan_band, seek_next, seek_previous, stong_freq
 
 def start_local_server(port=8000, directory="."):
     """
@@ -819,7 +819,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 }}
             """)
 
-
     # def flashProgressBar(self, color):
     #     # Change the color of the progress bar's "chunk" (the filled portion).
     #     # You can customize the duration (here 500ms) as needed.
@@ -864,26 +863,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             start_freq=88e6,
             end_freq=108e6,
             step=200000,         # 200 kHz
-            integration_time=0.5,
-            threshold=-90,       # Adjust threshold as needed
+            integration_time=10,
+            threshold=10,      # Adjust threshold as needed
             output_csv="fm_scan.csv"
         )
         # Store the candidate list in your class.
         self.candidate_list = fm_candidates
         # Find the index in candidate_list that is closest to the current frequency:
-        self.current_candidate = min(fm_candidates, key=lambda x: abs(x - self.frequency))
+        if fm_candidates:
+            self.current_candidate = min(fm_candidates, key=lambda x: abs(x - self.frequency))
+        else:
+            print("No strong candidates found!")
 
     def seek_next_button_pressed(self):
         if self.candidate_list:
-            new_freq = seek_next(self.frequency, self.candidate_list)
-            self.set_frequency(new_freq)
+            self.new_freq = seek_next(self.frequency, self.candidate_list)
+            # self.set_frequency(new_freq) #I think this might cause problems, testing
+            self.change_frequency()
 
     def seek_previous_button_pressed(self):
         if self.candidate_list:
-            new_freq = seek_previous(self.frequency, self.candidate_list)
-            self.set_frequency(new_freq)
-
-
+            self.new_freq = seek_previous(self.frequency, self.candidate_list)
+            # self.set_frequency(new_freq)
+            self.change_frequency()
         
 async def main():
     # async def main():
