@@ -88,7 +88,7 @@ def start_local_server(port=8000, directory="."):
     thread.start()
     
     os.chdir(cwd)
-    print(f"Local HTTP server started on port {port}, serving directory: {directory}")
+    # print(f"Local HTTP server started on port {port}, serving directory: {directory}")
     return httpd
 
 # --- PyAudio Setup ---

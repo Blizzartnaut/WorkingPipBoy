@@ -75,7 +75,7 @@ def parse_gnrmc(sentence):
         # Set system time (requires sudo privileges)
         # print("Setting system time to:", new_time_str)
         subprocess.run(['sudo', 'date', '-s', new_time_str])
-        subprocess.run('sudo fake-hwclock save')
+        # subprocess.run('sudo fake-hwclock save')
     except Exception as e:
         print("Error parsing time:", e)
 
