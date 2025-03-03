@@ -561,7 +561,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def change_frequency(self):
         self.stop_stream()
-        self.frequency = self.newFreq
+        self.frequency = self.new_Freq
         #small delay to allow time for commands to terminate
         time.sleep(0.5)
         self.start_stream()
@@ -572,7 +572,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Convert the input to a float. Assume input is in MHz.
             new_freq_mhz = float(freq_text)
             new_freq_hz = new_freq_mhz * 1e6  # convert MHz to Hz
-            self.newFreq = new_freq_hz
+            self.new_Freq = new_freq_hz
             self.freqInput.setText(f"{self.frequency/1e6:.2f} MHz")
             
             # If the radio is already running, change frequency immediately.
@@ -580,7 +580,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.change_frequency()
             else:
                 # If the radio isn't playing, just update the stored frequency.
-                self.frequency = self.newFreq
+                self.frequency = self.new_Freq
             # Optionally, clear the text input.
             self.freqInput.clear()
         except ValueError:
@@ -879,6 +879,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Find the index in candidate_list that is closest to the current frequency:
         if fm_candidates:
             self.current_candidate = min(fm_candidates, key=lambda x: abs(x - self.frequency))
+            self.candidatesLabel.setText(f'Found {len(self.candidate_list)} Candidates!')
         else:
             print("No strong candidates found!")
 

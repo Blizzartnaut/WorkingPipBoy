@@ -32,7 +32,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="main">
      <attribute name="title">
@@ -844,6 +844,19 @@
          <string>Seek &gt;&gt;</string>
         </property>
        </widget>
+       <widget class="QLabel" name="candidatesLabel">
+        <property name="geometry">
+         <rect>
+          <x>414</x>
+          <y>290</y>
+          <width>291</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="SOURCE_FIND">
        <attribute name="title">
@@ -1096,7 +1109,7 @@
      <x>0</x>
      <y>0</y>
      <width>799</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
