@@ -303,7 +303,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fmScan = QTimer(self)
         self.fmScan.timeout.connect(self.scanner)
         self.fmScan.start(600000)
-        self.fmScan.singleShot(2000)
+        self.fmScan.singleShot(2000, self.scanner)
         
         #Gas Sensor Graph
         #Matplotlib persistant canvas
