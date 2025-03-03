@@ -2,6 +2,7 @@ import subprocess
 import csv
 import time
 import os
+import threading
 
 def scan_band(band_name, start_freq, end_freq, step, integration_time, threshold, output_csv):
     """
@@ -28,7 +29,7 @@ def scan_band(band_name, start_freq, end_freq, step, integration_time, threshold
     # Run the command (blocking call).
     subprocess.run(cmd, shell=True)
     # Give a short delay to ensure the file is written.
-    time.sleep(1)
+    time.sleep(11)
     
     candidates = []
     if os.path.exists(output_csv):
@@ -119,3 +120,6 @@ def stong_freq():
     for freq in strong_freqs:
         print(f"{freq/1e6:.3f} MHz")
     return strong_freqs
+
+scan_thread = threading.Thread(target=scan_band)
+scan_thread.start()

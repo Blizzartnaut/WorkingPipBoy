@@ -298,6 +298,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gacl = QTimer(self)
         self.gacl.timeout.connect(self.run_gc)
         self.gacl.start(30000)
+
+        #Scan Frequency Timers
+        self.fmScan = QTimer(self)
+        self.fmScan.timeout.connect(self.scanner)
+        self.fmScan.start(600000)
+        self.fmScan.singleShot(2000)
         
         #Gas Sensor Graph
         #Matplotlib persistant canvas
@@ -858,16 +864,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def scan_fm_band(self):
         # For FM, use a range of 88 MHz to 108 MHz, step size 200 kHz,
         # integration time of 0.5 seconds, and a threshold (e.g., -80 dB).
-        fm_candidates = scan_band(
-            band_name="FM",
-            start_freq=88e6,
-            end_freq=108e6,
-            step=200000,         # 200 kHz
-            integration_time=10,
-            threshold=10,      # Adjust threshold as needed
-            output_csv="fm_scan.csv"
-        )
-        # Store the candidate list in your class.
+        # fm_candidates = scan_band(
+        #     band_name="FM",
+        #     start_freq=88e6,
+        #     end_freq=108e6,
+        #     step=200000,         # 200 kHz
+        #     integration_time=10,
+        #     threshold=10,      # Adjust threshold as needed
+        #     output_csv="fm_scan.csv"
+        # )
+        # # Store the candidate list in your class.
+        fm_candidates = stong_freq()
         self.candidate_list = fm_candidates
         # Find the index in candidate_list that is closest to the current frequency:
         if fm_candidates:
@@ -886,6 +893,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.new_freq = seek_previous(self.frequency, self.candidate_list)
             # self.set_frequency(new_freq)
             self.change_frequency()
+
+    def scanner(self):
+        # For FM, use a range of 88 MHz to 108 MHz, step size 200 kHz,
+        # integration time of 0.5 seconds, and a threshold (e.g., -80 dB).
+        scan_band(
+            band_name="FM",
+            start_freq=88e6,
+            end_freq=108e6,
+            step=200000,         # 200 kHz
+            integration_time=10,
+            threshold=10,      # Adjust threshold as needed
+            output_csv="fm_scan.csv"
+        )
         
 async def main():
     # async def main():
