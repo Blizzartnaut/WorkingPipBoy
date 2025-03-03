@@ -22,7 +22,7 @@ def scan_band(band_name, start_freq, end_freq, step, integration_time, threshold
     """
     # Build the rtl_power command.
     # Example: rtl_power -f 88000000:108000000:200000 -i 0.5 -E 1 -F csv > fm_scan.csv
-    cmd = f"rtl_power -f {start_freq}:{end_freq}:{step} -i {integration_time} {output_csv}"
+    cmd = f"rtl_power -f {start_freq}:{end_freq}:{step} -i {integration_time} -1 {output_csv}"
     print("Running command:", cmd)
     
     # Run the command (blocking call).
