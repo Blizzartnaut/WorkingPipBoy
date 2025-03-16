@@ -683,9 +683,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # lat, lon = self.get_current_gps_coordinates()  # Replace with real GPS data when available
         self.get_current_gps_coordinates()
 
-    def zoom_map(self):
-        self.zoomlevel = self.ZOOM_SLIDER.value
-        js_codeMap = f"map.setZoom({self.zoomlevel});"
+    def zoom_map(self, value):
+        # self.zoomlevel = self.ZOOM_SLIDER.value
+        js_codeMap = f"map.setZoom({value});"
         # Run the JavaScript in the QWebEngineView.
         self.mapView.page().runJavaScript(js_codeMap)
 
