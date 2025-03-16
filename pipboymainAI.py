@@ -684,7 +684,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.get_current_gps_coordinates()
 
     def zoom_map(self):
-        self.mapView.zoomFactor = self.ZOOM_SLIDER.value
+        self.zoomlevel = self.ZOOM_SLIDER.value
+        js_codeMap = f"map.setZoom({self.zoomlevel});"
+        # Run the JavaScript in the QWebEngineView.
+        self.mapView.page().runJavaScript(js_codeMap)
 
     def update_cpm(self):
         # Append the current CPS value to the rolling deque.
