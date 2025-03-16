@@ -67,7 +67,7 @@ import alsaaudio
 radioval = 0
 
 #for radio
-from radioControls import scan_band, seek_next, seek_previous, stong_freq
+from radioControls import scan_band, seek_next, seek_previous, stong_freq, post_process_candidates
 
 def start_local_server(port=8000, directory="."):
     """
@@ -155,7 +155,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Initial Freq should be in hz, #e6 means MHz (specifically means a Mega or a million)
         self.frequency = 102.7e6
         self.process = None
-        self.freqInput.setText(str(self.frequency))
+        self.freqInput.setText(f"{self.frequency/1e6:.2f}")
         self.time_plot_butt.setText("PLAY")
         self.freq_plot_butt.setText("STOP")
         self.time_plot_butt.clicked.connect(self.start_stream)
@@ -246,6 +246,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #Map placement
         server = start_local_server(port=8000, directory=".")
+        self.ZOOM_SLIDER.valueChanged.connect(self.zoom_map)
 
         #Bus for battery capacity gauge
         self.bus = smbus.SMBus(1) #0 = /dev/i2c-0 (port I@C0), 1 = /dev/i2c-1 (port I2C1)
@@ -517,6 +518,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 while self.hold == True: #True is set whenever self.play() is called, but then is set to false as soon as this is called, allowing it to run only once per song
                     self.hold = False #so it doesnt trigger multiple times per song
                     QTimer.singleShot((self.length/98), self.auto_play) #sets a single shot timer to a time relative to the length of the song, in an attempt to give just enough of a break between songs
+            
+            if self.length == None:
+                self.auto_play()
 
 
         # if self.percent >= 98: #percent hasnt been declared yet, outside of the if statement its in.
@@ -678,6 +682,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # lat, lon = self.get_current_gps_coordinates()  # Replace with real GPS data when available
         self.get_current_gps_coordinates()
+
+    def zoom_map(self):
+        self.mapView.zoomFactor = self.ZOOM_SLIDER.value
 
     def update_cpm(self):
         # Append the current CPS value to the rolling deque.
@@ -879,8 +886,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # # Store the candidate list in your class.
         fm_candidates = stong_freq()
         self.candidate_list = fm_candidates
+
+        fm_candidates_snapped = post_process_candidates(fm_candidates)
+
+
         # Find the index in candidate_list that is closest to the current frequency:
-        if fm_candidates:
+        if fm_candidates_snapped:
             self.current_candidate = min(fm_candidates, key=lambda x: abs(x - self.frequency))
             self.candidatesLabel.setText(f'Found {len(self.candidate_list)} Candidates!')
         else:

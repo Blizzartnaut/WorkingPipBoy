@@ -121,5 +121,46 @@ def stong_freq():
         print(f"{freq/1e6:.3f} MHz")
     return strong_freqs
 
+def snap_to_fm_channel(freq_hz):
+    """
+    Snaps a given frequency (in Hz) to the nearest valid FM channel frequency.
+    Assumes FM channels in the US from 88.1 MHz to 107.9 MHz in 200 kHz steps.
+    
+    Returns:
+        Snapped frequency in Hz.
+    """
+    # Convert Hz to MHz
+    freq_mhz = freq_hz / 1e6
+    # Define FM band limits and channel spacing
+    lower_bound = 88.1
+    upper_bound = 107.9
+    channel_spacing = 0.2  # MHz
+    
+    # Calculate the nearest channel using the lower bound as reference
+    channel = round((freq_mhz - lower_bound) / channel_spacing) * channel_spacing + lower_bound
+    
+    # Clamp to the valid FM band
+    if channel < lower_bound:
+        channel = lower_bound
+    if channel > upper_bound:
+        channel = upper_bound
+
+    # Return the frequency in Hz
+    return channel * 1e6
+
+# Example usage:
+# raw_candidate = 99300000  # 99.3 MHz in Hz
+# snapped = snap_to_fm_channel(raw_candidate)
+
+def post_process_candidates(candidates):
+    """
+    Takes a list of candidate frequencies (in Hz) and snaps each to the nearest valid FM channel.
+    Returns a sorted list of unique frequencies.
+    """
+    snapped = [snap_to_fm_channel(freq) for freq in candidates]
+    # Remove duplicates and sort
+    unique_snapped = sorted(set(snapped))
+    return unique_snapped
+
 scan_thread = threading.Thread(target=scan_band)
 scan_thread.start()

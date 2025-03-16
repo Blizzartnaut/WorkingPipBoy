@@ -242,9 +242,11 @@ class Ui_MainWindow(object):
         self.ZOOM_SLIDER = QSlider(self.map)
         self.ZOOM_SLIDER.setObjectName(u"ZOOM_SLIDER")
         self.ZOOM_SLIDER.setGeometry(QRect(20, 20, 41, 231))
-        self.ZOOM_SLIDER.setMinimum(9)
+        self.ZOOM_SLIDER.setMinimum(7)
         self.ZOOM_SLIDER.setMaximum(15)
+        self.ZOOM_SLIDER.setValue(15)
         self.ZOOM_SLIDER.setOrientation(Qt.Vertical)
+        self.ZOOM_SLIDER.setInvertedControls(False)
         self.MAP = QLabel(self.map)
         self.MAP.setObjectName(u"MAP")
         self.MAP.setGeometry(QRect(174, 19, 611, 401))
@@ -400,7 +402,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(4)
+        self.tabWidget.setCurrentIndex(3)
         self.MENU2.setCurrentIndex(0)
 
 
