@@ -19,7 +19,7 @@
     <script src="lib/leaflet/leaflet.js"></script>
     <script>
       // Initialize the map at the default coordinates and zoom.
-      var map = L.map('map').setView([41.0120, -76.8477], 10);
+      var map = L.map('map').setView([41.0120, -76.8477], 15);
 
       // Load the local tile layer.
       L.tileLayer('XYZTiles/{z}/{x}/{y}.png', {
@@ -48,7 +48,19 @@
           // Alternatively, for an instant recentering (uncomment the line below):
           // map.setView([lat, lon], map.getZoom());
         }
+        // Create an empty polyline for the GPS path
+      var gpsPath = L.polyline([], { color: 'blue', weight: 3 }).addTo(map);
+
+      // Function to update the GPS path with an array of [lat, lon] pairs
+      function updateGPSPath(points) {
+        // 'points' should be an array like: [[lat1, lon1], [lat2, lon2], ...]
+        // Update the polyline's latlngs
+        gpsPath.setLatLngs(points);
       }
+
+    }
+    // Optionally, you could expose updateGPSPath to be callable externally
+    window.updateGPSPath = updateGPSPath;
     </script>
   </body>
 </html>

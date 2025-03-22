@@ -66,6 +66,10 @@ import alsaaudio
 #for testing
 radioval = 0
 
+#importing database
+import database
+import json
+
 #for radio
 from radioControls import scan_band, seek_next, seek_previous, stong_freq, post_process_candidates
 
@@ -97,19 +101,6 @@ stream = p.open(format=pyaudio.paFloat32,
                 channels=1,
                 rate=48000,       # Target audio sample rate
                 output=True)
-
-# class SDRWorker():
-#     async def run(self, update_callback):
-#         sdr = RtlSdr()
-#         sdr.sample_rate = 2.4e6
-#         sdr.center_freq = 100e6
-#         sdr.gain = 'auto'
-#         # Stream samples asynchronously
-#         async for samples in sdr.stream():
-#             # Compute a spectrum (FFT) of the samples
-#             spectrum = np.abs(np.fft.fftshift(np.fft.fft(samples)))
-#             update_callback(spectrum)
-#             await asyncio.sleep(0)  # yield control to the event loop
 
 class SplashScreen(QMainWindow):
     def __init__(self, gif_path, audio_path, duration=3400):
@@ -594,6 +585,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # If the conversion fails, display an error message.
             self.freqInput.setText("Invalid frequency")
 
+    def insert_database(self):
+        #Inserts sensor and gps data into database for later recall
+        database.insert_sensor_data(self.data_sens1, self.data_sens2, self.data_sens3, self.data_sensrad, self.lat, self.lon)
     
     def update(self):
         """
@@ -635,6 +629,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.SENS3.setText(f"MQ135: {values[2]}")
                 self.sel_4.setText(f"RAD: {values[3]} CPS")
                 # print(f'{values[0]},{values[1]},{values[2]},{values[3]}')
+
+                self.insert_database()
                 
                 self.update_graph()
                 self.update_rad_graph()
@@ -753,6 +749,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Run the JavaScript in the QWebEngineView.
             self.mapView.page().runJavaScript(js_code)
             # print(f"Updated GPS marker to lat: {lat}, lon: {lon}")
+
+    def update_gps_path_on_map(self):
+        # Query the database for the last 60 minutes of GPS coordinates.
+        gps_points = database.query_recent_gps(minutes=60)
+        # Convert the list to JSON.
+        gps_points_json = json.dumps(gps_points)
+        # Build the JavaScript call.
+        js_code = f"updateGPSPath({gps_points_json});"
+        # Run the JavaScript in the QWebEngineView.
+        self.mapView.page().runJavaScript(js_code)
         
     def update_memory_usage(self):
         # """
