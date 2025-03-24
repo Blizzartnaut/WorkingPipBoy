@@ -71,7 +71,7 @@ import database
 import json
 
 #for radio
-from radioControls import scan_band, seek_next, seek_previous, stong_freq, post_process_candidates
+from radioControls import scan_band, seek_next, seek_previous, stong_freq, post_process_candidates, ScanThread
 
 def start_local_server(port=8000, directory="."):
     """
@@ -295,7 +295,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fmScan = QTimer(self)
         self.fmScan.timeout.connect(self.scanner)
         self.fmScan.start(600000)
-        self.fmScan.singleShot(2000, self.scanner)
+        # self.fmScan.singleShot(2000, self.scanner)
         # self.freq_text = 102.7
         
         #Gas Sensor Graph
@@ -922,15 +922,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def scanner(self):
         # For FM, use a range of 88 MHz to 108 MHz, step size 200 kHz,
         # integration time of 0.5 seconds, and a threshold (e.g., -80 dB).
-        scan_band(
-            band_name="FM",
-            start_freq=88e6,
-            end_freq=108e6,
-            step=200000,         # 200 kHz
-            integration_time=10,
-            threshold=10,      # Adjust threshold as needed
-            output_csv="fm_scan.csv"
-        )
+        # scan_band(
+        #     band_name="FM",
+        #     start_freq=88e6,
+        #     end_freq=108e6,
+        #     step=200000,         # 200 kHz
+        #     integration_time=10,
+        #     threshold=10,      # Adjust threshold as needed
+        #     output_csv="fm_scan.csv"
+        # )
+        scan_thread = ScanThread("FM", 88e6, 108e6, 200000, 10, 10, "fm_scan.csv")
+        scan_thread.scan_complete.connect(lambda candidates: print("Scan complete:", candidates))
+        scan_thread.start()
         
 async def main():
     # async def main():
