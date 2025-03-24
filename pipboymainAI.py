@@ -678,6 +678,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # lat, lon = self.get_current_gps_coordinates()  # Replace with real GPS data when available
         self.get_current_gps_coordinates()
+        self.update_gps_path_on_map()
 
     def zoom_map(self, value):
         # self.zoomlevel = self.ZOOM_SLIDER.value
