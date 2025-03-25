@@ -1,17 +1,13 @@
 import requests
 import json
 
-def poll_adsb_data():
-    """
-    Poll the dump1090 JSON endpoint and return a list of aircraft data.
-    Each aircraft entry is a dictionary containing keys such as 'lat', 'lon', 'track', etc.
-    """
+def fetch_adsb_data():
+    url = 'http://localhost:8080/data.json'
     try:
-        response = requests.get("http://localhost:8080", timeout=2)
-        if response.status_code == 200:
-            data = response.json()
-            # The JSON structure typically has an "aircraft" key with a list of aircraft dictionaries.
-            return data.get("aircraft", [])
+        response = requests.get(url, timeout=3)
+        response.raise_for_status()
+        data = response.json()
+        return data  # This is a list of aircraft dictionaries.
     except Exception as e:
-        print("Error polling ADS-B data:", e)
-    return []
+        print("Error fetching ADS-B data:", e)
+        return []

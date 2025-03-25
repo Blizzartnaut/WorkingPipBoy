@@ -74,7 +74,7 @@ import json
 from radioControls import scan_band, seek_next, seek_previous, stong_freq, post_process_candidates, run_scan
 
 #for adsb
-from adsbsensing import poll_adsb_data
+from adsbsensing import fetch_adsb_data
 
 def start_local_server(port=8000, directory="."):
     """
@@ -943,15 +943,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         scan_thread.start()
 
     def update_adsb_markers(self):
-        aircraft_list = poll_adsb_data()
-        # Convert the list to JSON string.
-        adsb_json = json.dumps(aircraft_list)
-        # Build a JavaScript call to update markers. This assumes you have defined updateAircraftMarkers in your HTML.
+        adsb_data = fetch_adsb_data()
+        # Convert the list to a JSON string
+        adsb_json = json.dumps(adsb_data)
+        # Call the JavaScript function to update markers:
         js_code = f"updateAircraftMarkers({adsb_json});"
         self.mapView.page().runJavaScript(js_code)
 
     def adsb_start(self):
-        cmd = f"./home/marceversole/dump1090/dump1090 --interactive --net"
+        cmd = f"/home/marceversole/dump1090/dump1090 --interactive --net"
         self.adsb_process = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid)
 
     def closeEvent(self, event):
