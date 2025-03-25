@@ -73,6 +73,9 @@ import json
 #for radio
 from radioControls import scan_band, seek_next, seek_previous, stong_freq, post_process_candidates, run_scan
 
+#for adsb
+from adsbsensing import poll_adsb_data
+
 def start_local_server(port=8000, directory="."):
     """
     Start an HTTP server serving files from the specified directory.
@@ -356,6 +359,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #self.cpd_timer = QTimer(self)
         #self.cpd_timer.timeout.connect(self.update_cpd)
         #self.cpd_timer.start(36000000)
+
+        self.adsb_timer = QTimer(self)
+        self.adsb_timer.timeout.connect(self.update_adsb_markers)
+        self.adsb_timer.start(5000)
         
         rad_layout = QVBoxLayout(self.radGraphWidget)
         self.radGraphWidget.setLayout(rad_layout)
@@ -943,6 +950,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # )
         scan_thread = threading.Thread(target=run_scan, daemon=True)
         scan_thread.start()
+
+    def update_adsb_markers(self):
+        aircraft_list = poll_adsb_data()
+        # Convert the list to JSON string.
+        adsb_json = json.dumps(aircraft_list)
+        # Build a JavaScript call to update markers. This assumes you have defined updateAircraftMarkers in your HTML.
+        js_code = f"updateAircraftMarkers({adsb_json});"
+        self.mapView.page().runJavaScript(js_code)
         
 async def main():
     # async def main():
