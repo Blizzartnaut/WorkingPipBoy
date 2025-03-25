@@ -71,7 +71,7 @@ import database
 import json
 
 #for radio
-from radioControls import scan_band, seek_next, seek_previous, stong_freq, post_process_candidates, ScanThread
+from radioControls import scan_band, seek_next, seek_previous, stong_freq, post_process_candidates, run_scan
 
 def start_local_server(port=8000, directory="."):
     """
@@ -941,8 +941,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #     threshold=10,      # Adjust threshold as needed
         #     output_csv="fm_scan.csv"
         # )
-        scan_thread = ScanThread("FM", 88e6, 108e6, 200000, 10, 10, "fm_scan.csv")
-        scan_thread.scan_complete.connect(lambda candidates: print("Scan complete:", candidates))
+        scan_thread = threading.Thread(target=run_scan, daemon=True)
         scan_thread.start()
         
 async def main():
