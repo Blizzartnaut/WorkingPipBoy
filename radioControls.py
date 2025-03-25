@@ -19,7 +19,7 @@ class ScanThread(QThread):
         self.output_csv = output_csv
 
     def run(self):
-        candidates = scan_band(self.band_name, self.start_freq, self.end_freq,
+        candidates = self.scan_band(self.band_name, self.start_freq, self.end_freq,
                                self.step, self.integration_time, self.threshold, self.output_csv)
         self.scan_complete.emit(candidates)
 
