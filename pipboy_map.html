@@ -49,15 +49,55 @@
           // map.setView([lat, lon], map.getZoom());
         }
         // Create an empty polyline for the GPS path
-      var gpsPath = L.polyline([], { color: 'blue', weight: 3 }).addTo(map);
+        var gpsPath = L.polyline([], { color: 'blue', weight: 3 }).addTo(map);
 
-      // Function to update the GPS path with an array of [lat, lon] pairs
-      function updateGPSPath(points) {
-        // 'points' should be an array like: [[lat1, lon1], [lat2, lon2], ...]
-        // Update the polyline's latlngs
-        gpsPath.setLatLngs(points);
+        // Function to update the GPS path with an array of [lat, lon] pairs
+        function updateGPSPath(points) {
+          // 'points' should be an array like: [[lat1, lon1], [lat2, lon2], ...]
+          // Update the polyline's latlngs
+          gpsPath.setLatLngs(points);
+        }
+        // Object to keep track of aircraft markers by unique ID.
+      var aircraftMarkers = {};
+
+      function updateAircraftMarkers(aircraftList) {
+        // Remove markers for aircraft that are no longer visible.
+        for (var id in aircraftMarkers) {
+          if (!aircraftList.some(ac => ac.hex === id)) {
+            map.removeLayer(aircraftMarkers[id]);
+            delete aircraftMarkers[id];
+          }
+        }
+        // Add or update markers for each aircraft.
+        aircraftList.forEach(function(ac) {
+          // Ensure the ADS-B message has valid position data.
+          if (!ac.lat || !ac.lon) return;
+          var id = ac.hex;  // Unique identifier for the aircraft.
+          var lat = ac.lat;
+          var lon = ac.lon;
+          var track = ac.track;  // Heading in degrees.
+
+          // Optionally, create or update a custom icon that shows the aircraft’s heading.
+          var icon = L.icon({
+            iconUrl: 'aircraft_icon.png',  // Create a small icon image for your aircraft.
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            // Rotation can be applied if using plugins like Leaflet.RotatedMarker.
+          });
+
+          if (aircraftMarkers[id]) {
+            // Update marker position.
+            aircraftMarkers[id].setLatLng([lat, lon]);
+            // If you support rotation, update its rotation angle here.
+          } else {
+            // Create a new marker.
+            var marker = L.marker([lat, lon], {icon: icon});
+            marker.bindPopup(ac.flight ? ac.flight : id);
+            marker.addTo(map);
+            aircraftMarkers[id] = marker;
+          }
+        });
       }
-
     }
     // Optionally, you could expose updateGPSPath to be callable externally
     window.updateGPSPath = updateGPSPath;
