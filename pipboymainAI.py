@@ -291,12 +291,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gacl.timeout.connect(self.run_gc)
         self.gacl.start(30000)
 
-        #Scan Frequency Timers
-        self.fmScan = QTimer(self)
-        self.fmScan.timeout.connect(self.scanner)
-        self.fmScan.start(600000)
-        # self.fmScan.singleShot(2000, self.scanner)
-        # self.freq_text = 102.7
+        # #Scan Frequency Timers
+        # self.fmScan = QTimer(self)
+        # self.fmScan.timeout.connect(self.scanner)
+        # self.fmScan.start(600000)
+        # # self.fmScan.singleShot(2000, self.scanner)
+        # # self.freq_text = 102.7
+        self.scannerstart = QTimer(self)
+        self.scannerstart.singleShot(2000, self.start_scanning)
         
         #Gas Sensor Graph
         #Matplotlib persistant canvas
@@ -416,6 +418,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def start_fullscreen(self):
         self.showFullScreen()
+
+    def start_scanning(self):
+        #Scan Frequency Timers
+        self.fmScan = QTimer(self)
+        self.fmScan.timeout.connect(self.scanner)
+        self.fmScan.start(600000)
+        # self.fmScan.singleShot(2000, self.scanner)
+        # self.freq_text = 102.7
     
     # # RTL SDR Setup
     #     @asyncSlot(object)
