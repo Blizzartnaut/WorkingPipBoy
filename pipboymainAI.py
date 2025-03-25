@@ -951,7 +951,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mapView.page().runJavaScript(js_code)
 
     def adsb_start(self):
-        cmd = f"./dump1090/dump1090 --interactive --net"
+        cmd = f".home/marceversole/dump1090/dump1090 --interactive --net"
         self.adsb_process = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid)
 
     def closeEvent(self, event):
