@@ -364,7 +364,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.adsb_timer.timeout.connect(self.update_adsb_markers)
         self.adsb_timer.start(5000)
         self.adsb_start = QTimer(self)
-        self.adsb_start.singleShot(1000, self.start_adsb)
+        self.adsb_start.singleShot(1000, self.adsb_start)
         
         rad_layout = QVBoxLayout(self.radGraphWidget)
         self.radGraphWidget.setLayout(rad_layout)
