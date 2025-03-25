@@ -363,6 +363,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.adsb_timer = QTimer(self)
         self.adsb_timer.timeout.connect(self.update_adsb_markers)
         self.adsb_timer.start(5000)
+        self.adsb_start = QTimer(self)
+        self.adsb_start.singleShot(1000, self.start_adsb)
         
         rad_layout = QVBoxLayout(self.radGraphWidget)
         self.radGraphWidget.setLayout(rad_layout)
@@ -937,17 +939,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.change_frequency()
 
     def scanner(self):
-        # For FM, use a range of 88 MHz to 108 MHz, step size 200 kHz,
-        # integration time of 0.5 seconds, and a threshold (e.g., -80 dB).
-        # scan_band(
-        #     band_name="FM",
-        #     start_freq=88e6,
-        #     end_freq=108e6,
-        #     step=200000,         # 200 kHz
-        #     integration_time=10,
-        #     threshold=10,      # Adjust threshold as needed
-        #     output_csv="fm_scan.csv"
-        # )
         scan_thread = threading.Thread(target=run_scan, daemon=True)
         scan_thread.start()
 
@@ -958,6 +949,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Build a JavaScript call to update markers. This assumes you have defined updateAircraftMarkers in your HTML.
         js_code = f"updateAircraftMarkers({adsb_json});"
         self.mapView.page().runJavaScript(js_code)
+
+    def adsb_start(self):
+        cmd = f"./dump1090 --interactive --net"
+        self.adsb_process = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid)
+
+    def closeEvent(self, event):
+        # When the program is closing, kill the ADS-B process (if running)
+        if self.adsb_process:
+            os.killpg(os.getpgid(self.adsb_process.pid), signal.SIGTERM)
+        event.accept()
         
 async def main():
     # async def main():
