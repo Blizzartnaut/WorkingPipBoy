@@ -19,7 +19,7 @@ class ScanThread(QThread):
         self.output_csv = output_csv
 
     def run(self):
-        candidates = self.scan_band(self.band_name, self.start_freq, self.end_freq,
+        candidates = scan_band(self.band_name, self.start_freq, self.end_freq,
                                self.step, self.integration_time, self.threshold, self.output_csv)
         self.scan_complete.emit(candidates)
 
@@ -44,26 +44,19 @@ class ScanThread(QThread):
         # Example: rtl_power -f 88000000:108000000:200000 -i 0.5 -E 1 -F csv > fm_scan.csv
         cmd = f"rtl_power -f {start_freq}:{end_freq}:{step} -i {integration_time} -1 {output_csv}"
         print("Running command:", cmd)
-        
-        # Run the command (blocking call).
         subprocess.run(cmd, shell=True)
-        # Give a short delay to ensure the file is written.
-        time.sleep(2)
-        
+        # time.sleep(11)
         candidates = []
         if os.path.exists(output_csv):
             with open(output_csv, newline='') as csvfile:
                 reader = csv.reader(csvfile)
-                # Example CSV row: "Frequency, Power" (adjust indices as needed)
                 for row in reader:
                     try:
                         freq = float(row[0])
                         power = float(row[1])
-                        # If the measured power is above our threshold, add to candidates.
                         if power > threshold:
                             candidates.append(freq)
-                    except Exception as e:
-                        # Skip header lines or malformed rows.
+                    except Exception:
                         continue
         candidates.sort()
         print(f"Found {len(candidates)} candidate frequencies in band {band_name}")
