@@ -337,14 +337,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.ax_gas.set_xlim(0, self.window_seconds)
         self.ax_gas.set_ylim(0, 1000)
         self.ax_gas.legend()
-        self.canvas_gas.draw()
-        self.bg_gas = self.canvas_gas.copy_from_bbox(self.ax_gas.bbox)
+        # self.canvas_gas.draw()
+        # self.bg_gas = self.canvas_gas.copy_from_bbox(self.ax_gas.bbox)
 
-        #Further set up initial blitting lines
-        self.ax_gas.draw_artist(self.line1)
-        self.ax_gas.draw_artist(self.line2)
-        self.ax_gas.draw_artist(self.line3)
-        self.canvas_gas.blit(self.ax_gas.bbox)
+        # #Further set up initial blitting lines
+        # self.ax_gas.draw_artist(self.line1)
+        # self.ax_gas.draw_artist(self.line2)
+        # self.ax_gas.draw_artist(self.line3)
+        # self.canvas_gas.blit(self.ax_gas.bbox)
 
         #Geiger Sensor Graph
         #Matplotlib persistant canvas
@@ -376,12 +376,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         #add legend
         self.ax_rad.legend()
-        self.canvas_rad.draw()
-        self.bg_rad = self.canvas_rad.copy_from_bbox(self.ax_rad.bbox)
+        # self.canvas_rad.draw()
+        # self.bg_rad = self.canvas_rad.copy_from_bbox(self.ax_rad.bbox)
 
-        #For blitting
-        self.ax_rad.draw_artist(self.radline)
-        self.canvas_rad.blit(self.ax_rad.bbox)
+        # #For blitting
+        # self.ax_rad.draw_artist(self.radline)
+        # self.canvas_rad.blit(self.ax_rad.bbox)
 
         #Radiation Counters for alerts
         self.last_60_cps = deque(maxlen= 60)
@@ -452,6 +452,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def start_fullscreen(self):
         self.showFullScreen()
+
+    def blitzngraphs(self, event):
+        """
+        Called once when the window is first shown. By this point, 
+        layouts have been processed, placeholders resized, and canvas
+        has its final on-screen size.
+        """
+        super().showEvent(event)
+
+        # 4. Now that everything is visible, do an initial draw & copy the background
+        self.canvas_gas.draw()
+        self.bg_gas = self.canvas_gas.copy_from_bbox(self.ax_gas.bbox)
+        # draw the (initially empty) line artists
+        self.ax_gas.draw_artist(self.line1)
+        self.ax_gas.draw_artist(self.line2)
+        self.ax_gas.draw_artist(self.line3)
+        self.canvas_gas.blit(self.ax_gas.bbox)
+
+        # Same for the radiation canvas:
+        self.canvas_rad.draw()
+        self.bg_rad = self.canvas_rad.copy_from_bbox(self.ax_rad.bbox)
+        self.ax_rad.draw_artist(self.radline)
+        self.canvas_rad.blit(self.ax_rad.bbox)
+
 
     def start_scanning(self):
         #Scan Frequency Timers
