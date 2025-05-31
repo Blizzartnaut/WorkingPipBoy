@@ -306,6 +306,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         #Gas Sensor Graph
         #Matplotlib persistant canvas
+        #Using Blitting
         self.graphWidget = self.findChild(QWidget, "SENSGRAPH")
         # if self.graphWidget is None:
         #     self.graph_timer.start(1000)
@@ -314,32 +315,72 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphWidget.setLayout(graph_layout)
         self.graphWidget.setScaledContents(True)
 
-        self.figure = Figure(figsize=(6,4))
-        self.canvas = FigureCanvas(self.figure)
-        graph_layout.addWidget(self.canvas)
+        self.fig_gas = Figure(figsize=(6,4))
+        self.canvas_gas = FigureCanvas(self.fig_gas)
+        graph_layout.addWidget(self.canvas_gas)
 
-        #Set Labales and title
-        self.ax = self.figure.add_subplot(111)
-        self.ax.set_title('Past 5 Minutes')
-        self.ax.set_xlabel('Time (sec)')
-        self.ax.set_ylabel('Value')
+        #Set Labels and title
+        self.ax_gas = self.fig_gas.add_subplot(111)
+        self.window_seconds = 300
+        self.window_minutes = 5
+        self.ax_gas.set_title(f'Past {self.window_min} Minutes')
+        self.ax_gas.set_xlabel('Time (sec)')
+        self.ax_gas.set_ylabel('Value')
 
         #Plot the data
-        self.line1, = self.ax.plot(self.data_sens1, color="blue", label="MQ4")
-        self.line2, = self.ax.plot(self.data_sens2, color="red", label="MQ6")
-        self.line3, = self.ax.plot(self.data_sens3, color="green", label="MQ135")
+        self.line1, = self.ax_gas.plot([], [], color="blue", label="MQ4")
+        self.line2, = self.ax_gas.plot([], [], color="red", label="MQ6")
+        self.line3, = self.ax_gas.plot([], [], color="green", label="MQ135")
             
         #add legend
-        # self.ax.set_xlim(max(0, len(self.data_sens1) - 300), len(self.data_sens1))
-        self.ax.legend()
-        self.canvas.draw()
+        self.ax_gas.set_xlim(0, self.window_seconds)
+        self.ax_gas.set_ylim(0, 1000)
+        self.ax_gas.legend()
+        self.canvas_gas.draw()
+        self.bg_gas = self.canvas_gas.copy_from_bbox(self.ax_gas.bbox)
+
+        #Further set up initial blitting lines
+        self.ax_gas.draw_artist(self.line1)
+        self.ax_gas.draw_artist(self.line2)
+        self.ax_gas.draw_artist(self.line3)
+        self.canvas_gas.blit(self.ax_gas.bbox)
 
         #Geiger Sensor Graph
         #Matplotlib persistant canvas
+        #adding blitting
         self.radGraphWidget = self.findChild(QWidget, "SELGRAPHRAD")
         if self.graphWidget is None:
             self.radGraphWidget = QWidget(self)
             #self.graph_timer.start(5000)
+
+        rad_layout = QVBoxLayout(self.radGraphWidget)
+        self.radGraphWidget.setLayout(rad_layout)
+        self.radGraphWidget.setScaledContents(True)
+
+        self.radfigure = Figure(figsize=(6,4))
+        self.canvas_rad = FigureCanvas(self.radfigure)
+        rad_layout.addWidget(self.canvas_rad)
+
+        #Set Labales and title
+        self.ax_rad = self.radfigure.add_subplot(111)
+        self.ax_rad.set_title('Counts Per Second (Radiation)')
+        self.ax_rad.set_xlim(0, self.window_seconds)
+        self.ax_rad.set_ylim(0, 200) 
+        self.ax_rad.set_xlabel('Time (sec)')
+        self.ax_rad.set_ylabel('CPS')
+        self.count = 0
+
+        #Plot the data
+        self.radline, = self.ax_rad.plot([], [], color="purple", label="CPS")
+            
+        #add legend
+        self.ax_rad.legend()
+        self.canvas_rad.draw()
+        self.bg_rad = self.canvas_rad.copy_from_bbox(self.ax_rad.bbox)
+
+        #For blitting
+        self.ax_rad.draw_artist(self.radline)
+        self.canvas_rad.blit(self.ax_rad.bbox)
 
         #Radiation Counters for alerts
         self.last_60_cps = deque(maxlen= 60)
@@ -367,27 +408,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.start_adsb_start = QTimer(self)
         self.start_adsb_start.singleShot(1000, self.adsb_start)
         
-        rad_layout = QVBoxLayout(self.radGraphWidget)
-        self.radGraphWidget.setLayout(rad_layout)
-        self.radGraphWidget.setScaledContents(True)
-
-        self.radfigure = Figure(figsize=(6,4))
-        self.radcanvas = FigureCanvas(self.radfigure)
-        rad_layout.addWidget(self.radcanvas)
-
-        #Set Labales and title
-        self.radax = self.radfigure.add_subplot(111)
-        self.radax.set_title('Counts Per Second (Radiation)')
-        self.radax.set_xlabel('Time (sec)')
-        self.radax.set_ylabel('CPS')
-        self.count = 0
-
-        #Plot the data
-        self.radline, = self.radax.plot(self.data_sensrad, color="purple", label="CPS")
-            
-        #add legend
-        self.radax.legend()
-        self.radcanvas.draw()
 
         # Create a vertical layout for the container if not already set.
         if self.MAP.layout() is None:
@@ -695,24 +715,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not x:
                 return  # no data yet
 
-            # Update your existing lines:
-            self.line1.set_xdata(x)
-            self.line1.set_ydata(y1)
-            self.line2.set_xdata(x)
-            self.line2.set_ydata(y2)
-            self.line3.set_xdata(x)
-            self.line3.set_ydata(y3)
+            #Restore background
+            self.canvas_gas.restore_region(self.bg_gas)
 
-            # Rescale axes to fit new data
-            self.ax.relim()
-            self.ax.autoscale_view()
+            #Update the line data
+            self.line1.set_data(x, y1)
+            self.line2.set_data(x, y2)
+            self.line3.set_data(x, y3)
 
-            self.ax.set_title('Past 10 Minutes')
-            self.ax.set_xlabel('Seconds ago')
-            self.canvas.draw_idle()
-            t0 = time.time()
-            self.canvas.draw_idle()
-            print("Draw took", (time.time() - t0)*1000, "ms")
+            #Draw only those artists onto the restored background
+            self.ax_gas.draw_artist(self.line1)
+            self.ax_gas.draw_artist(self.line2)
+            self.ax_gas.draw_artist(self.line3)
+
+            #Blit the updated Axes rectangle to the screen
+            self.canvas_gas.blit(self.ax_gas.bbox)
+
+            # # Update your existing lines:
+            # self.line1.set_xdata(x)
+            # self.line1.set_ydata(y1)
+            # self.line2.set_xdata(x)
+            # self.line2.set_ydata(y2)
+            # self.line3.set_xdata(x)
+            # self.line3.set_ydata(y3)
+
+            # # Rescale axes to fit new data
+            # self.ax.relim()
+            # self.ax.autoscale_view()
+
+            # self.ax.set_title('Past 10 Minutes')
+            # self.ax.set_xlabel('Seconds ago')
+            # self.canvas.draw_idle()
+            # t0 = time.time()
+            # self.canvas.draw_idle()
+            # print("Draw took", (time.time() - t0)*1000, "ms")
         except Exception as e:
             print("Error Updating Graph", e)
     
@@ -798,15 +834,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not x:
                 return
 
-            self.radline.set_xdata(x)
-            self.radline.set_ydata(y4)
+            self.canvas_rad.restore_region(self.bg_rad)
 
-            self.radax.relim()
-            self.radax.autoscale_view()
+            self.radline.set_data(x, y4)
+            self.ax_rad.draw_artist(self.radline)
 
-            self.radax.set_title('Radiation CPS — Past 5 Minutes')
-            self.radax.set_xlabel('Seconds ago')
-            self.radcanvas.draw_idle()
+            self.canvas_rad.blit(self.ax_rad.bbox)
+
+            # self.radline.set_xdata(x)
+            # self.radline.set_ydata(y4)
+
+            # self.radax.relim()
+            # self.radax.autoscale_view()
+
+            # self.radax.set_title('Radiation CPS — Past 5 Minutes')
+            # self.radax.set_xlabel('Seconds ago')
+            # self.radcanvas.draw_idle()
         except Exception as e:
             print("Error Updating Graph", e)
     
