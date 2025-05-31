@@ -452,32 +452,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def start_fullscreen(self):
         self.showFullScreen()
 
-    def blitzngraphs(self, event):
+    def showEvent(self, event):
         """
-        Called once when the window is first shown. By this point, 
-        layouts have been processed, placeholders resized, and canvas
-        has its final on-screen size.
+        Override Qt’s showEvent so that, once the window is laid out and shown,
+        we capture the true background (canvas size is final) and paint our empty
+        line artists into that background. Only then do we start the blit timers.
         """
         super().showEvent(event)
 
-        # 4. Now that everything is visible, do an initial draw & copy the background
+        # —–––––––––––––––––––––––––––––––––
+        # STEP 1: Force a full draw of each FigureCanvas (now that it’s sized correctly)
         self.canvas_gas.draw()
         self.bg_gas = self.canvas_gas.copy_from_bbox(self.ax_gas.bbox)
-        # draw the (initially empty) line artists
+        # Draw your (empty) gas‐sensor lines into that background:
         self.ax_gas.draw_artist(self.line1)
         self.ax_gas.draw_artist(self.line2)
         self.ax_gas.draw_artist(self.line3)
+        # Blit that first frame to “prime” the canvas:
         self.canvas_gas.blit(self.ax_gas.bbox)
 
-        # Same for the radiation canvas:
+        # —–––––––––––––––––––––––––––––––––
+        # STEP 2: Do the exact same for the radiation canvas
         self.canvas_rad.draw()
         self.bg_rad = self.canvas_rad.copy_from_bbox(self.ax_rad.bbox)
         self.ax_rad.draw_artist(self.radline)
         self.canvas_rad.blit(self.ax_rad.bbox)
-        
-        #Timers
-        self.graph_timer.start(1000)
-        self.radgraph_timer.start(1000)
+
+        # —–––––––––––––––––––––––––––––––––
+        # STEP 3: Now that the backgrounds are captured, start the update timers
+        # self.graph_timer.start(1000)     # gas timer at 1 Hz
+        # self.radgraph_timer.start(1000)  # radiation timer at 1 Hz
 
     def start_scanning(self):
         #Scan Frequency Timers
