@@ -2,6 +2,7 @@
 # database.py
 
 import sqlite3
+import datetime
 
 # Define the database file
 DATABASE_FILE = 'sensors.db'
@@ -10,26 +11,22 @@ def create_connection():
     """
     Create and return a database connection to the SQLite database.
     """
-    conn = sqlite3.connect(DATABASE_FILE)
-    return conn
+    return sqlite3.connect(DATABASE_FILE)
 
 def init_db():
-    """
-    Initialize the database by creating the sensor_data table if it does not exist.
-    """
     conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS sensor_data (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            sensor1 REAL,
-            sensor2 REAL,
-            sensor3 REAL,
-            sensor4 REAL,
-            latitude REAL,
-            longitude REAL
-        )
+    cur = conn.cursor()
+    cur.execute('''
+      CREATE TABLE IF NOT EXISTS sensor_data (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        sensor1 REAL,
+        sensor2 REAL,
+        sensor3 REAL,
+        sensor4 REAL,
+        latitude REAL,
+        longitude REAL
+      )
     ''')
     conn.commit()
     conn.close()
@@ -53,43 +50,40 @@ def insert_sensor_data(sensor1, sensor2, sensor3, sensor4, latitude, longitude):
 
 def query_recent_data(minutes=10):
     """
-    Query sensor data from the last `minutes` minutes.
-
-    Parameters:
-      minutes (int): The number of minutes in the past from which to query data.
-
     Returns:
-      List of rows (tuples) from the sensor_data table.
+      List of tuples [(timestamp_str, s1, s2, s3, s4, lat, lon), …]
+      for rows in the last `minutes` minutes.
     """
+    cutoff = (datetime.datetime.utcnow() - datetime.timedelta(minutes=minutes)) \
+               .isoformat(sep=' ')
     conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT * FROM sensor_data 
-        WHERE timestamp >= datetime('now', ?)
-        ORDER BY timestamp ASC
-    ''', (f'-{minutes} minutes',))
-    rows = cursor.fetchall()
+    cur = conn.cursor()
+    cur.execute('''
+      SELECT timestamp, sensor1, sensor2, sensor3, sensor4, latitude, longitude
+      FROM sensor_data
+      WHERE timestamp >= ?
+      ORDER BY timestamp ASC
+    ''', (cutoff,))
+    rows = cur.fetchall()
     conn.close()
     return rows
 
 def query_recent_gps(minutes=60):
     """
-    Query GPS coordinates from the last `minutes` minutes.
-    
     Returns:
-      A list of [latitude, longitude] pairs.
+      [[lat, lon], …] for the last `minutes` minutes.
     """
-    conn = sqlite3.connect(DATABASE_FILE)
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT latitude, longitude FROM sensor_data 
-        WHERE timestamp >= datetime('now', ?)
-        ORDER BY timestamp ASC
+    conn = create_connection()
+    cur = conn.cursor()
+    cur.execute('''
+      SELECT latitude, longitude
+      FROM sensor_data
+      WHERE timestamp >= datetime('now', ?)
+      ORDER BY timestamp ASC
     ''', (f'-{minutes} minutes',))
-    rows = cursor.fetchall()
+    rows = cur.fetchall()
     conn.close()
-    # rows is a list of tuples; convert to list of lists if needed
-    return [list(row) for row in rows]
+    return [list(r) for r in rows]
 
 # if __name__ == '__main__':
 #     # For testing: Initialize the database and insert a sample record.

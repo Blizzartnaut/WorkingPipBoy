@@ -11,6 +11,7 @@ import gc
 from collections import deque
 import subprocess
 import signal
+import datetime
 
 # PySide6 imports
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QListWidget, QProgressBar, QGridLayout, QSlider, QLabel, QHBoxLayout, QPushButton, QComboBox, QRadioButton, QSizePolicy
@@ -361,7 +362,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #self.cpd_timer.start(36000000)
 
         self.adsb_timer = QTimer(self)
-        self.adsb_timer.timeout.connect(self.update_adsb_markers)
+        self.adsb_timer.timeout.connect(self.update_aircraft_markers)
         self.adsb_timer.start(5000)
         self.start_adsb_start = QTimer(self)
         self.start_adsb_start.singleShot(1000, self.adsb_start)
@@ -607,6 +608,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def insert_database(self):
         #Inserts sensor and gps data into database for later recall
         database.insert_sensor_data(self.data_sens1, self.data_sens2, self.data_sens3, self.data_sensrad, self.lat, self.lon)
+        print(f"Inserting into DB: {self.data_sens1 =}, {self.data_sens2 =}, {self.data_sens3 =}, {self.data_sensrad =}, {self.lat=}, {self.lon=}")
+
+    def load_sensor_history(self, minutes=5):
+        """
+        Query the last `minutes` of data and return:
+          x = [seconds since first point, …],
+          y1, y2, y3 = sensor1/2/3 lists,
+          y4 = sensor4 list.
+        """
+        rows = database.query_recent_data(minutes)
+        if not rows:
+            return [], [], [], [], []
+
+        # Parse timestamps and readings
+        times = [datetime.datetime.fromisoformat(r[0]) for r in rows]
+        t0 = times[0]
+        x = [(t - t0).total_seconds() for t in times]
+
+        y1 = [r[1] for r in rows]
+        y2 = [r[2] for r in rows]
+        y3 = [r[3] for r in rows]
+        y4 = [r[4] for r in rows]
+        return x, y1, y2, y3, y4
     
     def update(self):
         """
@@ -618,41 +642,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.TIME.setText("Time: " + QTime.currentTime().toString())
     
     def read_Serial(self):
-        """
-        Read incoming serial data if available. Expected CSV format:
-        [value1, value2, value3, value4, menuScreen]
-        Updates sensor arrays and UI labels.
-        """
         if hasattr(self, 'serial_port') and self.serial_port.in_waiting > 0:
             try:
-                data = self.serial_port.readline().decode('utf-8').strip()
-                values = data.split(',')
-                
-                # Roll arrays to make room for new data at the end.
+                line = self.serial_port.readline().decode('utf-8').strip()
+                vals = line.split(',')
+                # Parse the four sensor readings as floats
+                s1, s2, s3, s4 = map(float, vals[:4])
+                # (If you later send menuScreen or volumeD, grab those separately.)
+
+                # Roll and update your time‐series arrays as before
                 self.data_sens1 = np.roll(self.data_sens1, -1)
+                self.data_sens1[-1] = s1
                 self.data_sens2 = np.roll(self.data_sens2, -1)
+                self.data_sens2[-1] = s2
                 self.data_sens3 = np.roll(self.data_sens3, -1)
+                self.data_sens3[-1] = s3
                 self.data_sensrad = np.roll(self.data_sensrad, -1)
-                
-                # Update sensor data (ensure values[0-2] are valid floats)
-                self.data_sens1[-1] = float(values[0])
-                self.data_sens2[-1] = float(values[1])
-                self.data_sens3[-1] = float(values[2])
-                self.data_sensrad[-1] = float(values[3])
-                self.count = values[3]
-                self.volumeD = values[7]
-                # self.sec4.setText(self.cps)
+                self.data_sensrad[-1] = s4
 
-                self.SENS1.setText(f"MQ4: {values[0]}")
-                self.SENS2.setText(f"MQ6: {values[1]}")
-                self.SENS3.setText(f"MQ135: {values[2]}")
-                self.sel_4.setText(f"RAD: {values[3]} CPS")
-                # print(f'{values[0]},{values[1]},{values[2]},{values[3]}')
+                # Update your labels
+                self.SENS1.setText(f"MQ4: {s1}")
+                self.SENS2.setText(f"MQ6: {s2}")
+                self.SENS3.setText(f"MQ135: {s3}")
+                self.sel_4.setText(f"RAD: {s4} CPS")
 
-                self.insert_database()
-                
+                # Make sure you have up-to-date GPS
+                lat, lon = getattr(self, 'lat', None), getattr(self, 'lon', None)
+
+                # Call your database API with scalars
+                database.insert_sensor_data(s1, s2, s3, s4, lat, lon)
+
+                # Redraw your graphs
                 self.update_graph()
                 self.update_rad_graph()
+
             except Exception as e:
                 print("Error in read_Serial:", e)
         else:
@@ -665,14 +688,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         The graph is saved to a BytesIO buffer, then loaded into a QPixmap.
         """
         try:
-            self.ax.set_ylim(0, 1000)
-            self.line1.set_ydata(self.data_sens1)            
-            self.line2.set_ydata(self.data_sens2)            
-            self.line3.set_ydata(self.data_sens3)
+            x, y1, y2, y3, _ = self.load_sensor_history(minutes=5)
+            if not x:
+                return  # no data yet
 
-            self.ax.set_xlim(max(0, len(self.data_sens1) - 300), len(self.data_sens1))
+            # Update your existing lines:
+            self.line1.set_xdata(x)
+            self.line1.set_ydata(y1)
+            self.line2.set_xdata(x)
+            self.line2.set_ydata(y2)
+            self.line3.set_xdata(x)
+            self.line3.set_ydata(y3)
 
+            # Rescale axes to fit new data
+            self.ax.relim()
+            self.ax.autoscale_view()
+
+            self.ax.set_title('Past 10 Minutes')
+            self.ax.set_xlabel('Seconds ago')
             self.canvas.draw_idle()
+            t0 = time.time()
+            self.canvas.draw_idle()
+            print("Draw took", (time.time() - t0)*1000, "ms")
         except Exception as e:
             print("Error Updating Graph", e)
     
@@ -751,11 +788,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         The graph is saved to a BytesIO buffer, then loaded into a QPixmap.
         """
         try:
-            self.radax.set_ylim(0, 20)
-            self.radline.set_ydata(self.data_sensrad)            
+            """
+            Plot the geiger data (sensor4) from DB history.
+            """
+            x, _, _, _, y4 = self.load_sensor_history(minutes=5)
+            if not x:
+                return
 
-            self.radax.set_xlim(max(0, len(self.data_sensrad) - 300), len(self.data_sensrad))
+            self.radline.set_xdata(x)
+            self.radline.set_ydata(y4)
 
+            self.radax.relim()
+            self.radax.autoscale_view()
+
+            self.radax.set_title('Radiation CPS — Past 5 Minutes')
+            self.radax.set_xlabel('Seconds ago')
             self.radcanvas.draw_idle()
         except Exception as e:
             print("Error Updating Graph", e)
@@ -942,7 +989,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         scan_thread = threading.Thread(target=run_scan, daemon=True)
         scan_thread.start()
 
-    def update_adsb_markers(self):
+    def update_aircraft_markers(self):
         adsb_data = fetch_adsb_data()
         # Convert the list to a JSON string
         adsb_json = json.dumps(adsb_data)
