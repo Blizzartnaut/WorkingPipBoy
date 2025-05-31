@@ -317,6 +317,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.fig_gas = Figure(figsize=(6,4))
         self.canvas_gas = FigureCanvas(self.fig_gas)
+        graph_layout.setContentsMargins(0, 0, 0, 0)
         graph_layout.addWidget(self.canvas_gas)
 
         #Set Labels and title
@@ -357,7 +358,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.radGraphWidget.setLayout(rad_layout)
         self.radGraphWidget.setScaledContents(True)
 
-        self.radfigure = Figure(figsize=(6,4))
+        self.radfigure = Figure(figsize=(5,3))
         self.canvas_rad = FigureCanvas(self.radfigure)
         rad_layout.addWidget(self.canvas_rad)
 
