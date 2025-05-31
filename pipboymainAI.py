@@ -264,12 +264,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             raise Exception("Unsupported Operating System")
         
-        # Timers for various periodic updates:
-        
-        # Graph update timer: refresh graph every 10 seconds.
-        self.graph_timer = QTimer(self)
-        self.graph_timer.timeout.connect(self.update_graph)
-        
+        # Timers for various periodic updates:     
         # Serial data reading timer: check for serial data every 100 ms.
         self.serial_timer = QTimer(self)
         self.serial_timer.timeout.connect(self.read_Serial)
@@ -304,6 +299,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.scannerstart = QTimer(self)
         self.scannerstart.singleShot(2000, self.start_scanning)
         
+        # Graph update timer: refresh graph every 10 seconds.
+        self.graph_timer = QTimer(self)
+        self.graph_timer.timeout.connect(self.update_graph)
+
         #Gas Sensor Graph
         #Matplotlib persistant canvas
         #Using Blitting
@@ -475,7 +474,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.bg_rad = self.canvas_rad.copy_from_bbox(self.ax_rad.bbox)
         self.ax_rad.draw_artist(self.radline)
         self.canvas_rad.blit(self.ax_rad.bbox)
-
+        
+        #Timers
+        self.graph_timer.start(1000)
+        self.radgraph_timer.start(1000)
 
     def start_scanning(self):
         #Scan Frequency Timers
