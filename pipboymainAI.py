@@ -323,7 +323,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.ax_gas = self.fig_gas.add_subplot(111)
         self.window_seconds = 300
         self.window_minutes = 5
-        self.ax_gas.set_title(f'Past {self.window_min} Minutes')
+        self.ax_gas.set_title(f'Past {self.window_minutes} Minutes')
         self.ax_gas.set_xlabel('Time (sec)')
         self.ax_gas.set_ylabel('Value')
 
