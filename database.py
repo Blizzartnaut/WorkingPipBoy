@@ -3,9 +3,11 @@
 
 import sqlite3
 import datetime
+import os
 
 # Define the database file
-DATABASE_FILE = 'sensors.db'
+BASE_DIR = os.path.dirname(__file__)
+DATABASE_FILE = os.path.join(BASE_DIR, 'sensors.db')
 
 def create_connection():
     """
@@ -54,16 +56,16 @@ def query_recent_data(minutes=10):
       List of tuples [(timestamp_str, s1, s2, s3, s4, lat, lon), …]
       for rows in the last `minutes` minutes.
     """
-    cutoff = (datetime.datetime.utcnow() - datetime.timedelta(minutes=minutes)) \
-               .isoformat(sep=' ')
-    conn = create_connection()
+    conn = create_connection()           # ← use create_connection()
     cur = conn.cursor()
-    cur.execute('''
-      SELECT timestamp, sensor1, sensor2, sensor3, sensor4, latitude, longitude
-      FROM sensor_data
-      WHERE timestamp >= ?
+    cutoff = datetime.datetime.utcnow() \
+             - datetime.timedelta(minutes=minutes)
+    cur.execute("""
+        SELECT timestamp, sensor1, sensor2, sensor3, sensor4, latitude, longitude
+          FROM sensor_data
+         WHERE timestamp >= ?
       ORDER BY timestamp ASC
-    ''', (cutoff,))
+    """, (cutoff.isoformat(sep=' '),))
     rows = cur.fetchall()
     conn.close()
     return rows

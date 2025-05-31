@@ -424,6 +424,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pipboygif.addWidget(self.vaultlabel)
         self.vaultlabel.setScaledContents(True)
 
+        #Start database
+        database.init_db()
+
         QTimer.singleShot(20, self.start_fullscreen)
 
     def start_fullscreen(self):
