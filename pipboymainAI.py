@@ -698,33 +698,47 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def read_Serial(self):
         if hasattr(self, 'serial_port') and self.serial_port.in_waiting > 0:
             try:
-                line = self.serial_port.readline().decode('utf-8').strip()
-                vals = line.split(',')
+                # line = self.serial_port.readline().decode('utf-8').strip()
+                data = self.serial_port.readline().decode('utf-8').strip()
+                # vals = line.split(',')
+                values = data.split(',')
                 # Parse the four sensor readings as floats
-                s1, s2, s3, s4 = map(float, vals[:4])
+                # s1, s2, s3, s4 = map(float, vals[:4])
                 # (If you later send menuScreen or volumeD, grab those separately.)
 
-                # Roll and update your time‐series arrays as before
-                self.data_sens1 = np.roll(self.data_sens1, -1)
-                self.data_sens1[-1] = s1
-                self.data_sens2 = np.roll(self.data_sens2, -1)
-                self.data_sens2[-1] = s2
-                self.data_sens3 = np.roll(self.data_sens3, -1)
-                self.data_sens3[-1] = s3
-                self.data_sensrad = np.roll(self.data_sensrad, -1)
-                self.data_sensrad[-1] = s4
+                # Roll and update your time‐series arrays as before #These things might be doing something weird, double check them
+                # self.data_sens1 = np.roll(self.data_sens1, -1)
+                # self.data_sens1[-1] = s1
+                # self.data_sens2 = np.roll(self.data_sens2, -1)
+                # self.data_sens2[-1] = s2
+                # self.data_sens3 = np.roll(self.data_sens3, -1)
+                # self.data_sens3[-1] = s3
+                # self.data_sensrad = np.roll(self.data_sensrad, -1)
+                # self.data_sensrad[-1] = s4
+                self.data_sens1[-1] = float(values[0])
+                self.data_sens2[-1] = float(values[1])
+                self.data_sens3[-1] = float(values[2])
+                self.data_sensrad[-1] = float(values[3])
+                self.count = values[3]
+                self.volumeD = values[7]
+                # self.sec4.setText(self.cps)
+
+                self.SENS1.setText(f"MQ4: {values[0]}")
+                self.SENS2.setText(f"MQ6: {values[1]}")
+                self.SENS3.setText(f"MQ135: {values[2]}")
+                self.sel_4.setText(f"RAD: {values[3]} CPS")
 
                 # Update your labels
-                self.SENS1.setText(f"MQ4: {s1}")
-                self.SENS2.setText(f"MQ6: {s2}")
-                self.SENS3.setText(f"MQ135: {s3}")
-                self.sel_4.setText(f"RAD: {s4} CPS")
+                # self.SENS1.setText(f"MQ4: {s1}")
+                # self.SENS2.setText(f"MQ6: {s2}")
+                # self.SENS3.setText(f"MQ135: {s3}")
+                # self.sel_4.setText(f"RAD: {s4} CPS")
 
                 # Make sure you have up-to-date GPS
                 lat, lon = getattr(self, 'lat', None), getattr(self, 'lon', None)
 
                 # Call your database API with scalars
-                database.insert_sensor_data(s1, s2, s3, s4, lat, lon)
+                # database.insert_sensor_data(s1, s2, s3, s4, lat, lon) #Figure out whats going on here
 
                 # Redraw your graphs
                 self.update_graph()
@@ -735,6 +749,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             # No data available on the serial port.
             pass
+        
+        
     
     def update_graph(self):
         """
@@ -742,17 +758,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         The graph is saved to a BytesIO buffer, then loaded into a QPixmap.
         """
         try:
-            x, y1, y2, y3, _ = self.load_sensor_history(minutes=5)
-            if not x:
-                return  # no data yet
+            # x, y1, y2, y3, _ = self.load_sensor_history(minutes=5)
+            # if not x:
+            #     return  # no data yet
+            # x = 
 
             #Restore background
             self.canvas_gas.restore_region(self.bg_gas)
 
             #Update the line data
-            self.line1.set_data(x, y1)
-            self.line2.set_data(x, y2)
-            self.line3.set_data(x, y3)
+            # self.line1.set_data(x, y1)
+            # self.line2.set_data(x, y2)
+            # self.line3.set_data(x, y3)
+            # self.line1.set_data(x, y1) #Re
+            # self.line2.set_data(x, y2)
+            # self.line3.set_data(x, y3)
+            self.ax.set_ylim(0, 1000)
+            self.line1.set_ydata(self.data_sens1)            
+            self.line2.set_ydata(self.data_sens2)            
+            self.line3.set_ydata(self.data_sens3)
+
+            self.ax.set_xlim(max(0, len(self.data_sens1) - 300), len(self.data_sens1))
 
             #Draw only those artists onto the restored background
             self.ax_gas.draw_artist(self.line1)
@@ -861,13 +887,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             """
             Plot the geiger data (sensor4) from DB history.
             """
-            x, _, _, _, y4 = self.load_sensor_history(minutes=5)
-            if not x:
-                return
+            # x, _, _, _, y4 = self.load_sensor_history(minutes=5)
+            # if not x:
+            #     return
 
             self.canvas_rad.restore_region(self.bg_rad)
 
-            self.radline.set_data(x, y4)
+            # self.radline.set_data(x, y4)
             self.ax_rad.draw_artist(self.radline)
 
             self.canvas_rad.blit(self.ax_rad.bbox)
